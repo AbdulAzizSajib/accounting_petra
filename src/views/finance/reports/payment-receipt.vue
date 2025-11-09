@@ -56,7 +56,7 @@
       </div>
     </div>
 
-    <div id="receiptPaymentReport" class="report-container">
+    <div v-if="voucherData" id="receiptPaymentReport" class="report-container">
       <!-- Header Section -->
       <div class="report-header">
         <div class="header-left">
@@ -311,17 +311,9 @@ const formData = ref({
 const category = ref("JVR");
 
 const loading = ref(false);
-const voucherData = ref([]);
+const voucherData = ref();
 const voucherTypes = ref([]);
 const all_voucherTypes = ref([]);
-
-const totalDebit = computed(() =>
-  voucherData.value.flat().reduce((sum, v) => sum + Number(v.Debit || 0), 0)
-);
-
-const totalCredit = computed(() =>
-  voucherData.value.flat().reduce((sum, v) => sum + Number(v.Credit || 0), 0)
-);
 
 const A_data = ref([]);
 const B_data = ref([]);
