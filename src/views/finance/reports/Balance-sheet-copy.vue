@@ -60,32 +60,12 @@
       </div>
     </div>
 
-    <!-- Loading State -->
     <div v-if="loading" class="flex justify-center items-center py-20">
       <a-spin size="large" />
     </div>
 
-    <!-- No Data Found State (after search) -->
     <div
-      v-else-if="
-        hasSearched && (!b_balanceSheetData || b_balanceSheetData.length === 0)
-      "
-      class="flex flex-col items-center justify-center py-20"
-    >
-      <Icon icon="tabler:file-off" class="text-6xl text-gray-400 mb-4" />
-      <h2 class="text-xl font-semibold text-gray-600 mb-2">No Data Found</h2>
-      <p class="text-gray-500 text-sm">
-        No balance sheet data available for the period
-        {{ formatRange(DateFrom, DateTo) }}
-      </p>
-      <!-- <a-button type="primary" @click="resetFilters" class="mt-4">
-        Reset Filters
-      </a-button> -->
-    </div>
-
-    <!-- Balance Sheet Data Display -->
-    <div
-      v-else-if="b_balanceSheetData && b_balanceSheetData.length > 0"
+      v-if="b_balanceSheetData?.length > 0"
       class="w-full max-w-4xl mx-auto p-8 border"
     >
       <!-- Header -->
@@ -97,6 +77,7 @@
         <h2 class="text-lg font-semibold mb-1">
           Management Statement of Financial Position
         </h2>
+        <!-- <p class="text-sm text-gray-600">1st July 2023  to 30 June 2024</p> -->
         <p class="text-sm text-gray-600">{{ formatRange(DateFrom, DateTo) }}</p>
       </div>
 
@@ -112,7 +93,14 @@
       <div class="bg-white">
         <table class="w-full">
           <thead>
-            <tr class=" "></tr>
+            <tr class=" ">
+              <!-- <th class="text-left py-2 px-4 font-semibold border">
+                Particulars
+              </th>
+              <th class="text-right py-2 px-4 font-semibold border">
+                30 June 2024
+              </th> -->
+            </tr>
           </thead>
           <tbody>
             <!-- ASSETS Section -->
@@ -128,7 +116,12 @@
               </td>
               <td class="text-right px-4 py-1 font-bold">-</td>
             </tr>
-            <tr></tr>
+            <tr>
+              <!-- <td class="px-4 py-1">Property, Plant & Equipment</td>
+              <td class="text-right px-4 py-1 border-b border-black">
+                20,025,507
+              </td> -->
+            </tr>
 
             <!-- Current Assets -->
             <tr>
@@ -152,6 +145,7 @@
             </template>
 
             <!-- Total Assets -->
+
             <tr class="font-bold">
               <td class="px-4 py-2">TOTAL ASSETS</td>
               <td class="text-right px-4 py-2 border-b-2 border-black">
@@ -172,6 +166,12 @@
               <td class="px-4 py-1 font-semibold underline">Owners' Equity</td>
               <td class="text-right px-4 py-1 font-bold">-</td>
             </tr>
+            <!-- <tr>
+              <td class="px-4 py-1">Retained Earnings</td>
+              <td class="text-right px-4 py-1 border-b border-black">
+                171,189,454
+              </td>
+            </tr> -->
 
             <!-- Non-Current Liabilities -->
             <tr>
@@ -180,6 +180,12 @@
               </td>
               <td class="text-right px-4 py-1 pt-3 font-bold">-</td>
             </tr>
+            <!-- <tr>
+              <td class="px-4 py-1">AB Bank Loan Liabilities</td>
+              <td class="text-right px-4 py-1 border-b border-black">
+                44,248,549
+              </td>
+            </tr> -->
 
             <!-- Current Liabilities -->
             <tr>
@@ -188,6 +194,10 @@
               </td>
               <td class="text-right px-4 py-1 pt-3 font-bold">-</td>
             </tr>
+            <!-- <tr>
+              <td class="px-4 py-1">Short Term Loan</td>
+              <td class="text-right px-4 py-1">12,719,504</td>
+            </tr> -->
 
             <!-- Total Equities & Liabilities -->
             <tr class="font-bold">
@@ -202,16 +212,8 @@
         </table>
       </div>
     </div>
-
-    <!-- Initial State (before any search) -->
-    <div v-else class="flex flex-col items-center justify-center py-20">
-      <Icon
-        icon="tabler:report-analytics"
-        class="text-6xl text-gray-300 mb-4"
-      />
-      <p class="text-gray-500">
-        Select a date range and click Preview to generate the balance sheet
-      </p>
+    <div v-else>
+      <h2>No data found</h2>
     </div>
   </MainLayout>
 </template>
@@ -226,7 +228,6 @@ import dayjs from "dayjs";
 import * as XLSX from "xlsx";
 import printJS from "print-js";
 import { Icon } from "@iconify/vue";
-import { message } from "ant-design-vue";
 
 const SiteCode = "01";
 const pdfLoading = ref(false);
@@ -234,15 +235,13 @@ const excelLoading = ref(false);
 
 const category = ref("JVR");
 // Initialize as strings in YYYY-MM-DD so native <input type="date"> shows correct values
+// (HTML date inputs expect a value in the format YYYY-MM-DD)
 const DateFrom = ref(dayjs().startOf("month").format("YYYY-MM-DD"));
 const DateTo = ref(dayjs().endOf("month").format("YYYY-MM-DD"));
 
 const loading = ref(false);
 const b_balanceSheetData = ref([]);
 const b_total = ref(0);
-
-// New ref to track if a search has been performed
-const hasSearched = ref(false);
 
 // Computed property to check if dates are valid
 const dateError = computed(() => {
@@ -285,11 +284,9 @@ const formatAmount = (amount) => {
   });
 };
 
-// Enhanced fetchBalanceSheet function
 const fetchBalanceSheet = async () => {
   try {
     loading.value = true;
-    hasSearched.value = true; // Mark that a search has been performed
 
     const res = await axios.post(
       `${apiBase}/journal-master/balance-sheet-report`,
@@ -299,108 +296,60 @@ const fetchBalanceSheet = async () => {
       },
       getToken()
     );
-
-    // Handle different response scenarios
-    if (res.data && res.data.B) {
-      // Check if data is an array and handle accordingly
-      b_balanceSheetData.value = Array.isArray(res.data.B.data)
-        ? res.data.B.data
-        : [];
-      b_total.value = res.data.B.total || 0;
-
-      // Show message if no data found
-      if (b_balanceSheetData.value.length === 0) {
-        message.info("No balance sheet entries found for the selected period");
-      }
-    } else {
-      // If response structure is unexpected
-      b_balanceSheetData.value = [];
-      b_total.value = 0;
-      // message.warning("Unexpected response format from server");
-    }
-
-    console.log("Balance sheet data:", b_balanceSheetData.value);
+    b_balanceSheetData.value = res.data.B.data;
+    b_total.value = res.data.B.total;
+    console.log(b_balanceSheetData.value);
+    loading.value = false;
   } catch (err) {
-    console.error("Error fetching balance sheet:", err);
-    // Set empty data on error
-    b_balanceSheetData.value = [];
-    b_total.value = 0;
-    hasSearched.value = true;
-
-    // Show error message based on error type
-    if (err.response?.status === 404) {
-      message.error("Balance sheet data not found");
-    } else if (err.response?.status === 500) {
-      message.error("Server error. Please try again later");
-    } else if (err.message === "Network Error") {
-      message.error("Network error. Please check your connection");
-    } else {
-      message.error("Failed to fetch balance sheet data");
-    }
-  } finally {
+    console.error("Error fetching vouchers:", err);
     loading.value = false;
   }
 };
 
-// Reset function to clear filters and data
-const resetFilters = () => {
-  DateFrom.value = dayjs().startOf("month").format("YYYY-MM-DD");
-  DateTo.value = dayjs().endOf("month").format("YYYY-MM-DD");
-  b_balanceSheetData.value = [];
-  b_total.value = 0;
-  hasSearched.value = false;
-  message.success("Filters have been reset");
-};
-
 const exportExcel = () => {
-  if (!b_balanceSheetData.value.length) {
-    message.warning("No data to export");
-    return;
-  }
+  if (!voucherData.value.length) return;
   excelLoading.value = true;
   try {
     const wsData = [
-      ["PETRA PRODUCTS"],
-      ["Management Statement of Financial Position"],
-      [`Period: ${formatRange(DateFrom.value, DateTo.value)}`],
-      [],
-      ["Particulars", "Amount"],
-      ["ASSETS", ""],
-      ["Current Assets", formatAmount(b_total.value)],
+      [
+        "Period",
+        "Vou No",
+        "Date",
+        "M. Code",
+        "M. Accounts Description",
+        "Debit",
+        "Credit",
+        "Narration",
+      ],
     ];
-
-    b_balanceSheetData.value.forEach((item) => {
-      wsData.push([item.FundName || "", formatAmount(item.Amount || 0)]);
+    voucherData.value.forEach((voucherGroup) => {
+      voucherGroup.forEach((item) => {
+        wsData.push([
+          item.Period || "",
+          item.JvNo || "",
+          item.JVdate ? dayjs(item.JVdate).format("DD-MMM-YYYY") : "",
+          item.AMCode || "",
+          item.AMDetails || "",
+          Number(item.Debit || 0),
+          Number(item.Credit || 0),
+          item.Narration || "",
+        ]);
+      });
     });
-
-    wsData.push(
-      ["TOTAL ASSETS", formatAmount(b_total.value)],
-      [],
-      ["EQUITIES & LIABILITIES", ""],
-      ["TOTAL EQUITIES & LIABILITIES", formatAmount(b_total.value)]
-    );
-
     const ws = XLSX.utils.aoa_to_sheet(wsData);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Balance Sheet");
-    XLSX.writeFile(wb, `Balance_Sheet_${dayjs().format("YYYY-MM-DD")}.xlsx`);
-    message.success("Excel file exported successfully");
+    XLSX.utils.book_append_sheet(wb, ws, "Journal Book");
+    XLSX.writeFile(wb, `Journal_Book_${dayjs().format("YYYY-MM-DD")}.xlsx`);
   } catch (err) {
     console.error("Error exporting Excel:", err);
-    message.error("Failed to export Excel file");
   } finally {
     excelLoading.value = false;
   }
 };
 
 const exportPDF = () => {
-  if (!b_balanceSheetData.value.length) {
-    message.warning("No data to export");
-    return;
-  }
-
   printJS({
-    printable: "balanceSheetToPrint",
+    printable: "journalBookToPrint",
     type: "html",
     targetStyles: ["*"],
     style: `
@@ -420,28 +369,156 @@ const exportPDF = () => {
           color-adjust: exact !important;
         }
         
-        #balanceSheetToPrint {
+        #journalBookToPrint {
           width: 100% !important;
           margin: 0 !important;
           padding: 0 !important;
           background: white !important;
         }
         
-        .table-print th,
-        .table-print td {
+        #journalBookToPrint .flex.justify-between {
+          display: flex !important;
+          justify-content: space-between !important;
+          align-items: flex-start !important;
+          margin-bottom: 15px !important;
+          width: 100% !important;
+        }
+       #journalBookToPrint .table-print th,
+        .min-w-full th {
           border: 1px solid #000 !important;
           padding: 4px 3px !important;
           font-size: 9px !important;
+          font-weight: bold !important;
+          text-align: left !important;
+          -webkit-print-color-adjust: exact !important;
+        }
+        #journalBookToPrint .table-print th,
+        .min-w-full th.text-right{
+        text-align: right !important;
+        }
+
+        #journalBookToPrint .text-left.mb-6 {
+          flex: 1 !important;
+          margin-bottom: 0 !important;
+        }
+        
+        #journalBookToPrint .text-left.mb-6 h1 {
+          font-size: 14px !important;
+          font-weight: bold !important;
+          color: #000 !important;
+          margin: 0 0 3px 0 !important;
+        }
+        
+        #journalBookToPrint .text-left.mb-6 p {
+          font-size: 12px !important;
+          font-weight: bold !important;
+          color: #000 !important;
+          margin: 0 !important;
+        }
+        
+        #journalBookToPrint .flex.gap-10 {
+          display: flex !important;
+          gap: 15px !important;
+          flex-shrink: 0 !important;
+        }
+        
+        #journalBookToPrint .flex.gap-10 table {
+          border: 1px solid #000 !important;
+          border-collapse: collapse !important;
+          width: 140px !important;
+          font-size: 9px !important;
+        }
+        
+        #journalBookToPrint .flex.gap-10 th {
+          border: 1px solid #000 !important;
+          padding: 3px 4px !important;
+          font-weight: bold !important;
+          text-align: left !important;
+          -webkit-print-color-adjust: exact !important;
+        }
+        
+        #journalBookToPrint .flex.gap-10 td {
+          border: 1px solid #000 !important;
+          padding: 2px 4px !important;
+          font-size: 8px !important;
+        }
+        
+        .table-print,
+        .min-w-full {
+          width: 100% !important;
+          border: 1px solid #000 !important;
+          border-collapse: collapse !important;
+          margin-top: 10px !important;
+          font-size: 9px !important;
+        }
+        
+        .table-print th,
+        .min-w-full th {
+          border: 1px solid #000 !important;
+          padding: 4px 3px !important;
+          font-size: 9px !important;
+          font-weight: bold !important;
+          text-align: center !important;
+          -webkit-print-color-adjust: exact !important;
+        }
+        
+        .table-print td,
+        .min-w-full td {
+          border: 1px solid #000 !important;
+          padding: 3px !important;
+          font-size: 8px !important;
+          vertical-align: top !important;
+          word-wrap: break-word !important;
+        }
+        
+        .table-print td.font-bold,
+        .min-w-full td.font-bold {
+          font-weight: bold !important;
+          -webkit-print-color-adjust: exact !important;
+        }
+        
+        .bg-gray-100 {
+          -webkit-print-color-adjust: exact !important;
+        }
+        
+        .bg-gray-100 td {
+          font-weight: bold !important;
+        }
+        
+        .text-right {
+          text-align: right !important;
+        }
+        
+        .overflow-x-auto {
+          overflow: visible !important;
         }
         
         button,
         .flex.justify-end,
         .ant-spin,
-        .ant-btn {
+        .ant-btn,
+        .ant-select,
+        .ant-picker,
+        .p-4,
+        .grid {
           display: none !important;
+        }
+        
+        .table-print {
+          page-break-inside: auto !important;
+        }
+        
+        .table-print tr {
+          page-break-inside: avoid !important;
+        }
+        
+        .table-print thead {
+          display: table-header-group !important;
         }
       }
     `,
+    css: null,
+    scanStyles: false,
     onLoadingStart: () => {
       pdfLoading.value = true;
     },
@@ -450,7 +527,6 @@ const exportPDF = () => {
     },
     onPrintDialogClose: () => {
       pdfLoading.value = false;
-      message.success("PDF exported successfully");
     },
   });
 };
