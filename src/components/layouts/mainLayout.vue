@@ -277,6 +277,11 @@ const items = reactive([
         onClick: () => router.push("/reports/journal-book-report"),
       },
       {
+        key: "/reports/balance-sheet",
+        label: "Balance Sheet",
+        onClick: () => router.push("/reports/balance-sheet"),
+      },
+      {
         key: "/reports/statement-of-finance",
         label: "Statement of Finance",
         onClick: () => router.push("/reports/statement-of-finance"),

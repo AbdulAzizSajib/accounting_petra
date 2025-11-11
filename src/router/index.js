@@ -95,6 +95,7 @@ import SalesVoucher from "@/views/finance/reports/sales-voucher.vue";
 import BillReceive from "@/views/finance/reports/bill-receive.vue";
 import VoucherType from "@/views/finance/files/voucher-type.vue";
 import VoucherCategory from "@/views/finance/files/voucher-category.vue";
+import BalanceSheet from "@/views/finance/reports/Balance-sheet.vue";
 
 const routes = [
   {
@@ -453,6 +454,11 @@ const routes = [
     path: "/reports/payment-receipt",
     name: "payment-receipt",
     component: PaymentReceipt,
+  },
+  {
+    path: "/reports/balance-sheet",
+    name: "balance-sheet",
+    component: BalanceSheet,
   },
   {
     path: "/transaction/sales-voucher",
