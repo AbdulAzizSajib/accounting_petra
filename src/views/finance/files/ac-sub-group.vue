@@ -1,5 +1,6 @@
 <template>
   <MainLayout>
+    <!-- <h2>AC Sub Group</h2> -->
     <div class="flex justify-between">
       <div class="mb-4">
         <a-input
@@ -19,12 +20,12 @@
           class="bg-primary text-white px-4 py-2 rounded"
           @click="isCreateModalVisible = true"
         >
-          Add AC Type
+          Add AC Sub Group
         </button>
       </div>
     </div>
     <h1 class="text-2xl font-bold text-primary mb-4 flex items-center gap-4">
-      AC Type ({{ total }})
+      AC Sub Group ({{ total }})
 
       <Icon v-if="isShowLoading" class="size-7" icon="line-md:loading-loop" />
     </h1>
@@ -34,28 +35,22 @@
       <thead>
         <tr class="bg-primary text-white">
           <th class="border border-white px-4 py-2">GroupCode</th>
-          <th class="border border-white px-4 py-2">Group Details</th>
-          <th class="border border-white px-4 py-2">Group Code Sub</th>
-          <th class="border border-white px-4 py-2 text-right">AC Type</th>
+          <th class="border border-white px-4 py-2">GroupCodeSub</th>
+          <th class="border border-white px-4 py-2">GroupSubOrder</th>
+          <th class="border border-white px-4 py-2">GroupDetailsSub</th>
           <th class="border border-white px-4 py-2 text-center">Actions</th>
         </tr>
       </thead>
       <tbody class="capitalize">
         <tr v-for="(data, index) in allData" :key="index">
           <td class="px-4 border">{{ data?.GroupCode }}</td>
-          <td class="px-4 border">{{ data?.ACType1Details }}</td>
-          <td class="px-4 border">{{ data?.GroupCodeSub || "-" }}</td>
-          <td class="px-4 border text-right">{{ data?.ACType1 }}</td>
+          <td class="px-4 border">{{ data?.GroupCodeSub }}</td>
+          <td class="px-4 border">{{ data?.GroupSubOrder }}</td>
+          <td class="px-4 border">{{ data?.GroupDetailsSub }}</td>
           <td class="px-4 border text-center w-8">
             <div class="flex justify-center gap-x-3">
               <button
-                @click="
-                  allData_idwise(
-                    data?.ACType1,
-                    data?.GroupCode,
-                    data?.GroupCodeSub
-                  )
-                "
+                @click="allData_idwise(data?.GroupCodeSub)"
                 type="button"
                 class="px-2 py-1 bg-secondary text-white rounded-md hover:bg-primary"
               >
@@ -63,9 +58,7 @@
               </button>
 
               <a-popconfirm
-                @confirm="
-                  deleteData(data?.ACType1, data?.GroupCode, data?.GroupCodeSub)
-                "
+                @confirm="deleteData(data?.GroupCodeSub)"
                 title="Are you sure?"
                 ok-text="Yes"
                 cancel-text="No"
@@ -104,7 +97,6 @@
               class="w-full"
               placeholder="Select Group Code"
               v-model:value="formData.GroupCode"
-              @select="getacSubGroup"
             >
               <a-select-option
                 v-for="item in groupcodeList"
@@ -115,51 +107,29 @@
               </a-select-option>
             </a-select>
           </a-form-item>
-          <!-- Group Code Field -->
-          <a-form-item
-            label="A/C Sub Group"
-            name="A/CSubGroup"
-            :rules="[
-              { required: false, message: 'Please select A/C Sub Group!' },
-            ]"
-          >
-            <a-select
-              class="w-full"
-              placeholder="Select A/C Sub Group"
-              v-model:value="formData.GroupCodeSub"
-            >
-              <a-select-option
-                v-for="item in acSubGroupList"
-                :value="item?.GroupCodeSub"
-                :key="item?.GroupCodeSub"
-              >
-                {{ item?.GroupCodeSub }} - {{ item?.GroupDetailsSub }}
-              </a-select-option>
-            </a-select>
-          </a-form-item>
 
-          <!-- A/C Type  -->
-          <a-form-item label="A/C Type " name="ACType1">
+          <!-- GroupDetailsSub  -->
+          <a-form-item label="Group Details Sub" name="GroupDetailsSub">
             <a-input
-              type="number"
+              type="text"
               class="w-full"
-              placeholder="Enter A/C Type "
-              v-model:value="formData.ACType1"
-              @input="handleNumeric($event)"
+              placeholder="Enter Group Details Sub"
+              v-model:value="formData.GroupDetailsSub"
             />
           </a-form-item>
-          <!-- A/C Type Details Field -->
+          <!-- GroupSubOrder -->
           <a-form-item
-            label="A/C Type Details"
-            name="ACType1Details"
+            label="Group Sub Order"
+            name="GroupSubOrder"
             :rules="[
-              { required: false, message: 'Please input A/C Type details!' },
+              { required: false, message: 'Please input Group Sub Order!' },
             ]"
           >
             <a-input
               class="w-full"
-              placeholder="Enter A/C Type Details"
-              v-model:value="formData.ACType1Details"
+              placeholder="Enter Group Sub Order"
+              v-model:value="formData.GroupSubOrder"
+              maxlength="2"
             />
           </a-form-item>
         </div>
@@ -183,15 +153,7 @@
       @cancel="isEditModalVisible = false"
       width="500px"
     >
-      <form
-        @submit.prevent="
-          updateallData(
-            updateformData.ACType1,
-            updateformData.GroupCode,
-            updateformData.GroupCodeSub
-          )
-        "
-      >
+      <form @submit.prevent="updateallData(updateformData.GroupCodeSub)">
         <div class="grid grid-cols-1 gap-x-4 custom-form">
           <!-- Group Code Field (Disabled) -->
           <a-form-item label="Group Code" name="GroupCode">
@@ -211,41 +173,28 @@
             </a-select>
           </a-form-item>
 
-          <!-- Group Code Field -->
-          <a-form-item label="A/C Sub Group" name="A/CSubGroup">
-            <a-select
-              disabled
-              class="w-full"
-              placeholder="Select A/C Sub Group"
-              v-model:value="updateformData.GroupCodeSub"
-            >
-              <a-select-option
-                v-for="item in acSubGroupList"
-                :value="item?.GroupCodeSub"
-                :key="item?.GroupCodeSub"
-              >
-                {{ item?.GroupCodeSub }} - {{ item?.GroupDetailsSub }}
-              </a-select-option>
-            </a-select>
-          </a-form-item>
-
-          <!-- A/C Type Field (Disabled) -->
-          <a-form-item label="A/C Type" name="ACType1">
+          <!-- GroupDetailsSub  -->
+          <a-form-item label="Group Details Sub" name="GroupDetailsSub">
             <a-input
-              disabled
-              type="number"
+              type="text"
               class="w-full"
-              placeholder="Enter A/C Type"
-              v-model:value="updateformData.ACType1"
+              placeholder="Enter Group Details Sub"
+              v-model:value="updateformData.GroupDetailsSub"
             />
           </a-form-item>
-
-          <!-- A/C Type Details Field -->
-          <a-form-item label="A/C Type Details" name="ACType1Details">
+          <!-- GroupSubOrder -->
+          <a-form-item
+            label="Group Sub Order"
+            name="GroupSubOrder"
+            :rules="[
+              { required: false, message: 'Please input Group Sub Order!' },
+            ]"
+          >
             <a-input
               class="w-full"
-              placeholder="Enter A/C Type Details"
-              v-model:value="updateformData.ACType1Details"
+              placeholder="Enter Group Sub Order"
+              v-model:value="updateformData.GroupSubOrder"
+              maxlength="2"
             />
           </a-form-item>
         </div>
@@ -305,16 +254,15 @@ const isCreating = ref(false);
 const isUpdating = ref(false);
 
 const formData = ref({
-  ACType1: "",
+  GroupDetailsSub: "",
   GroupCode: "",
-  GroupCodeSub: "",
-  ACType1Details: "",
+  GroupSubOrder: "",
 });
 const updateformData = ref({
-  ACType1: "",
-  GroupCode: "",
   GroupCodeSub: "",
-  ACType1Details: "",
+  GroupDetailsSub: "",
+  GroupCode: "",
+  GroupSubOrder: "",
 });
 
 // create
@@ -322,7 +270,7 @@ const createallData = async () => {
   isCreating.value = true;
   try {
     const res = await axios.post(
-      `${apiBase}/settings/ac-types`,
+      `${apiBase}/settings/ac-groups-sub/`,
       formData.value,
       getToken()
     );
@@ -334,10 +282,9 @@ const createallData = async () => {
     );
     await fetchAllData();
     formData.value = {
-      ACType1: "",
+      GroupDetailsSub: "",
       GroupCode: "",
-      GroupCodeSub: "",
-      ACType1Details: "",
+      GroupSubOrder: "",
     };
 
     isCreateModalVisible.value = false;
@@ -350,19 +297,19 @@ const createallData = async () => {
 
 const isShowLoading = ref(false);
 
-const allData_idwise = async (ACType1, GroupCode, GroupCodeSub) => {
+const allData_idwise = async (GroupCodeSub) => {
   try {
     isShowLoading.value = true;
     const res = await axios.get(
-      `${apiBase}/settings/ac-types/show?actype1=${ACType1}&groupcode=${GroupCode}&groupcodesub=${GroupCodeSub}`,
+      `${apiBase}/settings/ac-groups-sub/show?GroupCodeSub=${GroupCodeSub}`,
       getToken()
     );
     isShowLoading.value = false;
     updateformData.value = {
-      ACType1: res?.data?.data[0]?.ACType1,
+      GroupDetailsSub: res?.data?.data[0]?.GroupDetailsSub,
       GroupCode: res?.data?.data[0]?.GroupCode,
       GroupCodeSub: res?.data?.data[0]?.GroupCodeSub,
-      ACType1Details: res?.data?.data[0]?.ACType1Details,
+      GroupSubOrder: res?.data?.data[0]?.GroupSubOrder,
     };
     isEditModalVisible.value = true;
   } catch (error) {
@@ -371,15 +318,16 @@ const allData_idwise = async (ACType1, GroupCode, GroupCodeSub) => {
 };
 
 // update
-const updateallData = async (ACType1, GroupCode, GroupCodeSub) => {
-  isUpdating.value = true;
-  const finaldata = {
-    ACType1Details: updateformData.value.ACType1Details,
+const updateallData = async (GroupCodeSub) => {
+  const finalData = {
+    GroupDetailsSub: updateformData.value.GroupDetailsSub,
+    GroupSubOrder: updateformData.value.GroupSubOrder,
   };
+  isUpdating.value = true;
   try {
     const res = await axios.put(
-      `${apiBase}/settings/ac-types?actype1=${ACType1}&groupcode=${GroupCode}&groupcodesub=${GroupCodeSub}`,
-      finaldata,
+      `${apiBase}/settings/ac-groups-sub?GroupCodeSub=${GroupCodeSub}`,
+      finalData,
       getToken()
     );
     isUpdating.value = false;
@@ -389,9 +337,9 @@ const updateallData = async (ACType1, GroupCode, GroupCodeSub) => {
     );
 
     updateformData.value = {
-      ACType1: "",
+      GroupDetailsSub: "",
       GroupCode: "",
-      ACType1Details: "",
+      GroupSubOrder: "",
       GroupCodeSub: "",
     };
     await fetchAllData();
@@ -418,7 +366,7 @@ const fetchAllData = async () => {
   loading.value = true;
   try {
     const res = await axios.get(
-      `${apiBase}/settings/ac-types?page=${page.value}&per_page=${per_page.value}&search=${search.value}`,
+      `${apiBase}/settings/ac-groups-sub?page=${page.value}&per_page=${per_page.value}&search=${search.value}`,
       getToken()
     );
     loading.value = false;
@@ -432,11 +380,11 @@ const fetchAllData = async () => {
   }
 };
 
-const deleteData = async (actype1, groupcode, groupcodesub) => {
+const deleteData = async (GroupCodeSub) => {
   loading.value = true;
   try {
     const res = await axios.delete(
-      `${apiBase}/settings/ac-types?actype1=${actype1}&groupcode=${groupcode}&groupcodesub=${groupcodesub}`,
+      `${apiBase}/settings/ac-groups-sub?GroupCodeSub=${GroupCodeSub}`,
       getToken()
     );
     showNotification(res?.data ? "success" : "error", res?.data?.message);
@@ -460,27 +408,6 @@ const getGroupCode = async () => {
   } catch (error) {
     console.log(error.message);
   }
-};
-
-const acSubGroupList = ref([]);
-const getacSubGroup = async () => {
-  try {
-    const res = await axios.get(
-      `${apiBase}/settings/ac-groups-sub/show?GroupCode=${formData.value.GroupCode}`,
-      getToken()
-    );
-    if (res?.data) {
-      acSubGroupList.value = res?.data?.data;
-    }
-  } catch (error) {
-    console.log(error.message);
-  }
-};
-
-const handleNumeric = (event) => {
-  const value = event.target.value;
-  // Remove any non-numeric characters
-  formData.value.ACType1 = value.replace(/[^0-9]/g, "");
 };
 
 onMounted(async () => {

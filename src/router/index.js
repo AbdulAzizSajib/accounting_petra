@@ -96,6 +96,7 @@ import BillReceive from "@/views/finance/reports/bill-receive.vue";
 import VoucherType from "@/views/finance/files/voucher-type.vue";
 import VoucherCategory from "@/views/finance/files/voucher-category.vue";
 import BalanceSheet from "@/views/finance/reports/Balance-sheet.vue";
+import AcSubGroup from "@/views/finance/files/ac-sub-group.vue";
 
 const routes = [
   {
@@ -243,6 +244,11 @@ const routes = [
     path: "/files/ac-type",
     name: "ac-type",
     component: AcType,
+  },
+  {
+    path: "/files/ac-sub-group",
+    name: "ac-sub-group",
+    component: AcSubGroup,
   },
   {
     path: "/files/sub-ledger",

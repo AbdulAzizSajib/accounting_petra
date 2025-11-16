@@ -159,6 +159,11 @@ const items = reactive([
         label: "A/C Type",
         onClick: () => router.push("/files/ac-type"),
       },
+      {
+        key: "/files/ac-sub-group",
+        label: "A/C Sub Group",
+        onClick: () => router.push("/files/ac-sub-group"),
+      },
 
       {
         key: "/files/search-chart-of-accounts",
@@ -276,11 +281,7 @@ const items = reactive([
         label: "Journal Book",
         onClick: () => router.push("/reports/journal-book-report"),
       },
-      {
-        key: "/reports/balance-sheet",
-        label: "Balance Sheet",
-        onClick: () => router.push("/reports/balance-sheet"),
-      },
+
       {
         key: "/reports/statement-of-finance",
         label: "Statement of Finance",
@@ -315,6 +316,11 @@ const items = reactive([
         key: "/reports/trial-balance",
         label: "Trial Balance",
         onClick: () => router.push("/reports/trial-balance"),
+      },
+      {
+        key: "/reports/balance-sheet",
+        label: "Balance Sheet",
+        onClick: () => router.push("/reports/balance-sheet"),
       },
 
       // {

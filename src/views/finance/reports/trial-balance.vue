@@ -169,6 +169,33 @@
 
             <!-- Table Footer with Totals -->
             <tfoot>
+              <tr
+                v-if="
+                  SuspendingAccount?.Status === 'Debit' ||
+                  SuspendingAccount?.Status === 'Credit'
+                "
+                class="bg-gray-100 font-bold"
+              >
+                <td
+                  class="px-2 py-1.5 text-sm border border-gray-700 text-end"
+                  colspan="3"
+                ></td>
+
+                <td class="px-2 py-1.5 text-sm border border-gray-700 text-end">
+                  {{
+                    SuspendingAccount?.Status === "Debit"
+                      ? SuspendingAccount?.Amount
+                      : ""
+                  }}
+                </td>
+                <td class="px-2 py-1.5 text-sm border border-gray-700 text-end">
+                  {{
+                    SuspendingAccount?.Status === "Credit"
+                      ? SuspendingAccount?.Amount
+                      : ""
+                  }}
+                </td>
+              </tr>
               <tr class="bg-gray-100 font-bold">
                 <td
                   colspan="3"
@@ -180,20 +207,23 @@
                   class="px-2 py-1.5 text-base border border-gray-700 text-end font-bold"
                 >
                   {{
-                    formatNumber(totalDebit) == 0
-                      ? "-"
-                      : formatNumber(totalDebit)
+                    formatNumber(
+                      Number(SuspendingAccount?.TotalDebit || 0).toFixed(2)
+                    )
                   }}
-
-                  <!-- {{ totalDebit }} -->
                 </td>
                 <td
                   class="px-2 py-1.5 text-base border border-gray-700 text-end font-bold"
                 >
-                  {{
+                  <!-- {{
                     formatNumber(totalCredit) == 0
                       ? "-"
                       : formatNumber(totalCredit)
+                  }} -->
+                  {{
+                    formatNumber(
+                      Number(SuspendingAccount?.TotalCredit || 0).toFixed(2)
+                    )
                   }}
                 </td>
               </tr>
@@ -251,6 +281,7 @@ const allData = ref([]);
 const loading = ref(false);
 const pdfLoading = ref(false);
 const excelLoading = ref(false);
+const SuspendingAccount = ref();
 
 // Fetch allData with search and pagination
 const fetchAllData = async () => {
@@ -266,8 +297,8 @@ const fetchAllData = async () => {
     );
 
     loading.value = false;
-    allData.value = res?.data;
-    console.log("All data", allData.value);
+    allData.value = res?.data?.records;
+    SuspendingAccount.value = res?.data?.SuspendingAccount;
   } catch (err) {
     loading.value = false;
     allData.value = [];
