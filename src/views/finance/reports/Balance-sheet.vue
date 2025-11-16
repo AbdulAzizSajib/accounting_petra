@@ -136,7 +136,7 @@
                 Current Assets
               </td>
               <td class="text-right px-4 py-1 pt-3 font-bold">
-                {{ formatAmount(b_total) }}
+                {{ formatAmount(Math.round(b_total)) }}
               </td>
             </tr>
             <template v-if="b_balanceSheetData?.length > 0">
@@ -144,9 +144,9 @@
                 v-for="(value, index) in b_balanceSheetData"
                 :key="`a-${index}`"
               >
-                <td class="px-4 py-1">{{ value?.FundName }}</td>
+                <td class="px-4 py-1">{{ value?.ACType1Details }}</td>
                 <td class="text-right px-4 py-1">
-                  {{ formatAmount(value?.Amount) }}
+                  {{ formatAmount(Math.round(value?.Amount)) }}
                 </td>
               </tr>
             </template>
@@ -155,7 +155,7 @@
             <tr class="font-bold">
               <td class="px-4 py-2">TOTAL ASSETS</td>
               <td class="text-right px-4 py-2 border-b-2 border-black">
-                {{ formatAmount(b_total) }}
+                {{ formatAmount(Math.round(b_total)) }}
               </td>
             </tr>
 
@@ -164,30 +164,66 @@
               <td class="px-4 py-2 pt-4 font-bold underline">
                 EQUITIES & LIABILITIES
               </td>
-              <td></td>
+              <td class="text-right px-4 py-1 pt-3 font-bold">
+               
+              </td>
             </tr>
+           
 
             <!-- Owners' Equity -->
             <tr>
               <td class="px-4 py-1 font-semibold underline">Owners' Equity</td>
-              <td class="text-right px-4 py-1 font-bold">-</td>
+              <td class="text-right px-4 py-1 font-bold border-b-2 border-black ">{{ formatAmount(f_total) }}</td>
             </tr>
+             <template v-if="f_balanceSheetData?.length > 0">
+              <tr
+                v-for="(value, index) in f_balanceSheetData"
+                :key="`a-${index}`"
+              >
+                <td class="px-4 py-1">{{ value?.ACType1Details }}</td>
+                <td class="text-right px-4 py-1 ">
+                  {{ formatAmount(value?.Amount) }}
+                </td>
+              </tr>
+            </template>
 
             <!-- Non-Current Liabilities -->
             <tr>
               <td class="px-4 py-1 pt-3 font-semibold underline">
                 Non-Current Liabilities
               </td>
-              <td class="text-right px-4 py-1 pt-3 font-bold">-</td>
+              <td class="text-right px-4 py-1 pt-3 font-bold border-b-2 border-black">{{ formatAmount(e_total) }}</td>
             </tr>
+                <template v-if="e_balanceSheetData?.length > 0">
+              <tr
+                v-for="(value, index) in e_balanceSheetData"
+                :key="`a-${index}`"
+              >
+                <td class="px-4 py-1">{{ value?.ACType1Details }}</td>
+                <td class="text-right px-4 py-1 ">
+                  {{ formatAmount(value?.Amount) }}
+                </td>
+              </tr>
+            </template>
 
             <!-- Current Liabilities -->
             <tr>
               <td class="px-4 py-1 pt-3 font-semibold underline">
                 Current Liabilities
               </td>
-              <td class="text-right px-4 py-1 pt-3 font-bold">-</td>
+              <td class="text-right px-4 py-1 pt-3 font-bold border-b-2 border-black">{{ formatAmount(d_total) }}</td>
             </tr>
+             <template v-if="d_balanceSheetData?.length > 0">
+              <tr
+                v-for="(value, index) in d_balanceSheetData"
+                :key="`a-${index}`"
+              >
+                <td class="px-4 py-1">{{ value?.ACType1Details }}</td>
+                <td class="text-right px-4 py-1 ">
+                  {{ formatAmount(value?.Amount) }}
+                </td>
+              </tr>
+            </template>
 
             <!-- Total Equities & Liabilities -->
             <tr class="font-bold">
@@ -195,7 +231,7 @@
               <td
                 class="text-right px-4 py-2 border-b-2 border-double border-black"
               >
-                {{ formatAmount(b_total) }}
+                {{ formatAmount(f_total + e_total + d_total) }}
               </td>
             </tr>
           </tbody>
@@ -240,6 +276,12 @@ const DateTo = ref(dayjs().endOf("month").format("YYYY-MM-DD"));
 const loading = ref(false);
 const b_balanceSheetData = ref([]);
 const b_total = ref(0);
+const d_balanceSheetData = ref([]);
+const d_total = ref(0);
+const e_balanceSheetData = ref([]);
+const e_total = ref(0);
+const f_balanceSheetData = ref([]);
+const f_total = ref(0);
 
 // New ref to track if a search has been performed
 const hasSearched = ref(false);
@@ -300,13 +342,24 @@ const fetchBalanceSheet = async () => {
       getToken()
     );
 
-    // Handle different response scenarios
-    if (res.data && res.data.B) {
+    if (res.data) {
       // Check if data is an array and handle accordingly
-      b_balanceSheetData.value = Array.isArray(res.data.B.data)
-        ? res.data.B.data
+      b_balanceSheetData.value = Array.isArray(res?.data?.B?.data)
+        ? res?.data?.B?.data
         : [];
-      b_total.value = res.data.B.total || 0;
+      b_total.value = res?.data?.B?.total || 0;
+      d_balanceSheetData.value = Array.isArray(res?.data?.D?.data)
+        ? res?.data?.D?.data
+        : [];
+      d_total.value = res?.data?.D?.total || 0;
+      e_balanceSheetData.value = Array.isArray(res?.data?.E?.data)
+        ? res?.data?.E?.data
+        : [];
+      e_total.value = res?.data?.E?.total || 0;
+      f_balanceSheetData.value = Array.isArray(res?.data?.F?.data)
+        ? res?.data?.F?.data
+        : [];
+      f_total.value = res?.data?.F?.total || 0;
 
       // Show message if no data found
       if (b_balanceSheetData.value.length === 0) {
