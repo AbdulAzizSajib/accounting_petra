@@ -56,6 +56,28 @@
               >
             </div>
           </div>
+          <div class="col-span-1">
+            <div>
+              <a-button
+                type="primary"
+                @click="exportPDF"
+                :loading="pdfLoading"
+                :disabled="dateError || !b_balanceSheetData.length"
+                >PDF</a-button
+              >
+            </div>
+          </div>
+          <div class="col-span-1">
+            <div>
+              <a-button
+                type="primary"
+                @click="exportExcel"
+                :loading="excelLoading"
+                :disabled="dateError || !b_balanceSheetData.length"
+                >Excel</a-button
+              >
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -78,9 +100,6 @@
         No balance sheet data available for the period
         {{ formatRange(DateFrom, DateTo) }}
       </p>
-      <!-- <a-button type="primary" @click="resetFilters" class="mt-4">
-        Reset Filters
-      </a-button> -->
     </div>
 
     <!-- Balance Sheet Data Display -->
@@ -164,24 +183,25 @@
               <td class="px-4 py-2 pt-4 font-bold underline">
                 EQUITIES & LIABILITIES
               </td>
-              <td class="text-right px-4 py-1 pt-3 font-bold">
-               
-              </td>
+              <td class="text-right px-4 py-1 pt-3 font-bold"></td>
             </tr>
-           
 
             <!-- Owners' Equity -->
             <tr>
               <td class="px-4 py-1 font-semibold underline">Owners' Equity</td>
-              <td class="text-right px-4 py-1 font-bold border-b-2 border-black ">{{ formatAmount(f_total) }}</td>
+              <td
+                class="text-right px-4 py-1 font-bold border-b-2 border-black"
+              >
+                {{ formatAmount(f_total) }}
+              </td>
             </tr>
-             <template v-if="f_balanceSheetData?.length > 0">
+            <template v-if="f_balanceSheetData?.length > 0">
               <tr
                 v-for="(value, index) in f_balanceSheetData"
                 :key="`a-${index}`"
               >
                 <td class="px-4 py-1">{{ value?.ACType1Details }}</td>
-                <td class="text-right px-4 py-1 ">
+                <td class="text-right px-4 py-1">
                   {{ formatAmount(value?.Amount) }}
                 </td>
               </tr>
@@ -192,15 +212,19 @@
               <td class="px-4 py-1 pt-3 font-semibold underline">
                 Non-Current Liabilities
               </td>
-              <td class="text-right px-4 py-1 pt-3 font-bold border-b-2 border-black">{{ formatAmount(e_total) }}</td>
+              <td
+                class="text-right px-4 py-1 pt-3 font-bold border-b-2 border-black"
+              >
+                {{ formatAmount(e_total) }}
+              </td>
             </tr>
-                <template v-if="e_balanceSheetData?.length > 0">
+            <template v-if="e_balanceSheetData?.length > 0">
               <tr
                 v-for="(value, index) in e_balanceSheetData"
                 :key="`a-${index}`"
               >
                 <td class="px-4 py-1">{{ value?.ACType1Details }}</td>
-                <td class="text-right px-4 py-1 ">
+                <td class="text-right px-4 py-1">
                   {{ formatAmount(value?.Amount) }}
                 </td>
               </tr>
@@ -211,15 +235,19 @@
               <td class="px-4 py-1 pt-3 font-semibold underline">
                 Current Liabilities
               </td>
-              <td class="text-right px-4 py-1 pt-3 font-bold border-b-2 border-black">{{ formatAmount(d_total) }}</td>
+              <td
+                class="text-right px-4 py-1 pt-3 font-bold border-b-2 border-black"
+              >
+                {{ formatAmount(d_total) }}
+              </td>
             </tr>
-             <template v-if="d_balanceSheetData?.length > 0">
+            <template v-if="d_balanceSheetData?.length > 0">
               <tr
                 v-for="(value, index) in d_balanceSheetData"
                 :key="`a-${index}`"
               >
                 <td class="px-4 py-1">{{ value?.ACType1Details }}</td>
-                <td class="text-right px-4 py-1 ">
+                <td class="text-right px-4 py-1">
                   {{ formatAmount(value?.Amount) }}
                 </td>
               </tr>
@@ -414,23 +442,76 @@ const exportExcel = () => {
   try {
     const wsData = [
       ["PETRA PRODUCTS"],
+      ["House No.# 90, Main Road, Nolvog, Nishat Nagar, Turag, Dhaka-1230"],
       ["Management Statement of Financial Position"],
       [`Period: ${formatRange(DateFrom.value, DateTo.value)}`],
       [],
-      ["Particulars", "Amount"],
+      ["Particulars", formatDisplayDate(DateTo.value)],
+      [],
       ["ASSETS", ""],
-      ["Current Assets", formatAmount(b_total.value)],
+      [],
+      ["Non Current Assets", "-"],
+      [],
+      ["Current Assets", formatAmount(Math.round(b_total.value))],
     ];
 
+    // Add Current Assets details
     b_balanceSheetData.value.forEach((item) => {
-      wsData.push([item.FundName || "", formatAmount(item.Amount || 0)]);
+      wsData.push([
+        item.ACType1Details || "",
+        formatAmount(Math.round(item.Amount || 0)),
+      ]);
     });
 
     wsData.push(
-      ["TOTAL ASSETS", formatAmount(b_total.value)],
+      [],
+      ["TOTAL ASSETS", formatAmount(Math.round(b_total.value))],
       [],
       ["EQUITIES & LIABILITIES", ""],
-      ["TOTAL EQUITIES & LIABILITIES", formatAmount(b_total.value)]
+      [],
+      ["Owners' Equity", formatAmount(f_total.value)]
+    );
+
+    // Add Owners' Equity details
+    if (f_balanceSheetData.value && f_balanceSheetData.value.length > 0) {
+      f_balanceSheetData.value.forEach((item) => {
+        wsData.push([
+          item.ACType1Details || "",
+          formatAmount(item.Amount || 0),
+        ]);
+      });
+    }
+
+    wsData.push([], ["Non-Current Liabilities", formatAmount(e_total.value)]);
+
+    // Add Non-Current Liabilities details
+    if (e_balanceSheetData.value && e_balanceSheetData.value.length > 0) {
+      e_balanceSheetData.value.forEach((item) => {
+        wsData.push([
+          item.ACType1Details || "",
+          formatAmount(item.Amount || 0),
+        ]);
+      });
+    }
+
+    wsData.push([], ["Current Liabilities", formatAmount(d_total.value)]);
+
+    // Add Current Liabilities details
+    if (d_balanceSheetData.value && d_balanceSheetData.value.length > 0) {
+      d_balanceSheetData.value.forEach((item) => {
+        wsData.push([
+          item.ACType1Details || "",
+          formatAmount(item.Amount || 0),
+        ]);
+      });
+    }
+
+    wsData.push(
+      [],
+      [
+        "TOTAL EQUITIES & LIABILITIES",
+        formatAmount(f_total.value + e_total.value + d_total.value),
+      ]
     );
 
     const ws = XLSX.utils.aoa_to_sheet(wsData);
@@ -447,65 +528,248 @@ const exportExcel = () => {
 };
 
 const exportPDF = () => {
-  if (!b_balanceSheetData.value.length) {
+  if (!b_balanceSheetData.value || b_balanceSheetData.value.length === 0) {
     message.warning("No data to export");
     return;
   }
 
-  printJS({
-    printable: "balanceSheetToPrint",
-    type: "html",
-    targetStyles: ["*"],
-    style: `
-      @page {
-        size: A4;
-        margin: 10mm;
-      }
-      
-      @media print {
+  pdfLoading.value = true;
+
+  // Create a hidden printable HTML structure that matches the UI exactly
+  const printContent = `
+    <div style="width: 100%; max-width: 800px; margin: 0 auto; padding: 30px; font-family: Arial, sans-serif;">
+      <!-- Header - matching UI exactly -->
+      <div style="text-align: center; margin-bottom: 24px;">
+        <h1 style="font-size: 24px; font-weight: bold; margin: 0 0 8px 0;">PETRA PRODUCTS</h1>
+        <p style="font-size: 12px; color: #666; margin: 0 0 4px 0;">
+          House No.# 90, Main Road, Nolvog, Nishat Nagar, Turag, Dhaka-1230
+        </p>
+        <h2 style="font-size: 18px; font-weight: 600; margin: 0 0 4px 0;">
+          Management Statement of Financial Position
+        </h2>
+        <p style="font-size: 12px; color: #666; margin: 0;">${formatRange(
+          DateFrom.value,
+          DateTo.value
+        )}</p>
+      </div>
+
+      <!-- Header Row - matching UI's separate header boxes -->
+      <div style="display: table; width: 100%; margin-bottom: 0;">
+        <div style="display: table-cell; border: 1px solid black; padding: 8px 16px; font-weight: bold; vertical-align: middle;">
+          Particulars
+        </div>
+        <div style="display: table-cell; border: 1px solid black; padding: 8px 16px; font-weight: bold; text-align: center; width: 33.33%; vertical-align: middle;">
+          ${formatDisplayDate(DateTo.value)}
+        </div>
+      </div>
+
+      <!-- Balance Sheet Table - matching UI layout -->
+      <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+        <tbody>
+          <!-- ASSETS Section -->
+          <tr>
+            <td style="padding: 8px 16px; font-weight: bold; text-decoration: underline;">ASSETS</td>
+            <td style="width: 33.33%;"></td>
+          </tr>
+
+          <!-- Non Current Assets -->
+          <tr>
+            <td style="padding: 4px 16px; font-weight: 600; text-decoration: underline;">
+              Non Current Assets
+            </td>
+            <td style="text-align: right; padding: 4px 16px; font-weight: bold; width: 33.33%;">-</td>
+          </tr>
+          <tr><td colspan="2">&nbsp;</td></tr>
+
+          <!-- Current Assets -->
+          <tr>
+            <td style="padding: 4px 16px; padding-top: 12px; font-weight: 600; text-decoration: underline;">
+              Current Assets
+            </td>
+            <td style="text-align: right; padding: 4px 16px; padding-top: 12px; font-weight: bold; width: 33.33%;">
+              ${formatAmount(Math.round(b_total.value))}
+            </td>
+          </tr>
+          ${b_balanceSheetData.value
+            .map(
+              (item) => `
+            <tr>
+              <td style="padding: 4px 16px;">${item?.ACType1Details || ""}</td>
+              <td style="text-align: right; padding: 4px 16px; width: 33.33%;">
+                ${formatAmount(Math.round(item?.Amount || 0))}
+              </td>
+            </tr>
+          `
+            )
+            .join("")}
+
+          <!-- Total Assets -->
+          <tr style="font-weight: bold;">
+            <td style="padding: 8px 16px;">TOTAL ASSETS</td>
+            <td style="text-align: right; padding: 8px 16px; border-bottom: 2px solid black; width: 33.33%;">
+              ${formatAmount(Math.round(b_total.value))}
+            </td>
+          </tr>
+
+          <!-- EQUITIES & LIABILITIES Section -->
+          <tr>
+            <td style="padding: 8px 16px; padding-top: 16px; font-weight: bold; text-decoration: underline;">
+              EQUITIES & LIABILITIES
+            </td>
+            <td style="text-align: right; padding: 4px 16px; padding-top: 12px; font-weight: bold; width: 33.33%;"></td>
+          </tr>
+
+          <!-- Owners' Equity -->
+          <tr>
+            <td style="padding: 4px 16px; font-weight: 600; text-decoration: underline;">Owners' Equity</td>
+            <td style="text-align: right; padding: 4px 16px; font-weight: bold; border-bottom: 2px solid black; width: 33.33%;">
+              ${formatAmount(f_total.value)}
+            </td>
+          </tr>
+          ${
+            f_balanceSheetData.value && f_balanceSheetData.value.length > 0
+              ? f_balanceSheetData.value
+                  .map(
+                    (item) => `
+            <tr>
+              <td style="padding: 4px 16px;">${item?.ACType1Details || ""}</td>
+              <td style="text-align: right; padding: 4px 16px; width: 33.33%;">
+                ${formatAmount(item?.Amount || 0)}
+              </td>
+            </tr>
+          `
+                  )
+                  .join("")
+              : ""
+          }
+
+          <!-- Non-Current Liabilities -->
+          <tr>
+            <td style="padding: 4px 16px; padding-top: 12px; font-weight: 600; text-decoration: underline;">
+              Non-Current Liabilities
+            </td>
+            <td style="text-align: right; padding: 4px 16px; padding-top: 12px; font-weight: bold; border-bottom: 2px solid black; width: 33.33%;">
+              ${formatAmount(e_total.value)}
+            </td>
+          </tr>
+          ${
+            e_balanceSheetData.value && e_balanceSheetData.value.length > 0
+              ? e_balanceSheetData.value
+                  .map(
+                    (item) => `
+            <tr>
+              <td style="padding: 4px 16px;">${item?.ACType1Details || ""}</td>
+              <td style="text-align: right; padding: 4px 16px; width: 33.33%;">
+                ${formatAmount(item?.Amount || 0)}
+              </td>
+            </tr>
+          `
+                  )
+                  .join("")
+              : ""
+          }
+
+          <!-- Current Liabilities -->
+          <tr>
+            <td style="padding: 4px 16px; padding-top: 12px; font-weight: 600; text-decoration: underline;">
+              Current Liabilities
+            </td>
+            <td style="text-align: right; padding: 4px 16px; padding-top: 12px; font-weight: bold; border-bottom: 2px solid black; width: 33.33%;">
+              ${formatAmount(d_total.value)}
+            </td>
+          </tr>
+          ${
+            d_balanceSheetData.value && d_balanceSheetData.value.length > 0
+              ? d_balanceSheetData.value
+                  .map(
+                    (item) => `
+            <tr>
+              <td style="padding: 4px 16px;">${item?.ACType1Details || ""}</td>
+              <td style="text-align: right; padding: 4px 16px; width: 33.33%;">
+                ${formatAmount(item?.Amount || 0)}
+              </td>
+            </tr>
+          `
+                  )
+                  .join("")
+              : ""
+          }
+
+          <!-- Total Equities & Liabilities -->
+          <tr style="font-weight: bold;">
+            <td style="padding: 8px 16px;">TOTAL EQUITIES & LIABILITIES</td>
+            <td style="text-align: right; padding: 8px 16px; border-bottom: 3px double black; width: 33.33%;">
+              ${formatAmount(f_total.value + e_total.value + d_total.value)}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  try {
+    printJS({
+      printable: printContent,
+      type: "raw-html",
+      style: `
+        @page {
+          size: A4;
+          margin: 20mm;
+        }
+        
+        * {
+          box-sizing: border-box;
+        }
+        
         body {
-          font-family: Arial, sans-serif !important;
-          font-size: 10px !important;
-          line-height: 1.2 !important;
-          margin: 0 !important;
-          padding: 0 !important;
-          -webkit-print-color-adjust: exact !important;
-          color-adjust: exact !important;
+          font-family: Arial, sans-serif;
+          line-height: 1.5;
+          color: #000;
+          margin: 0;
+          padding: 0;
         }
         
-        #balanceSheetToPrint {
+        table {
+          page-break-inside: auto;
           width: 100% !important;
-          margin: 0 !important;
-          padding: 0 !important;
-          background: white !important;
         }
         
-        .table-print th,
-        .table-print td {
-          border: 1px solid #000 !important;
-          padding: 4px 3px !important;
-          font-size: 9px !important;
+        tr {
+          page-break-inside: avoid;
+          page-break-after: auto;
         }
         
-        button,
-        .flex.justify-end,
-        .ant-spin,
-        .ant-btn {
-          display: none !important;
+        td {
+          word-wrap: break-word;
+          overflow-wrap: break-word;
         }
-      }
-    `,
-    onLoadingStart: () => {
-      pdfLoading.value = true;
-    },
-    onLoadingEnd: () => {
-      pdfLoading.value = false;
-    },
-    onPrintDialogClose: () => {
-      pdfLoading.value = false;
-      message.success("PDF exported successfully");
-    },
-  });
+
+        h1, h2, p {
+          margin: 0;
+          padding: 0;
+        }
+      `,
+      onLoadingStart: () => {
+        pdfLoading.value = true;
+      },
+      onLoadingEnd: () => {
+        pdfLoading.value = false;
+      },
+      onPrintDialogClose: () => {
+        pdfLoading.value = false;
+        // message.success("PDF print dialog opened successfully");
+      },
+      onError: (error) => {
+        console.error("Print error:", error);
+        pdfLoading.value = false;
+        message.error("Failed to generate PDF");
+      },
+    });
+  } catch (error) {
+    console.error("PDF Export Error:", error);
+    pdfLoading.value = false;
+    message.error("Failed to export PDF");
+  }
 };
 </script>
 
