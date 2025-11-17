@@ -56,28 +56,6 @@
               >
             </div>
           </div>
-          <div class="col-span-1">
-            <div>
-              <a-button
-                type="primary"
-                @click="exportPDF"
-                :loading="pdfLoading"
-                :disabled="dateError || !b_balanceSheetData.length"
-                >PDF</a-button
-              >
-            </div>
-          </div>
-          <div class="col-span-1">
-            <div>
-              <a-button
-                type="primary"
-                @click="exportExcel"
-                :loading="excelLoading"
-                :disabled="dateError || !b_balanceSheetData.length"
-                >Excel</a-button
-              >
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -108,7 +86,7 @@
       class="w-full max-w-4xl mx-auto p-8 border"
     >
       <!-- Header -->
-      <div class="text-center mb-6">
+      <div class="text-center mb-6 relative">
         <h1 class="text-2xl font-bold mb-2">PETRA PRODUCTS</h1>
         <p class="text-sm text-gray-600 mb-1">
           House No.# 90, Main Road, Nolvog, Nishat Nagar, Turag, Dhaka-1230
@@ -117,6 +95,24 @@
           Management Statement of Financial Position
         </h2>
         <p class="text-sm text-gray-600">{{ formatRange(DateFrom, DateTo) }}</p>
+
+        <div class="absolute top-0 right-0 flex items-center gap-5">
+          <button
+            @click="exportPDF"
+            :loading="pdfLoading"
+            :disabled="dateError || !b_balanceSheetData.length"
+          >
+            <Icon icon="vscode-icons:file-type-pdf2" width="30" height="30" />
+          </button>
+
+          <button
+            @click="exportExcel"
+            :loading="excelLoading"
+            :disabled="dateError || !b_balanceSheetData.length"
+          >
+            <Icon icon="vscode-icons:file-type-excel" width="30" height="30" />
+          </button>
+        </div>
       </div>
 
       <!-- Balance Sheet Table -->
@@ -518,7 +514,7 @@ const exportExcel = () => {
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Balance Sheet");
     XLSX.writeFile(wb, `Balance_Sheet_${dayjs().format("YYYY-MM-DD")}.xlsx`);
-    message.success("Excel file exported successfully");
+    // message.success("Excel file exported successfully");
   } catch (err) {
     console.error("Error exporting Excel:", err);
     message.error("Failed to export Excel file");
