@@ -455,11 +455,11 @@
             <a-button
               type="primary"
               class="px-6 bg-primary text-white"
-              @click="saveVoucher"
+              @click="updateVoucher"
               :loading="creating"
               :disabled="!canSaveVoucher"
               ref="save_button_ref"
-              >Save</a-button
+              >Update</a-button
             >
             <!-- :disabled="!canAddEntry" -->
             <a-button
@@ -632,9 +632,9 @@ import { Icon } from "@iconify/vue";
 import { useRoute, useRouter } from "vue-router";
 
 const router = useRouter();
-const goBack = () => {
-  router.push({ name: "temp-voucher" });
-};
+// const route = useRoute();
+const JVNo_from_params = useRoute().params.JVNo || null;
+console.log(JVNo_from_params);
 
 const onVoucherTypeSelect = (value) => {
   if (value === "JVR") {
@@ -876,14 +876,20 @@ const isBankPayment = computed(() => {
   const selectedVoucher = voucherTypes.value.find(
     (v) => v.JVType === form.value.voucherType
   );
-  return selectedVoucher?.Category === "BANK" && form.value.category === "P"; // Assuming 'P' is short for Payment
+  return (
+    selectedVoucher?.Category?.toUpperCase() === "BANK" &&
+    form.value.category === "P"
+  ); // Assuming 'P' is short for Payment
 });
 
 const isBankReceipt = computed(() => {
   const selectedVoucher = voucherTypes.value.find(
     (v) => v.JVType === form.value.voucherType
   );
-  return selectedVoucher?.Category === "BANK" && form.value.category === "R"; // Assuming 'R' is short for Receipt
+  return (
+    selectedVoucher?.Category?.toUpperCase() === "BANK" &&
+    form.value.category === "R"
+  ); // Assuming 'R' is short for Receipt
 });
 
 const handleNumberFocus = (field) => {
@@ -1297,7 +1303,7 @@ const deleteEntry = (index) => {
   showNotification("success", "Entry deleted successfully");
 };
 
-const saveVoucher = async () => {
+const updateVoucher = async () => {
   if (["JVR", "BPV"].includes(form.value.voucherType)) {
     if (debitTotal.value !== creditTotal.value) {
       showNotification("error", "Debit balance is not equal to Credit balance");
@@ -1307,7 +1313,8 @@ const saveVoucher = async () => {
 
   const userInfo = JSON.parse(localStorage.getItem("user_info"));
   const payload = {
-    SiteCode: "02",
+    SiteCode: "01",
+    JVNo: JVNo_from_params,
     Period: dayjs(form.value.date).format("YYYYMM"),
     JVType: form.value.voucherType,
     JVCat: form.value.category || "",
@@ -1321,7 +1328,7 @@ const saveVoucher = async () => {
       AMCode: e.account_head,
       ASCode: e.type || "0",
       Person: e.person || "",
-      ChequeNo: e.chequeNo || "",
+      ChequeNo: e.chequeNo || "-",
       ChequeName: e.chequeName || "",
       Narration: e.narration || "",
       Debit: Number(e.debit) || 0,
@@ -1349,7 +1356,7 @@ const saveVoucher = async () => {
 
   creating.value = true;
   try {
-    const res = await axios.post(
+    const res = await axios.put(
       `${apiBase}/journal-master`,
       payload,
       getToken()
@@ -1494,6 +1501,7 @@ const siteCode = ref(route.params.SiteCode);
 const jvNo = ref(route.params.JVNo);
 
 const voucher_idwise_data = ref();
+const isEditingExistingVoucher = ref(false);
 const voucher_idwise = async () => {
   try {
     const res = await axios.get(
@@ -1501,9 +1509,14 @@ const voucher_idwise = async () => {
       getToken()
     );
     if (res.data) {
+      isEditingExistingVoucher.value = true;
       voucher_idwise_data.value = res.data;
       // Populate form after data is loaded
       populateFormFromResponse();
+      // After population is complete, allow fetching new voucher numbers for new entries
+      setTimeout(() => {
+        isEditingExistingVoucher.value = false;
+      }, 500);
     }
   } catch (error) {
     console.error("Error fetching voucher:", error);
@@ -1645,7 +1658,7 @@ watch(
     () => form.value.date,
   ],
   ([newType, newCat, newDate]) => {
-    if (newType && newCat && newDate) {
+    if (newType && newCat && newDate && !isEditingExistingVoucher.value) {
       fetchVoucherNumber();
     }
   }
