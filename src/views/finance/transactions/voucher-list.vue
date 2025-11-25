@@ -17,9 +17,45 @@
         </router-link>
       </div>
     </div>
-    <h1 class="text-2xl font-bold text-primary mb-4">
-      Voucher List ({{ total }})
-    </h1>
+    <div class="grid grid-cols-8 gap-4 mb-4 items-end">
+      <h1 class="text-2xl font-bold text-primary mb-4">
+        Voucher List ({{ total }})
+      </h1>
+      <div class="w-full">
+        <label for="period" class="w-36 font-bold">Form Date:</label>
+        <input
+          type="date"
+          v-model="from_date"
+          :max="to_date"
+          class="w-full border p-1 border-black rounded-md"
+          :class="{ 'border-red-500': dateError }"
+        />
+      </div>
+
+      <div class="w-full">
+        <label for="period" class="w-36 font-bold">To Date:</label>
+        <input
+          type="date"
+          v-model="to_date"
+          :min="from_date"
+          class="w-full border p-1 border-black rounded-md"
+          :class="{ 'border-red-500': dateError }"
+        />
+        <p v-if="dateError" class="text-red-500 text-xs mt-1">
+          To Date must be greater than or equal to From Date
+        </p>
+      </div>
+
+      <div>
+        <a-button
+          type="primary"
+          @click="fetchAllData"
+          :loading="loading"
+          :disabled="dateError"
+          >Filter</a-button
+        >
+      </div>
+    </div>
 
     <!-- Table -->
     <table class="w-full border border-collapse text-left">
@@ -68,6 +104,27 @@
               >
                 <i class="bi bi-trash"></i>
               </button>
+
+              <router-link
+                :to="{
+                  name: 'voucher-list-print',
+                  params: {
+                    SiteCode: voucher?.SiteCode,
+                    Period: voucher?.Period,
+                    Type: voucher?.JVType,
+                    Category: voucher?.JVCat,
+                    VoucherFrom: voucher?.JVSerial,
+                    VoucherTo: voucher?.JVSerial,
+                  },
+                }"
+              >
+                <button
+                  type="button"
+                  class="px-2 py-1 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                >
+                  <i class="bi bi-printer"></i>
+                </button>
+              </router-link>
             </div>
           </td>
         </tr>
@@ -122,7 +179,11 @@ const fetchAllData = async () => {
   loading.value = true;
   try {
     const res = await axios.get(
-      `${apiBase}/journal-master?page=${page.value}&per_page=${per_page.value}&search=${search.value}`,
+      `${apiBase}/journal-master?page=${page.value}&per_page=${
+        per_page.value
+      }&search=${search.value}&from_date=${from_date.value || " "}&to_date=${
+        to_date.value || " "
+      }`,
       getToken()
     );
 
@@ -190,6 +251,22 @@ const confirmDelete = (voucher) => {
     },
   });
 };
+
+// const from_date = ref(dayjs().startOf("month").format("YYYY-MM-DD"));
+const from_date = ref(null);
+const to_date = ref(null);
+const dateError = ref(false);
+
+// const handleFilterDates = async () => {
+//   try {
+//     const res = await axios.get(
+//       `${apiBase}/journal-master?DateFrom=${DateFrom.value}&DateTo=${DateTo.value}`,
+//       getToken()
+//     );
+//   } catch (error) {
+//     console.log(error.message);
+//   }
+// };
 
 onMounted(() => fetchAllData());
 </script>

@@ -247,11 +247,7 @@ const items = reactive([
         label: "Delete Voucher",
         onClick: () => router.push("/transaction/delete-voucher"),
       },
-      {
-        key: "/transaction/voucher-print",
-        label: "Voucher Print",
-        onClick: () => router.push("/transaction/voucher-print"),
-      },
+
       {
         key: "/transaction/voucher-search-chart-of-accounts",
         label: "Search Chart of Accounts",
@@ -280,6 +276,12 @@ const items = reactive([
         key: "/reports/journal-book-report",
         label: "Journal Book",
         onClick: () => router.push("/reports/journal-book-report"),
+      },
+
+      {
+        key: "/reports/voucher-print",
+        label: "Voucher Print",
+        onClick: () => router.push("/reports/voucher-print"),
       },
 
       {
@@ -321,6 +323,16 @@ const items = reactive([
         key: "/reports/balance-sheet",
         label: "Balance Sheet",
         onClick: () => router.push("/reports/balance-sheet"),
+      },
+      {
+        key: "/reports/balance-sheet-details",
+        label: "Balance Sheet Details",
+        onClick: () => router.push("/reports/balance-sheet-details"),
+      },
+      {
+        key: "/reports/cash-flow-statement-report",
+        label: "Cash Flow Statement",
+        onClick: () => router.push("/reports/cash-flow-statement-report"),
       },
 
       // {

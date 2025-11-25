@@ -1,45 +1,28 @@
 <template>
   <MainLayout>
     <div class="flex items-center">
-      <h1 class="text-2xl font-bold text-primary">Trial Balance</h1>
-      <div class="p-8">
-        <a-form-item
-          class="mb-0"
-          label="As on"
-          name="fromDate"
-          :rules="[{ required: false, message: 'Please input your username!' }]"
+      <h1 class="text-2xl font-bold text-primary">
+        Cash Flow Statement Report
+      </h1>
+      <div class="p-8 flex items-end space-x-6">
+        <div>
+          <label for="startDate">From Date</label>
+
+          <a-date-picker v-model:value="DateFrom" class="w-full" />
+        </div>
+        <div>
+          <label for="endDate">To Date</label>
+          <a-date-picker v-model:value="DateTo" class="w-full" />
+        </div>
+        <a-button type="primary" class="" @click="fetchAllData"
+          >Preview</a-button
         >
-          <a-date-picker
-            v-model:value="selectedDate"
-            class="w-full"
-            @change="handleDateChange"
-          />
-        </a-form-item>
       </div>
-      <a-button type="primary" class="" @click="fetchAllData">Preview</a-button>
     </div>
 
     <div v-if="loading" class="flex justify-center mt-4">
       <a-spin></a-spin>
     </div>
-
-    <!-- Export Buttons -->
-    <!-- <div class="flex justify-end gap-2 my-8 max-w-6xl m-auto" v-if="allData.length">
-      <button @click="exportExcel"
-        class="px-6 py-2 text-white bg-blue-500 hover:bg-blue-600 rounded-lg shadow-md flex items-center justify-center gap-2"
-        :disabled="excelLoading">
-        <a-spin v-if="excelLoading" size="small" class="spinner-white" />
-        <span v-if="!excelLoading">Excel Export</span>
-        <span v-else>Exporting Excel</span>
-      </button>
-      <button @click="exportPDF"
-        class="px-6 py-2 text-white bg-green-500 hover:bg-green-600 rounded-lg shadow-md flex items-center justify-center gap-2"
-        :disabled="pdfLoading">
-        <a-spin v-if="pdfLoading" size="small" class="spinner-white" />
-        <span v-if="!pdfLoading">Export to PDF</span>
-        <span v-else>Exporting PDF</span>
-      </button>
-    </div> -->
 
     <div class="" v-if="allData.length">
       <!-- report table -->
@@ -47,27 +30,30 @@
         id="trialBalanceToPrint"
         class="p-6 bg-white rounded-lg shadow-md max-w-6xl mx-auto border"
       >
+        <!-- @click="exportExcel" -->
         <div class="flex justify-end gap-2 pb-4">
-          <button @click="exportExcel" class="" :disabled="excelLoading">
+          <button class="" :disabled="excelLoading">
             <a-spin v-if="excelLoading" size="small" class="spinner-white" />
             <span>
               <Icon icon="vscode-icons:file-type-excel" class="text-4xl" />
             </span>
             <!-- <span v-else>Exporting Excel</span> -->
           </button>
-          <button @click="exportPDF" :disabled="pdfLoading">
+          <!-- @click="exportPDF" -->
+          <button :disabled="pdfLoading">
             <a-spin v-if="pdfLoading" size="small" class="spinner-white" />
             <span v-if="!pdfLoading">
               <Icon icon="vscode-icons:file-type-pdf2" class="text-4xl" />
             </span>
-            <!-- <span v-else>Exporting PDF</span> -->
           </button>
         </div>
         <!-- header area start -->
         <div class="flex justify-between mb-4 items-center space-x-10">
           <div class="text-left mb-6">
             <!-- title -->
-            <h1 class="text-2xl font-bold text-gray-800">Trial Balance</h1>
+            <h1 class="text-2xl font-bold text-gray-800">
+              Cash Flow Statement
+            </h1>
             <p class="text-base text-gray-700 font-semibold">
               Petra Food and Snacks
             </p>
@@ -109,22 +95,13 @@
                 <th
                   class="px-2 py-1.5 text-base font-semibold text-gray-700 border border-gray-700 text-center"
                 >
-                  Account Code
+                  Details
                 </th>
-                <th
-                  class="px-2 py-1.5 text-base font-semibold text-gray-700 border border-gray-700 text-center min-w-[300px]"
-                >
-                  Account Description
-                </th>
+
                 <th
                   class="px-2 py-1.5 text-base font-semibold text-gray-700 border border-gray-700 text-center"
                 >
-                  Debit
-                </th>
-                <th
-                  class="px-2 py-1.5 text-base font-semibold text-gray-700 border border-gray-700 text-center"
-                >
-                  Credit
+                  Amount
                 </th>
               </tr>
             </thead>
@@ -140,69 +117,18 @@
                 <td class="px-2 py-1.5 text-sm border border-gray-700 text-end">
                   {{ index + 1 }}
                 </td>
-                <td
-                  class="px-2 py-1.5 text-sm border border-gray-700 text-start"
-                >
-                  {{ data?.AMCode }}
-                </td>
-                <td
-                  class="px-2 py-1.5 text-sm border border-gray-700 text-start"
-                >
-                  {{ data?.AMDetails }}
+                <td class="px-2 py-1.5 text-sm border border-gray-700">
+                  {{ data?.Details || "_" }}
                 </td>
                 <td class="px-2 py-1.5 text-sm border border-gray-700 text-end">
-                  {{
-                    formatNumber(data?.Debit) == 0
-                      ? "-"
-                      : formatNumber(data?.Debit)
-                  }}
-                </td>
-                <td class="px-2 py-1.5 text-sm border border-gray-700 text-end">
-                  {{
-                    formatNumber(data?.Credit) == 0
-                      ? "-"
-                      : formatNumber(data?.Credit)
-                  }}
+                  {{ data?.Amount || "_" }}
                 </td>
               </tr>
             </tbody>
 
-            <!-- Table Footer with Totals -->
-            <tfoot>
-              <tr
-                v-if="
-                  SuspendingAccount?.Status === 'Debit' ||
-                  SuspendingAccount?.Status === 'Credit'
-                "
-                class="font-bold"
-              >
-                <td
-                  class="px-2 py-1.5 text-sm border border-gray-700 text-center font-normal"
-                  colspan="3"
-                >
-                  <h2>Suspending A/C:</h2>
-                </td>
-
-                <td class="px-2 py-1.5 text-sm border border-gray-700 text-end">
-                  {{
-                    SuspendingAccount?.Status === "Debit" &&
-                    SuspendingAccount?.Amount
-                      ? formatNumber(SuspendingAccount.Amount)
-                      : "-"
-                  }}
-                </td>
-                <td class="px-2 py-1.5 text-sm border border-gray-700 text-end">
-                  {{
-                    SuspendingAccount?.Status === "Credit" &&
-                    SuspendingAccount?.Amount
-                      ? formatNumber(SuspendingAccount.Amount)
-                      : "-"
-                  }}
-                </td>
-              </tr>
+            <!-- <tfoot>
               <tr class="bg-gray-100 font-bold">
                 <td
-                  colspan="3"
                   class="px-2 py-1.5 text-base border border-gray-700 text-end font-bold"
                 >
                   Total:
@@ -219,11 +145,6 @@
                 <td
                   class="px-2 py-1.5 text-base border border-gray-700 text-end font-bold"
                 >
-                  <!-- {{
-                    formatNumber(totalCredit) == 0
-                      ? "-"
-                      : formatNumber(totalCredit)
-                  }} -->
                   {{
                     formatNumber(
                       Number(SuspendingAccount?.TotalCredit || 0).toFixed(2)
@@ -231,7 +152,7 @@
                   }}
                 </td>
               </tr>
-            </tfoot>
+            </tfoot> -->
           </table>
         </div>
       </div>
@@ -277,32 +198,29 @@ const totalCredit = computed(() => {
     .toFixed(2);
 });
 
-const handleDateChange = (date) => {
-  selectedDate.value = date;
-};
+const DateFrom = ref(null);
+const DateTo = ref(null);
 
 const allData = ref([]);
 const loading = ref(false);
 const pdfLoading = ref(false);
 const excelLoading = ref(false);
-const SuspendingAccount = ref();
 
 // Fetch allData with search and pagination
 const fetchAllData = async () => {
   loading.value = true;
   try {
-    // Format the date for API request
-    const formattedDateForApi = selectedDate.value.format("YYYY-MM-DD");
-
     const res = await axios.post(
-      `${apiBase}/journal-master/trial-balance`,
-      { Date: formattedDateForApi },
+      `${apiBase}/journal-master/cash-flow-report`,
+      {
+        DateFrom: DateFrom.value.format("YYYY-MM-DD"),
+        DateTo: DateTo.value.format("YYYY-MM-DD"),
+      },
       getToken()
     );
 
     loading.value = false;
-    allData.value = res?.data?.records;
-    SuspendingAccount.value = res?.data?.SuspendingAccount;
+    allData.value = res?.data;
   } catch (err) {
     loading.value = false;
     allData.value = [];

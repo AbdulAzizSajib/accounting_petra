@@ -637,6 +637,13 @@ const goBack = () => {
 };
 
 const onVoucherTypeSelect = (value) => {
+  // Find the selected voucher and store its AMCode
+  const selectedVoucher = voucherTypes.value.find(
+    (item) => item.JVType === value
+  );
+  if (selectedVoucher) {
+    selectedAMCode.value = selectedVoucher.AMCode || "";
+  }
   if (value === "JVR") {
     // Focus on Group if Category is disabled
     group_code_ref.value?.focus();
@@ -845,14 +852,14 @@ const chequeRegisterList = ref([]);
 const all_chequeRegisterList = ref([]);
 const creating = ref(false);
 const save_button_ref = ref(false);
-
+const selectedAMCode = ref("");
 const fetchAccount_head = async (value) => {
   form.value.account_head = "";
   try {
     const { data } = await axios.get(
       `${apiBase}/journal/account-head?ACType1=${value || ""}&JVType=${
         form.value.voucherType
-      }`,
+      }&JVCode=${selectedAMCode.value || ""}`,
       getToken()
     );
 

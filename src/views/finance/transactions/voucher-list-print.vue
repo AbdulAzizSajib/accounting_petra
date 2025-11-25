@@ -1,123 +1,5 @@
 <template>
   <MainLayout>
-    <h1 class="text-2xl font-bold text-primary mb-4">Search Voucher</h1>
-    <!-- Filter -->
-    <div class="grid lg:grid-cols-6 gap-4 items-end">
-      <div class="">
-        <label class="mb-1 font-semibold block text-sm"
-          >Code <span class="text-red-500">*</span>
-          <LoadingOutlined class="ml-1 align-baseline" v-if="code_loading" />
-        </label>
-        <a-select
-          class="w-full !text-sm"
-          placeholder="Select Voucher Type"
-          showSearch
-          allowClear
-          :filterOption="false"
-          v-model:value="formData.Type"
-          @input="debounceGetCode($event?.target?.value)"
-          @select="getCategory(formData.Type)"
-        >
-          <template v-for="(data, index) in codeData" :key="index">
-            <a-select-option :value="data?.JVType"
-              >{{ data?.JVType }} - {{ data?.JVDetails }}
-            </a-select-option>
-          </template>
-        </a-select>
-      </div>
-      <div>
-        <label class="mb-1 font-semibold block text-sm"
-          >Category <span class="text-red-500">*</span>
-          <LoadingOutlined
-            class="ml-1 align-baseline"
-            v-if="category_loading"
-          />
-        </label>
-        <a-select
-          class="w-full"
-          placeholder="Select Voucher Type"
-          v-model:value="formData.Category"
-        >
-          <template v-for="(data, index) in categoryData" :key="index">
-            <a-select-option :value="data?.Short">{{
-              data?.Category
-            }}</a-select-option></template
-          >
-        </a-select>
-      </div>
-      <div>
-        <label class="mb-1 font-semibold block text-sm"
-          >Vouchar No From
-          <span class="text-red-500">*</span>
-        </label>
-        <a-input-number
-          type="number"
-          placeholder="Enter Voucher No"
-          class="w-full"
-          min="1"
-          v-model:value="formData.VoucherFrom"
-          @input="
-            () => {
-              if (formData.VoucherTo) {
-                if (Number(formData.VoucherFrom) > Number(formData.VoucherTo)) {
-                  showNotification('warning', 'Enter valid number');
-                  formData.VoucherFrom = '';
-                }
-              }
-            }
-          "
-        />
-      </div>
-      <div>
-        <label class="mb-1 font-semibold block text-sm"
-          >Vouchar No To
-          <span class="text-red-500">*</span>
-        </label>
-        <a-input-number
-          type="number"
-          placeholder="Enter Voucher No"
-          class="w-full"
-          v-model:value="formData.VoucherTo"
-        />
-      </div>
-
-      <div>
-        <label class="mb-1 font-semibold block text-sm"
-          >Period
-          <span class="text-red-500">*</span>
-        </label>
-        <a-date-picker
-          class="w-full"
-          picker="month"
-          placeholder="Select Date From"
-          v-model:value="formData.Period"
-        />
-      </div>
-      <div>
-        <div class="flex gap-1">
-          <a-button
-            :disabled="report_Loading"
-            class="px-6 w-full"
-            type="primary"
-            @click="getReport()"
-            >Preview</a-button
-          >
-        </div>
-      </div>
-    </div>
-    <hr class="my-4" />
-    <!-- table -->
-    <a-button
-      type="primary"
-      class="bg-blue-600 text-white px-4"
-      v-if="reportData.length"
-      @click="printAll"
-    >
-      Print All
-    </a-button>
-
-    <hr class="my-4" />
-
     <div
       v-for="(data, index) in reportData"
       :key="index"
@@ -283,7 +165,7 @@
                   class="border border-gray-400 px-3 py-1 text-xs"
                 >
                   <!-- {{ data[0]?.Narration }} -->
-                  {{ "_" }}
+                  {{ "-" }}
                 </td>
               </tr>
             </tfoot>
@@ -329,6 +211,38 @@ import { debounce } from "lodash";
 import { LoadingOutlined } from "@ant-design/icons-vue";
 import dayjs from "dayjs";
 import printJS from "print-js";
+import { useRoute } from "vue-router";
+
+const route = useRoute();
+const period = ref(route.params.Period);
+const siteCode = ref(route.params.SiteCode);
+const Type = ref(route.params.Type);
+const Category = ref(route.params.Category);
+const VoucherFrom = ref(route.params.VoucherFrom);
+const VoucherTo = ref(route.params.VoucherTo);
+
+const voucher_idwise = async () => {
+  try {
+    const res = await axios.post(
+      `${apiBase}/journal-master/voucher-print`,
+      {
+        SiteCode: siteCode.value,
+        Period: period.value,
+        Type: Type.value,
+        Category: Category.value,
+        VoucherFrom: VoucherFrom.value,
+        VoucherTo: VoucherTo.value,
+      },
+      getToken()
+    );
+    if (res.data) {
+      reportData.value = res.data;
+    }
+  } catch (error) {
+    console.error("Error fetching voucher:", error);
+    showNotification("error", "Failed to load voucher data");
+  }
+};
 
 function formatNumber(num) {
   if (isNaN(num)) return num;
@@ -339,50 +253,13 @@ function formatNumber(num) {
 }
 
 const codeData = ref([]);
-const categoryData = ref([]);
+
 const code_loading = ref(false);
-const category_loading = ref(false);
+
 const report_Loading = ref(false);
 
-const getCode = async (search = "") => {
-  code_loading.value = true;
-  try {
-    const res = await axios.get(
-      `${apiBase}/settings/voucher-type/all?search=${search}`,
-      getToken()
-    );
-    code_loading.value = false;
-
-    if (res?.data?.success == true) {
-      codeData.value = res?.data?.data;
-    }
-  } catch (err) {
-    code_loading.value = false;
-    codeData.value = [];
-    showNotification("error", err?.response?.data?.message || err?.message);
-  }
-};
-const getCategory = async (code = "") => {
-  category_loading.value = true;
-  try {
-    const res = await axios.get(
-      `${apiBase}/settings/voucher-type-category/show?JVType=${code}`,
-      getToken()
-    );
-    category_loading.value = false;
-
-    if (res?.data?.success == true) {
-      categoryData.value = res?.data?.data;
-    }
-  } catch (err) {
-    category_loading.value = false;
-    categoryData.value = [];
-    showNotification("error", err?.response?.data?.message || err?.message);
-  }
-};
-const debounceGetCode = debounce(getCode, 300);
 onMounted(async () => {
-  await getCode();
+  await voucher_idwise();
 });
 
 // Table Data
@@ -505,45 +382,6 @@ function numberToTakaWords(num) {
 
   return `Taka ${inWords(num)} Only`;
 }
-
-//printing function
-const printAll = () => {
-  // Collect all voucher sections
-  const vouchers = document.querySelectorAll("[id^='voucher-']");
-  let allHTML = "";
-
-  vouchers.forEach((voucher, i) => {
-    allHTML += `
-  <div class="voucher-page" style="page-break-after: always; margin-bottom: 20px;">
-    ${voucher.outerHTML}
-  </div>
-`;
-  });
-
-  printJS({
-    printable: allHTML,
-    type: "raw-html",
-    style: `
-      @page { size: A4; margin: 10mm; }
-      @media print {
-        .no-print { display: none !important; }
-        .voucher-page { page-break-after: always; }
-        body { font-family: Arial, sans-serif; font-size: 11px; }
-        table { border-collapse: collapse; width: 100%; }
-        th, td { border: 1px solid #ccc; padding: 4px; text-align: left; }
-
-        th.debit-credit-label{
-          text-align: center !important;
-          font-weight: bold;
-        }
-        td.debit-credit-value {
-          text-align: right !important;
-        }
-        h2, h3 { text-align: center; margin: 4px 0; }
-      }
-    `,
-  });
-};
 
 const printSingle = (index) => {
   const voucher = document.getElementById(`voucher-${index}`);

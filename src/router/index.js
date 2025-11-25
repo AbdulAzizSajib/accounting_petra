@@ -97,6 +97,9 @@ import VoucherType from "@/views/finance/files/voucher-type.vue";
 import VoucherCategory from "@/views/finance/files/voucher-category.vue";
 import BalanceSheet from "@/views/finance/reports/Balance-sheet.vue";
 import AcSubGroup from "@/views/finance/files/ac-sub-group.vue";
+import VoucherListPrint from "@/views/finance/transactions/voucher-list-print.vue";
+import CashFlowStatementReport from "@/views/finance/reports/cash-flow-statement-report.vue";
+import BalanceSheetDetails from "@/views/finance/reports/Balance-sheet-details.vue";
 
 const routes = [
   {
@@ -352,6 +355,7 @@ const routes = [
     name: "voucher-list",
     component: VoucherList,
   },
+
   {
     path: "/transaction/voucher-list/voucher-add",
     name: "voucher-add",
@@ -379,9 +383,9 @@ const routes = [
     component: DeleteVoucher,
   },
   {
-    path: "/transaction/voucher-print",
-    name: "voucher-print",
-    component: VoucherPrint,
+    path: "/transaction/voucher-list-print/:Period/:SiteCode/:Type/:Category/:VoucherFrom/:VoucherTo",
+    name: "voucher-list-print",
+    component: VoucherListPrint,
   },
   {
     path: "/transaction/voucher-search-chart-of-accounts",
@@ -390,6 +394,12 @@ const routes = [
   },
 
   // report
+
+  {
+    path: "/reports/voucher-print",
+    name: "voucher-print",
+    component: VoucherPrint,
+  },
   {
     path: "/reports/chart-of-accounts-reports",
     name: "chart-of-accounts-reports",
@@ -446,6 +456,11 @@ const routes = [
     component: TrialBalance,
   },
   {
+    path: "/reports/cash-flow-statement-report",
+    name: "cash-flow-statement-report",
+    component: CashFlowStatementReport,
+  },
+  {
     path: "/reports/statement-of-finance",
     name: "statement-of-finance",
     component: StatementOfFinance,
@@ -465,6 +480,11 @@ const routes = [
     path: "/reports/balance-sheet",
     name: "balance-sheet",
     component: BalanceSheet,
+  },
+  {
+    path: "/reports/balance-sheet-details",
+    name: "balance-sheet-details",
+    component: BalanceSheetDetails,
   },
   {
     path: "/transaction/sales-voucher",
