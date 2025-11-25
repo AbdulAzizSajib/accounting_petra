@@ -8,11 +8,21 @@
         <div>
           <label for="startDate">From Date</label>
 
-          <a-date-picker v-model:value="DateFrom" class="w-full" />
+          <input
+            type="date"
+            :max="DateTo"
+            v-model="DateFrom"
+            class="w-full border p-1 border-black rounded-md"
+          />
         </div>
         <div>
           <label for="endDate">To Date</label>
-          <a-date-picker v-model:value="DateTo" class="w-full" />
+          <input
+            type="date"
+            :min="DateFrom"
+            v-model="DateTo"
+            class="w-full border p-1 border-black rounded-md"
+          />
         </div>
         <a-button type="primary" class="" @click="fetchAllData"
           >Preview</a-button
@@ -31,22 +41,21 @@
         class="p-6 bg-white rounded-lg shadow-md max-w-6xl mx-auto border"
       >
         <!-- @click="exportExcel" -->
-        <div class="flex justify-end gap-2 pb-4">
+        <!-- <div class="flex justify-end gap-2 pb-4">
           <button class="" :disabled="excelLoading">
             <a-spin v-if="excelLoading" size="small" class="spinner-white" />
             <span>
               <Icon icon="vscode-icons:file-type-excel" class="text-4xl" />
             </span>
-            <!-- <span v-else>Exporting Excel</span> -->
           </button>
-          <!-- @click="exportPDF" -->
+
           <button :disabled="pdfLoading">
             <a-spin v-if="pdfLoading" size="small" class="spinner-white" />
             <span v-if="!pdfLoading">
               <Icon icon="vscode-icons:file-type-pdf2" class="text-4xl" />
             </span>
           </button>
-        </div>
+        </div> -->
         <!-- header area start -->
         <div class="flex justify-between mb-4 items-center space-x-10">
           <div class="text-left mb-6">
@@ -198,8 +207,8 @@ const totalCredit = computed(() => {
     .toFixed(2);
 });
 
-const DateFrom = ref(null);
-const DateTo = ref(null);
+const DateFrom = ref(dayjs().startOf("month").format("YYYY-MM-DD"));
+const DateTo = ref(dayjs().endOf("month").format("YYYY-MM-DD"));
 
 const allData = ref([]);
 const loading = ref(false);
@@ -208,13 +217,22 @@ const excelLoading = ref(false);
 
 // Fetch allData with search and pagination
 const fetchAllData = async () => {
+  if (!DateFrom.value) {
+    showNotification("warning", "Please select From Date.");
+    return;
+  }
+
+  if (!DateTo.value) {
+    showNotification("warning", "Please select To Date.");
+    return;
+  }
   loading.value = true;
   try {
     const res = await axios.post(
       `${apiBase}/journal-master/cash-flow-report`,
       {
-        DateFrom: DateFrom.value.format("YYYY-MM-DD"),
-        DateTo: DateTo.value.format("YYYY-MM-DD"),
+        DateFrom: DateFrom.value,
+        DateTo: DateTo.value,
       },
       getToken()
     );

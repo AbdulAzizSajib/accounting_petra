@@ -96,7 +96,7 @@
         </h2>
         <p class="text-sm text-gray-600">{{ formatRange(DateFrom, DateTo) }}</p>
 
-        <div class="absolute top-0 right-0 flex items-center gap-5">
+        <!-- <div class="absolute top-0 right-0 flex items-center gap-5">
           <button
             @click="exportPDF"
             :loading="pdfLoading"
@@ -112,7 +112,7 @@
           >
             <Icon icon="vscode-icons:file-type-excel" width="30" height="30" />
           </button>
-        </div>
+        </div> -->
       </div>
 
       <!-- Balance Sheet Table -->
