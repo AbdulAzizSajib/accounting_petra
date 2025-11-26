@@ -294,7 +294,7 @@
                     :key="cat.ASType"
                     :value="cat.ASType"
                   >
-                    {{ cat.ASType }}
+                    {{ cat.ASType }} - {{ cat.ASDetails }}
                   </a-select-option>
                 </a-select>
               </div>
@@ -670,6 +670,14 @@ const onVoucherTypeSelect = async (value) => {
       if (all_Type.value.length > 0) {
         // Auto-select first account head
         await fetchAccount_head(form.value.type, true);
+
+        // Auto-select first sub-ledger if available
+        if (form.value.account_head) {
+          await fetchSubLedgerList(form.value.account_head);
+          if (all_subLedgerList.value.length > 0) {
+            form.value.subLedger = all_subLedgerList.value[0].ASType;
+          }
+        }
       }
     }
 
@@ -692,6 +700,14 @@ const onVoucherTypeSelect = async (value) => {
       if (all_Type.value.length > 0) {
         // Auto-select first account head
         await fetchAccount_head(form.value.type, true);
+
+        // Auto-select first sub-ledger if available
+        if (form.value.account_head) {
+          await fetchSubLedgerList(form.value.account_head);
+          if (all_subLedgerList.value.length > 0) {
+            form.value.subLedger = all_subLedgerList.value[0].ASType;
+          }
+        }
       }
     }
   }
@@ -990,12 +1006,6 @@ const vendorIdToChequeNo = () => {
   }
 };
 
-// const handleAccHeadSelect = (value) => {
-//   sub_ledger_ref.value?.focus();
-//   form.value.subLedger = "";
-//   fetchSubLedgerList(value);
-// };
-
 const handleAccHeadSelect = async (value) => {
   form.value.subLedger = "";
   await fetchSubLedgerList(value);
@@ -1167,52 +1177,6 @@ const fetchVoucherTypes = async () => {
 
 const lastFocusedField = ref(null);
 
-// const addEntry = () => {
-//   if (!form.value.narration) {
-//     return showNotification("warning", "Please insert Narration");
-//   }
-
-//   const f = form.value;
-
-//   // Check Vendor ID first
-//   if (f.vendorId && !vendorList.value.some((v) => v.VendorId === f.vendorId)) {
-//     showNotification(
-//       "error",
-//       `Vendor ID "${f.vendorId}" not found in vendor list.`
-//     );
-//     return;
-//   }
-
-//   if (f.debit > 0 && f.credit === 0) {
-//     f.credit = 0;
-//   } else if (f.debit === 0 && f.credit > 0) {
-//     f.debit = 0;
-//   } else if (f.debit > 0 && f.credit > 0) {
-//     if (lastFocusedField.value === "debit") f.credit = 0;
-//     else if (lastFocusedField.value === "credit") f.debit = 0;
-//     else f.credit = 0;
-//   } else {
-//     showNotification("error", "Please enter either Debit or Credit amount.");
-//     return;
-//   }
-
-//   // Construct entry
-//   const entry = {
-//     ...JSON.parse(JSON.stringify(f)),
-//     accountDetails: getAccountDetails(f.account_head),
-//     vendorInfo: vendorList.value.find((v) => v.VendorId === f.vendorId) || null,
-//     isEditing: false,
-//   };
-
-//   voucherEntries.value.push(entry);
-
-//   // Clear the editing index when a new entry is added
-//   editingIndex.value = null;
-
-//   // Reset
-//   resetForm();
-//   // showNotification("success", "Entry added successfully");
-// };
 const addEntry = () => {
   // Check required fields and show specific notifications
   if (!form.value.voucherType) {
@@ -1366,7 +1330,7 @@ const saveVoucher = async () => {
     EditDate: dayjs().format("YYYY-MM-DD HH:mm:ss.SSS"),
     details: voucherEntries.value.map((e) => ({
       AMCode: e.account_head,
-      ASCode: e.type || "0",
+      ASCode: e.subLedger || 0,
       Person: e.person || "",
       ChequeNo: e.chequeNo || "",
       ChequeName: e.chequeName || "",

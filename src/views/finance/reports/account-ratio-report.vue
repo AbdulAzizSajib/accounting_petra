@@ -39,13 +39,13 @@
         class="p-6 bg-white rounded-lg shadow-md max-w-6xl mx-auto border"
       >
         <!--  -->
-        <div class="flex justify-end gap-2 pb-4">
-          <!-- <button @click="exportExcel" class="" :disabled="excelLoading">
+        <!-- <div class="flex justify-end gap-2 pb-4">
+          <button @click="exportExcel" class="" :disabled="excelLoading">
             <a-spin v-if="excelLoading" size="small" class="spinner-white" />
             <span>
               <Icon icon="vscode-icons:file-type-excel" class="text-4xl" />
             </span>
-          </button> -->
+          </button>
 
           <button @click="exportPDF" :disabled="pdfLoading">
             <a-spin v-if="pdfLoading" size="small" class="spinner-white" />
@@ -53,39 +53,38 @@
               <Icon icon="vscode-icons:file-type-pdf2" class="text-4xl" />
             </span>
           </button>
-        </div>
+        </div> -->
         <!-- header area start -->
-        <div class="flex justify-between mb-4 items-center space-x-10">
-          <div class="text-left mb-6">
-            <!-- title -->
-            <h1 class="text-2xl font-bold text-gray-800">
-              Account Ratio Statement
-            </h1>
-            <p class="text-base text-gray-700 font-semibold">
-              Petra Food and Snacks
+        <div class="flex justify-center mb-4 items-center space-x-10 relative">
+          <div class="text-center mb-6">
+            <h1 class="text-2xl font-bold mb-2">PETRA PRODUCTS</h1>
+            <p class="text-sm text-gray-600 mb-1">
+              House No.# 90, Main Road, Nolvog, Nishat Nagar, Turag, Dhaka-1230
             </p>
-            <p class="text-base text-gray-700">As on {{ formattedDate }}</p>
-          </div>
-          <div>
-            <table class="w-[200px] table-auto border-collapse">
-              <thead>
-                <tr>
-                  <th class="border px-4 py-1 text-left">Print</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td class="border px-4 py-1 text-sm">
-                    Date: {{ formattedToday }}
-                  </td>
-                </tr>
-                <tr>
-                  <td class="border px-4 py-1 text-sm">
-                    Time: {{ formattedTime }}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <h2 class="text-lg font-semibold mb-1">
+              Management Statement of Financial Position
+            </h2>
+            <p class="text-sm text-gray-600">
+              {{ formatRange(DateFrom, DateTo) }}
+            </p>
+
+            <div class="absolute top-0 right-0 flex items-center gap-5">
+              <button @click="exportPDF" :loading="pdfLoading">
+                <Icon
+                  icon="vscode-icons:file-type-pdf2"
+                  width="30"
+                  height="30"
+                />
+              </button>
+
+              <!-- <button @click="exportExcel" :loading="excelLoading">
+                <Icon
+                  icon="vscode-icons:file-type-excel"
+                  width="30"
+                  height="30"
+                />
+              </button> -->
+            </div>
           </div>
         </div>
         <!-- table area -->
@@ -297,6 +296,29 @@ import printJS from "print-js";
 
 const selectedDate = ref(dayjs());
 
+const getOrdinal = (d) => {
+  const j = d % 10,
+    k = d % 100;
+  if (k >= 11 && k <= 13) return "th";
+  if (j === 1) return "st";
+  if (j === 2) return "nd";
+  if (j === 3) return "rd";
+  return "th";
+};
+
+const formatDisplayDate = (date) => {
+  if (!date) return "";
+  const d = dayjs(date);
+  if (!d.isValid()) return date;
+  const dayNum = d.date();
+  const ord = getOrdinal(dayNum);
+  return `${dayNum}${ord} ${d.format("MMMM YYYY")}`;
+};
+
+const formatRange = (from, to) => {
+  return `${formatDisplayDate(from)} to ${formatDisplayDate(to)}`;
+};
+
 const formattedToday = computed(() => {
   return dayjs().format("DD-MMM-YYYY").toLowerCase();
 });
@@ -421,48 +443,39 @@ const exportPDF = () => {
           border: none !important;
         }
 
-        /* Header layout */
-        #trialBalanceToPrint .flex.justify-between {
+        /* Header layout - centered */
+        #trialBalanceToPrint .flex.justify-center {
           display: flex !important;
-          justify-content: space-between !important;
-          align-items: flex-start !important;
+          justify-content: center !important;
+          align-items: center !important;
           margin-bottom: 15px !important;
+          position: relative !important;
         }
 
-        #trialBalanceToPrint .text-left.mb-6 {
-          flex: 1 !important;
-          text-align: left !important;
+        #trialBalanceToPrint .text-center.mb-6 {
+          text-align: center !important;
         }
 
         #trialBalanceToPrint h1 {
-          font-size: 16px !important;
+          font-size: 18px !important;
           font-weight: bold !important;
-          margin: 0 0 3px 0 !important;
+          margin: 0 0 8px 0 !important;
+        }
+
+        #trialBalanceToPrint h2 {
+          font-size: 14px !important;
+          font-weight: 600 !important;
+          margin: 0 0 6px 0 !important;
         }
 
         #trialBalanceToPrint p {
           font-size: 11px !important;
-          margin: 2px 0 !important;
+          margin: 3px 0 !important;
         }
 
-        /* Info table in header - stays on the right */
-        #trialBalanceToPrint .w-\\[200px\\] {
-          border-collapse: collapse !important;
-          border: 1px solid #000 !important;
-          width: auto !important;
-          margin-left: auto !important;
-        }
-
-        #trialBalanceToPrint .w-\\[200px\\] th,
-        #trialBalanceToPrint .w-\\[200px\\] td {
-          border: 1px solid #000 !important;
-          padding: 3px 8px !important;
-          font-size: 9px !important;
-          text-align: left !important;
-        }
-
-        #trialBalanceToPrint .w-\\[200px\\] th {
-          font-weight: bold !important;
+        /* Hide the absolute positioned buttons in print */
+        #trialBalanceToPrint .absolute.top-0.right-0 {
+          display: none !important;
         }
 
         /* Table container */
@@ -535,7 +548,8 @@ const exportPDF = () => {
         .flex.justify-end.gap-2,
         .ant-spin,
         h1.text-primary,
-        .p-8.flex.items-end {
+        .p-8.flex.items-end,
+        .flex.items-center.gap-5 {
           display: none !important;
         }
 
