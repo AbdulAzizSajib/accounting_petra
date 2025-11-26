@@ -334,6 +334,11 @@ const items = reactive([
         label: "Cash Flow Statement",
         onClick: () => router.push("/reports/cash-flow-statement-report"),
       },
+      {
+        key: "/reports/account-ratio-report",
+        label: "Account Ratio",
+        onClick: () => router.push("/reports/account-ratio-report"),
+      },
 
       // {
       //   key: "/reports/monthly-expense-details",

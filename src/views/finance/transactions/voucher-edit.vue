@@ -34,6 +34,7 @@
                   ref="voucher_type_ref"
                   class="w-[80px]"
                   placeholder=""
+                  :disabled="voucherEntries.length > 0"
                   option-label-prop="label"
                   @select="onVoucherTypeSelect"
                   @keydown.native.enter.stop="onVoucherTypeEnter"
@@ -101,7 +102,9 @@
                   class="w-[100px]"
                   placeholder="Select"
                   @select="group_code_ref?.focus()"
-                  :disabled="form.voucherType === 'JVR'"
+                  :disabled="
+                    form.voucherType === 'JVR' || voucherEntries.length > 0
+                  "
                   @keydown.native.enter.stop="onCategoryEnter"
                   @keydown.native.esc="onCategoryEsc"
                 >
@@ -636,7 +639,7 @@ const router = useRouter();
 const JVNo_from_params = useRoute().query.JVNo || null;
 console.log(JVNo_from_params);
 
-const onVoucherTypeSelect = (value) => {
+const onVoucherTypeSelect = async (value) => {
   // Find the selected voucher and store its AMCode
   const selectedVoucher = voucherTypes.value.find(
     (item) => item.JVType === value
@@ -644,25 +647,52 @@ const onVoucherTypeSelect = (value) => {
   if (selectedVoucher) {
     selectedAMCode.value = selectedVoucher.AMCode || "";
   }
+
+  // Fetch cheque register list first
+  await fetchChequeRegisterList(value);
+
   if (value === "JVR") {
     // Focus on Group if Category is disabled
-    group_code_ref.value?.focus();
     form.value.category = "J"; // optionally prefill
-    // const serch
-    // const searchValue = "-";
-    form.value.chequeNo = chequeRegisterList.value[0].ChequeNo;
-    fetchChequeRegisterList(value);
-  } else {
-    // setTimeout(() => {
-    //   if (categories.value.length > 0) {
-    //     form.value.category = categories.value[0].Short;
-    //   }
-    // }, 100);
-    category_ref.value?.focus();
-    fetchChequeRegisterList(value);
 
+    // Auto-select first cheque number
+    if (chequeRegisterList.value.length > 0) {
+      form.value.chequeNo = chequeRegisterList.value[0].ChequeNo;
+    }
+
+    // Auto-select first group
+    await fetchgroup();
+    if (all_group.value.length > 0) {
+      form.value.group = all_group.value[0].GroupCode;
+
+      // Auto-select first type
+      await fetchType(form.value.group, true);
+      if (all_Type.value.length > 0) {
+        // Auto-select first account head
+        await fetchAccount_head(form.value.type, true);
+      }
+    }
+
+    group_code_ref.value?.focus();
+  } else {
+    category_ref.value?.focus();
+
+    // Auto-select first cheque number for Receipt category
     if (form.value.category === "R" && chequeRegisterList.value.length > 0) {
       form.value.chequeNo = chequeRegisterList.value[0].ChequeNo;
+    }
+
+    // Auto-select first group
+    await fetchgroup();
+    if (all_group.value.length > 0) {
+      form.value.group = all_group.value[0].GroupCode;
+
+      // Auto-select first type
+      await fetchType(form.value.group, true);
+      if (all_Type.value.length > 0) {
+        // Auto-select first account head
+        await fetchAccount_head(form.value.type, true);
+      }
     }
   }
 };
@@ -853,8 +883,10 @@ const all_chequeRegisterList = ref([]);
 const creating = ref(false);
 const save_button_ref = ref(false);
 const selectedAMCode = ref("");
-const fetchAccount_head = async (value) => {
-  form.value.account_head = "";
+const fetchAccount_head = async (value, autoSelect = false) => {
+  if (!autoSelect) {
+    form.value.account_head = "";
+  }
   try {
     const { data } = await axios.get(
       `${apiBase}/journal/account-head?ACType1=${value || ""}&JVType=${
@@ -866,6 +898,10 @@ const fetchAccount_head = async (value) => {
     if (Array.isArray(data)) {
       account_head.value = data;
       all_account_head.value = data;
+      // Auto-select first account head if requested and not already set
+      if (autoSelect && data.length > 0 && !form.value.account_head) {
+        form.value.account_head = data[0].AMCode;
+      }
     }
     // if (account_head.length === 0) {
     //   subLedgerList.value = [];
@@ -1007,9 +1043,11 @@ const handleGroupSelect = (value) => {
   fetchType(value);
 };
 
-const fetchType = async (group) => {
-  form.value.type = "";
-  form.value.account_head = "";
+const fetchType = async (group, autoSelect = false) => {
+  if (!autoSelect) {
+    form.value.type = "";
+    form.value.account_head = "";
+  }
   try {
     const { data } = await axios.get(
       `${apiBase}/journal/type?GroupCode=${group}&JVType=${form.value.voucherType}`,
@@ -1018,6 +1056,10 @@ const fetchType = async (group) => {
     if (Array.isArray(data)) {
       Type.value = data;
       all_Type.value = data;
+      // Auto-select first type if requested and not already set
+      if (autoSelect && data.length > 0 && !form.value.type) {
+        form.value.type = data[0].ACType1;
+      }
     }
   } catch (err) {
     console.error("Error fetching types:", err);
@@ -1444,6 +1486,10 @@ const fetchChequeRegisterList = async (value, searchValue) => {
         (c) => c.Status === "ACTIVE" || c.Status === null
       );
       chequeRegisterList.value = activeAndNullCheques;
+      form.value.chequeNo =
+        activeAndNullCheques.length > 0
+          ? activeAndNullCheques[0].ChequeNo
+          : " ";
       all_chequeRegisterList.value = activeAndNullCheques;
     }
   } catch (err) {

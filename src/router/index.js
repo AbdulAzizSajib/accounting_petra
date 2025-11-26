@@ -100,6 +100,7 @@ import AcSubGroup from "@/views/finance/files/ac-sub-group.vue";
 import VoucherListPrint from "@/views/finance/transactions/voucher-list-print.vue";
 import CashFlowStatementReport from "@/views/finance/reports/cash-flow-statement-report.vue";
 import BalanceSheetDetails from "@/views/finance/reports/Balance-sheet-details.vue";
+import AccountRatioReport from "@/views/finance/reports/account-ratio-report.vue";
 
 const routes = [
   {
@@ -460,6 +461,11 @@ const routes = [
     path: "/reports/cash-flow-statement-report",
     name: "cash-flow-statement-report",
     component: CashFlowStatementReport,
+  },
+  {
+    path: "/reports/account-ratio-report",
+    name: "account-ratio-report",
+    component: AccountRatioReport,
   },
   {
     path: "/reports/statement-of-finance",

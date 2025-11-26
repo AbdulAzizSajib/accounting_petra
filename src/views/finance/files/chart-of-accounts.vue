@@ -473,7 +473,6 @@ const handlesubLedger = (item) => {
   }
 };
 
-const AMDetailShow = ref();
 const GroupCode = ref();
 const AM_code_info = ref();
 const get_AM_Code = async () => {
@@ -484,15 +483,13 @@ const get_AM_Code = async () => {
     );
     if (res.data) {
       AM_code_info.value = res?.data;
-      // AMDetailShow.value = res?.data?.ACType1Details;
+      AMDetails.value = res?.data?.ACType1Details;
+
       GroupCode.value = res?.data?.GroupCode;
-      // ACType1.value = res?.data?.ACType1;
     } else {
-      // showNotification("error", "No data found for ACType");
     }
   } catch (error) {
     console.log(error);
-    // showNotification("error", "No data found for ACType");
   }
 };
 

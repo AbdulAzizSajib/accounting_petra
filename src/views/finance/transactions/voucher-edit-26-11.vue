@@ -35,7 +35,6 @@
                   class="w-[80px]"
                   placeholder=""
                   option-label-prop="label"
-                  :disabled="voucherEntries.length > 0"
                   @select="onVoucherTypeSelect"
                   @keydown.native.enter.stop="onVoucherTypeEnter"
                   @keydown.native.esc="onVoucherTypeEsc"
@@ -102,9 +101,7 @@
                   class="w-[100px]"
                   placeholder="Select"
                   @select="group_code_ref?.focus()"
-                  :disabled="
-                    form.voucherType === 'JVR' || voucherEntries.length > 0
-                  "
+                  :disabled="form.voucherType === 'JVR'"
                   @keydown.native.enter.stop="onCategoryEnter"
                   @keydown.native.esc="onCategoryEsc"
                 >
@@ -458,11 +455,11 @@
             <a-button
               type="primary"
               class="px-6 bg-primary text-white"
-              @click="saveVoucher"
+              @click="updateVoucher"
               :loading="creating"
               :disabled="!canSaveVoucher"
               ref="save_button_ref"
-              >Save</a-button
+              >Update</a-button
             >
             <!-- :disabled="!canAddEntry" -->
             <a-button
@@ -514,42 +511,42 @@
           >
             <!-- Account Code -->
             <td class="px-4 border">
-              <span>{{ entry.account_head }}</span>
+              <span>{{ entry?.account_head || "_" }}</span>
             </td>
 
             <!-- Account Details -->
             <td class="px-4 border">
-              <span>{{ entry.accountDetails }}</span>
+              <span>{{ entry?.accountDetails || "_" }}</span>
             </td>
 
             <!-- Sub Ledger -->
             <td class="px-4 border">
-              <span>{{ entry.subLedger }}</span>
+              <span>{{ entry?.subLedger || "_" }}</span>
             </td>
 
             <!-- Debit -->
             <td class="px-4 border text-right w-40">
-              <span>{{ entry.debit }}</span>
+              <span>{{ entry?.debit || 0 }}</span>
             </td>
 
             <!-- Credit -->
             <td class="px-4 border text-right w-40">
-              <span>{{ entry.credit }}</span>
+              <span>{{ entry?.credit || 0 }}</span>
             </td>
 
             <!-- Cheque No -->
             <td class="px-4 border w-40">
-              <span>{{ entry.chequeNo }}</span>
+              <span>{{ entry?.chequeNo || "_" }}</span>
             </td>
 
             <!-- Cheque Name -->
             <td class="px-4 border">
-              <span>{{ entry.chequeName }}</span>
+              <span>{{ entry?.chequeName || "_" }}</span>
             </td>
 
             <!-- Narration -->
             <td class="px-4 border">
-              <span>{{ entry.narration }}</span>
+              <span>{{ entry?.narration || "_" }}</span>
             </td>
 
             <!-- Actions -->
@@ -632,14 +629,14 @@ import axios from "axios";
 import { apiBase } from "@/config.js";
 import { getToken, showNotification } from "@/utilities/common.js";
 import { Icon } from "@iconify/vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 const router = useRouter();
-const goBack = () => {
-  router.push({ name: "temp-voucher" });
-};
+// const route = useRoute();
+const JVNo_from_params = useRoute().query.JVNo || null;
+console.log(JVNo_from_params);
 
-const onVoucherTypeSelect = async (value) => {
+const onVoucherTypeSelect = (value) => {
   // Find the selected voucher and store its AMCode
   const selectedVoucher = voucherTypes.value.find(
     (item) => item.JVType === value
@@ -647,52 +644,25 @@ const onVoucherTypeSelect = async (value) => {
   if (selectedVoucher) {
     selectedAMCode.value = selectedVoucher.AMCode || "";
   }
-
-  // Fetch cheque register list first
-  await fetchChequeRegisterList(value);
-
   if (value === "JVR") {
     // Focus on Group if Category is disabled
-    form.value.category = "J"; // optionally prefill
-
-    // Auto-select first cheque number
-    if (chequeRegisterList.value.length > 0) {
-      form.value.chequeNo = chequeRegisterList.value[0].ChequeNo;
-    }
-
-    // Auto-select first group
-    await fetchgroup();
-    if (all_group.value.length > 0) {
-      form.value.group = all_group.value[0].GroupCode;
-
-      // Auto-select first type
-      await fetchType(form.value.group, true);
-      if (all_Type.value.length > 0) {
-        // Auto-select first account head
-        await fetchAccount_head(form.value.type, true);
-      }
-    }
-
     group_code_ref.value?.focus();
+    form.value.category = "J"; // optionally prefill
+    // const serch
+    // const searchValue = "-";
+    form.value.chequeNo = chequeRegisterList.value[0].ChequeNo;
+    fetchChequeRegisterList(value);
   } else {
+    // setTimeout(() => {
+    //   if (categories.value.length > 0) {
+    //     form.value.category = categories.value[0].Short;
+    //   }
+    // }, 100);
     category_ref.value?.focus();
+    fetchChequeRegisterList(value);
 
-    // Auto-select first cheque number for Receipt category
     if (form.value.category === "R" && chequeRegisterList.value.length > 0) {
       form.value.chequeNo = chequeRegisterList.value[0].ChequeNo;
-    }
-
-    // Auto-select first group
-    await fetchgroup();
-    if (all_group.value.length > 0) {
-      form.value.group = all_group.value[0].GroupCode;
-
-      // Auto-select first type
-      await fetchType(form.value.group, true);
-      if (all_Type.value.length > 0) {
-        // Auto-select first account head
-        await fetchAccount_head(form.value.type, true);
-      }
     }
   }
 };
@@ -883,10 +853,8 @@ const all_chequeRegisterList = ref([]);
 const creating = ref(false);
 const save_button_ref = ref(false);
 const selectedAMCode = ref("");
-const fetchAccount_head = async (value, autoSelect = false) => {
-  if (!autoSelect) {
-    form.value.account_head = "";
-  }
+const fetchAccount_head = async (value) => {
+  form.value.account_head = "";
   try {
     const { data } = await axios.get(
       `${apiBase}/journal/account-head?ACType1=${value || ""}&JVType=${
@@ -898,10 +866,6 @@ const fetchAccount_head = async (value, autoSelect = false) => {
     if (Array.isArray(data)) {
       account_head.value = data;
       all_account_head.value = data;
-      // Auto-select first account head if requested and not already set
-      if (autoSelect && data.length > 0 && !form.value.account_head) {
-        form.value.account_head = data[0].AMCode;
-      }
     }
     // if (account_head.length === 0) {
     //   subLedgerList.value = [];
@@ -1043,11 +1007,9 @@ const handleGroupSelect = (value) => {
   fetchType(value);
 };
 
-const fetchType = async (group, autoSelect = false) => {
-  if (!autoSelect) {
-    form.value.type = "";
-    form.value.account_head = "";
-  }
+const fetchType = async (group) => {
+  form.value.type = "";
+  form.value.account_head = "";
   try {
     const { data } = await axios.get(
       `${apiBase}/journal/type?GroupCode=${group}&JVType=${form.value.voucherType}`,
@@ -1056,10 +1018,6 @@ const fetchType = async (group, autoSelect = false) => {
     if (Array.isArray(data)) {
       Type.value = data;
       all_Type.value = data;
-      // Auto-select first type if requested and not already set
-      if (autoSelect && data.length > 0 && !form.value.type) {
-        form.value.type = data[0].ACType1;
-      }
     }
   } catch (err) {
     console.error("Error fetching types:", err);
@@ -1256,6 +1214,14 @@ const addEntry = () => {
   }
 
   const f = form.value;
+
+  // Check Vendor ID first
+  // if (f.vendorId && !vendorList.value.some((v) => v.VendorId === f.vendorId)) {
+  //   showNotification(
+  //     "error",
+  //     `Vendor ID "${f.vendorId}" not found in vendor list.`
+  //   );
+  //   return;
   if (
     f.vendorId &&
     f.vendorId.trim() !== "" &&
@@ -1344,7 +1310,7 @@ const deleteEntry = (index) => {
   showNotification("success", "Entry deleted successfully");
 };
 
-const saveVoucher = async () => {
+const updateVoucher = async () => {
   if (["JVR", "BPV"].includes(form.value.voucherType)) {
     if (debitTotal.value !== creditTotal.value) {
       showNotification("error", "Debit balance is not equal to Credit balance");
@@ -1354,7 +1320,8 @@ const saveVoucher = async () => {
 
   const userInfo = JSON.parse(localStorage.getItem("user_info"));
   const payload = {
-    SiteCode: "02",
+    SiteCode: "01",
+    JVNo: JVNo_from_params,
     Period: dayjs(form.value.date).format("YYYYMM"),
     JVType: form.value.voucherType,
     JVCat: form.value.category || "",
@@ -1365,22 +1332,21 @@ const saveVoucher = async () => {
     EditUserID: userInfo?.UserId,
     EditDate: dayjs().format("YYYY-MM-DD HH:mm:ss.SSS"),
     details: voucherEntries.value.map((e) => ({
-      AMCode: e.account_head,
-      ASCode: e.type || "0",
-      Person: e.person || "",
-      ChequeNo: e.chequeNo || "",
-      ChequeName: e.chequeName || "",
-      Narration: e.narration || "",
-      Debit: Number(e.debit) || 0,
-
-      Credit: Number(e.credit) || 0,
-      AntiCode: e.account_head,
+      AMCode: e?.account_head,
+      ASCode: e?.type || "0",
+      Person: e?.person || "",
+      ChequeNo: e?.chequeNo || "-",
+      ChequeName: e?.chequeName || "",
+      Narration: e?.narration || "",
+      Debit: Number(e?.debit) || 0,
+      Credit: Number(e?.credit) || 0,
+      AntiCode: e?.account_head,
       AntiSCode: "0",
       ChequePayDate: dayjs().format("YYYY-MM-DD HH:mm:ss.SSS"),
       ChequeStatus: "Pending",
-      VendorId: e.vendorId || null,
-      BillNo: e.billNo || "",
-      BillDate: e.billDate
+      VendorId: e?.vendorId || null,
+      BillNo: e?.billNo || "",
+      BillDate: e?.billDate
         ? dayjs(e.billDate).format("YYYY-MM-DD HH:mm:ss.SSS")
         : null,
       TransType: "pu",
@@ -1396,7 +1362,7 @@ const saveVoucher = async () => {
 
   creating.value = true;
   try {
-    const res = await axios.post(
+    const res = await axios.put(
       `${apiBase}/journal-master`,
       payload,
       getToken()
@@ -1478,10 +1444,6 @@ const fetchChequeRegisterList = async (value, searchValue) => {
         (c) => c.Status === "ACTIVE" || c.Status === null
       );
       chequeRegisterList.value = activeAndNullCheques;
-      console.log("--------------->", chequeRegisterList.value);
-      form.value.chequeNo = chequeRegisterList.value.length
-        ? chequeRegisterList.value[0].ChequeNo
-        : " ";
       all_chequeRegisterList.value = activeAndNullCheques;
     }
   } catch (err) {
@@ -1537,6 +1499,93 @@ const onBillDateEnter = (e) => {
 };
 
 const isCategoryReceipt = computed(() => form.value.category === "R");
+
+// Get the route parameters
+const route = useRoute();
+const period = ref(route.query.Period);
+const siteCode = ref(route.query.SiteCode);
+const jvNo = ref(route.query.JVNo);
+
+const voucher_idwise_data = ref();
+const isEditingExistingVoucher = ref(false);
+const voucher_idwise = async () => {
+  try {
+    const res = await axios.get(
+      `${apiBase}/journal-master/show?Period=${period.value}&JVNo=${jvNo.value}&SiteCode=${siteCode.value}`,
+      getToken()
+    );
+    if (res.data) {
+      isEditingExistingVoucher.value = true;
+      voucher_idwise_data.value = res.data;
+      // Populate form after data is loaded
+      populateFormFromResponse();
+      // After population is complete, allow fetching new voucher numbers for new entries
+      setTimeout(() => {
+        isEditingExistingVoucher.value = false;
+      }, 500);
+    }
+  } catch (error) {
+    console.error("Error fetching voucher:", error);
+    showNotification("error", "Failed to load voucher data");
+  }
+};
+
+// Populate form from API response
+const populateFormFromResponse = async () => {
+  if (!voucher_idwise_data.value) return;
+
+  const data = voucher_idwise_data.value;
+
+  // Populate master form fields
+  form.value.date = data.JVDate ? dayjs(data.JVDate) : dayjs();
+  form.value.voucherType = data.JVType;
+  form.value.category = data.JVCat;
+  form.value.voucherNumber = data.JVSerial || data.JVNo;
+
+  // Fetch all account heads first to ensure we have the data
+  try {
+    const { data: accountHeadsData } = await axios.get(
+      `${apiBase}/journal/account-head?JVType=${form.value.voucherType}`,
+      getToken()
+    );
+    if (Array.isArray(accountHeadsData)) {
+      account_head.value = accountHeadsData;
+      all_account_head.value = accountHeadsData;
+    }
+  } catch (err) {
+    console.error("Error fetching account heads:", err);
+  }
+
+  // Populate voucher entries from details
+  if (Array.isArray(data.details) && data.details.length > 0) {
+    voucherEntries.value = data.details.map((detail) => {
+      const accountDetails = getAccountDetails(detail.AMCode);
+
+      return {
+        account_head: detail.AMCode,
+        accountDetails: accountDetails || detail.AMCode, // Fallback to AMCode if not found
+        // type: detail.ASCode,
+        subLedger: detail.ASCode,
+        person: detail.Person || "",
+        chequeNo: detail.ChequeNo || "",
+        chequeName: detail.ChequeName || "",
+        narration: detail.Narration || "",
+        debit: parseFloat(detail.Debit) || 0,
+        credit: parseFloat(detail.Credit) || 0,
+        billNo: detail.BillNo || "",
+        billDate: detail.BillDate ? dayjs(detail.BillDate) : dayjs(),
+        group: "",
+        voucherType: data.JVType,
+        category: data.JVCat,
+        date: data.JVDate ? dayjs(data.JVDate) : dayjs(),
+        isEditing: false,
+        RecNo: detail.RecNo,
+        AMCode: detail.AMCode,
+        ASCode: detail.ASCode,
+      };
+    });
+  }
+};
 
 watch(
   () => form.value.voucherType,
@@ -1629,7 +1678,7 @@ watch(
     () => form.value.date,
   ],
   ([newType, newCat, newDate]) => {
-    if (newType && newCat && newDate) {
+    if (newType && newCat && newDate && !isEditingExistingVoucher.value) {
       fetchVoucherNumber();
     }
   }
@@ -1681,6 +1730,7 @@ const handleKeydown = (e) => {
 onMounted(() => {
   fetchVoucherTypes();
   // fetchSubLedgerList();
+  voucher_idwise();
   fetchChequeRegisterList();
   fetchCategories();
   fetchgroup();

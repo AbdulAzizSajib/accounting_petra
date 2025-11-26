@@ -65,11 +65,9 @@
           <th class="border border-white px-4 py-2">Voucher Category</th>
           <th class="border border-white px-4 py-2">Narration</th>
           <th class="border border-white px-4 py-2">Period</th>
-          <th class="border border-white px-4 py-2">Type</th>
+
           <th class="border border-white px-4 py-2">Voucher Date</th>
-          <th class="border border-white px-4 py-2 text-center">
-            Voucher Serial
-          </th>
+
           <th class="border border-white px-4 py-2 text-center">Debit</th>
           <th class="border border-white px-4 py-2 text-center">Credit</th>
           <th class="border border-white px-4 py-2 text-center">Actions</th>
@@ -85,12 +83,11 @@
           <td class="px-4 border">
             {{ dayjs(voucher?.Period).format("MM-YYYY ") }}
           </td>
-          <!-- 2025 Nov -->
-          <td class="px-4 border">{{ voucher?.Type }}</td>
+
           <td class="px-4 border">
             {{ dayjs(voucher?.JvDate).format("DD-MM-YYYY") }}
           </td>
-          <td class="px-4 border text-end">{{ voucher?.JVSerial }}</td>
+
           <td class="px-4 border text-end">{{ voucher?.Debit }}</td>
           <td class="px-4 border text-end">{{ voucher?.Credit }}</td>
           <td class="px-4 border text-center w-8">
@@ -113,13 +110,13 @@
                 </button>
               </router-link>
 
-              <button
+              <!-- <button
                 type="button"
                 class="px-2 py-1 bg-red-600 text-white rounded-md hover:bg-red-700"
                 @click="confirmDelete(voucher)"
               >
                 <i class="bi bi-trash"></i>
-              </button>
+              </button> -->
 
               <router-link
                 :to="{
