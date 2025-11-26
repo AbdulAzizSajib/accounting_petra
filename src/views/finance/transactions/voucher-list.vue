@@ -127,8 +127,8 @@
                   query: {
                     SiteCode: voucher?.SiteCode,
                     Period: voucher?.Period,
-                    Type: voucher?.Type,
-                    Category: voucher?.JvCat,
+                    Type: voucher?.JVType,
+                    Category: voucher?.Type,
                     VoucherFrom: voucher?.JVSerial,
                     VoucherTo: voucher?.JVSerial,
                   },

@@ -883,14 +883,20 @@ const isBankPayment = computed(() => {
   const selectedVoucher = voucherTypes.value.find(
     (v) => v.JVType === form.value.voucherType
   );
-  return selectedVoucher?.Category === "BANK" && form.value.category === "P"; // Assuming 'P' is short for Payment
+  return (
+    selectedVoucher?.Category?.toUpperCase() === "BANK" &&
+    form.value.category === "P"
+  ); // Assuming 'P' is short for Payment
 });
 
 const isBankReceipt = computed(() => {
   const selectedVoucher = voucherTypes.value.find(
     (v) => v.JVType === form.value.voucherType
   );
-  return selectedVoucher?.Category === "BANK" && form.value.category === "R"; // Assuming 'R' is short for Receipt
+  return (
+    selectedVoucher?.Category?.toUpperCase() === "BANK" &&
+    form.value.category === "R"
+  ); // Assuming 'R' is short for Receipt
 });
 
 const handleNumberFocus = (field) => {

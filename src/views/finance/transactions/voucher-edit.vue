@@ -511,42 +511,42 @@
           >
             <!-- Account Code -->
             <td class="px-4 border">
-              <span>{{ entry.account_head }}</span>
+              <span>{{ entry?.account_head || "_" }}</span>
             </td>
 
             <!-- Account Details -->
             <td class="px-4 border">
-              <span>{{ entry.accountDetails }}</span>
+              <span>{{ entry?.accountDetails || "_" }}</span>
             </td>
 
             <!-- Sub Ledger -->
             <td class="px-4 border">
-              <span>{{ entry.subLedger }}</span>
+              <span>{{ entry?.subLedger || "_" }}</span>
             </td>
 
             <!-- Debit -->
             <td class="px-4 border text-right w-40">
-              <span>{{ entry.debit }}</span>
+              <span>{{ entry?.debit || 0 }}</span>
             </td>
 
             <!-- Credit -->
             <td class="px-4 border text-right w-40">
-              <span>{{ entry.credit }}</span>
+              <span>{{ entry?.credit || 0 }}</span>
             </td>
 
             <!-- Cheque No -->
             <td class="px-4 border w-40">
-              <span>{{ entry.chequeNo }}</span>
+              <span>{{ entry?.chequeNo || "_" }}</span>
             </td>
 
             <!-- Cheque Name -->
             <td class="px-4 border">
-              <span>{{ entry.chequeName }}</span>
+              <span>{{ entry?.chequeName || "_" }}</span>
             </td>
 
             <!-- Narration -->
             <td class="px-4 border">
-              <span>{{ entry.narration }}</span>
+              <span>{{ entry?.narration || "_" }}</span>
             </td>
 
             <!-- Actions -->
@@ -1332,22 +1332,21 @@ const updateVoucher = async () => {
     EditUserID: userInfo?.UserId,
     EditDate: dayjs().format("YYYY-MM-DD HH:mm:ss.SSS"),
     details: voucherEntries.value.map((e) => ({
-      AMCode: e.account_head,
-      ASCode: e.type || "0",
-      Person: e.person || "",
-      ChequeNo: e.chequeNo || "-",
-      ChequeName: e.chequeName || "",
-      Narration: e.narration || "",
-      Debit: Number(e.debit) || 0,
-
-      Credit: Number(e.credit) || 0,
-      AntiCode: e.account_head,
+      AMCode: e?.account_head,
+      ASCode: e?.type || "0",
+      Person: e?.person || "",
+      ChequeNo: e?.chequeNo || "-",
+      ChequeName: e?.chequeName || "",
+      Narration: e?.narration || "",
+      Debit: Number(e?.debit) || 0,
+      Credit: Number(e?.credit) || 0,
+      AntiCode: e?.account_head,
       AntiSCode: "0",
       ChequePayDate: dayjs().format("YYYY-MM-DD HH:mm:ss.SSS"),
       ChequeStatus: "Pending",
-      VendorId: e.vendorId || null,
-      BillNo: e.billNo || "",
-      BillDate: e.billDate
+      VendorId: e?.vendorId || null,
+      BillNo: e?.billNo || "",
+      BillDate: e?.billDate
         ? dayjs(e.billDate).format("YYYY-MM-DD HH:mm:ss.SSS")
         : null,
       TransType: "pu",
@@ -1532,7 +1531,7 @@ const voucher_idwise = async () => {
 };
 
 // Populate form from API response
-const populateFormFromResponse = () => {
+const populateFormFromResponse = async () => {
   if (!voucher_idwise_data.value) return;
 
   const data = voucher_idwise_data.value;
@@ -1543,6 +1542,20 @@ const populateFormFromResponse = () => {
   form.value.category = data.JVCat;
   form.value.voucherNumber = data.JVSerial || data.JVNo;
 
+  // Fetch all account heads first to ensure we have the data
+  try {
+    const { data: accountHeadsData } = await axios.get(
+      `${apiBase}/journal/account-head?JVType=${form.value.voucherType}`,
+      getToken()
+    );
+    if (Array.isArray(accountHeadsData)) {
+      account_head.value = accountHeadsData;
+      all_account_head.value = accountHeadsData;
+    }
+  } catch (err) {
+    console.error("Error fetching account heads:", err);
+  }
+
   // Populate voucher entries from details
   if (Array.isArray(data.details) && data.details.length > 0) {
     voucherEntries.value = data.details.map((detail) => {
@@ -1550,7 +1563,7 @@ const populateFormFromResponse = () => {
 
       return {
         account_head: detail.AMCode,
-        accountDetails: accountDetails,
+        accountDetails: accountDetails || detail.AMCode, // Fallback to AMCode if not found
         // type: detail.ASCode,
         subLedger: detail.ASCode,
         person: detail.Person || "",

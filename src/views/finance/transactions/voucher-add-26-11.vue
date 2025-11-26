@@ -637,6 +637,13 @@ const goBack = () => {
 };
 
 const onVoucherTypeSelect = (value) => {
+  // Find the selected voucher and store its AMCode
+  const selectedVoucher = voucherTypes.value.find(
+    (item) => item.JVType === value
+  );
+  if (selectedVoucher) {
+    selectedAMCode.value = selectedVoucher.AMCode || "";
+  }
   if (value === "JVR") {
     // Focus on Group if Category is disabled
     group_code_ref.value?.focus();
@@ -845,14 +852,14 @@ const chequeRegisterList = ref([]);
 const all_chequeRegisterList = ref([]);
 const creating = ref(false);
 const save_button_ref = ref(false);
-
+const selectedAMCode = ref("");
 const fetchAccount_head = async (value) => {
   form.value.account_head = "";
   try {
     const { data } = await axios.get(
       `${apiBase}/journal/account-head?ACType1=${value || ""}&JVType=${
         form.value.voucherType
-      }`,
+      }&JVCode=${selectedAMCode.value || ""}`,
       getToken()
     );
 
@@ -941,23 +948,46 @@ const vendorIdToChequeNo = () => {
   }
 };
 
-const handleAccHeadSelect = (value) => {
-  sub_ledger_ref.value?.focus();
+// const handleAccHeadSelect = (value) => {
+//   sub_ledger_ref.value?.focus();
+//   form.value.subLedger = "";
+//   fetchSubLedgerList(value);
+// };
 
+const handleAccHeadSelect = async (value) => {
   form.value.subLedger = "";
+  await fetchSubLedgerList(value);
 
-  fetchSubLedgerList(value);
+  // Wait for next tick to ensure DOM updates
+  setTimeout(() => {
+    if (all_subLedgerList.value.length === 0) {
+      person_ref.value?.focus();
+    } else {
+      sub_ledger_ref.value?.focus();
+    }
+  }, 100);
 };
+
+// const handleAccHeadEnter = () => {
+//   setTimeout(() => {
+//     if (subLedgerList.value.length === 0) {
+//       form.value.subLedger = null;
+//       person_ref.value?.focus();
+//     } else {
+//       sub_ledger_ref.value?.focus();
+//     }
+//   }, 500);
+// };
 
 const handleAccHeadEnter = () => {
   setTimeout(() => {
-    if (subLedgerList.value.length === 0) {
+    if (all_subLedgerList.value.length === 0) {
       form.value.subLedger = null;
       person_ref.value?.focus();
     } else {
       sub_ledger_ref.value?.focus();
     }
-  }, 500);
+  }, 150);
 };
 
 const handleTypeSelect = (value) => {
@@ -1314,12 +1344,10 @@ const saveVoucher = async () => {
         ? dayjs(e.billDate).format("YYYY-MM-DD HH:mm:ss.SSS")
         : null,
       TransType: "pu",
-      ChallanNo: e.billNo || "",
-      ChallanDate: e.billDate
-        ? dayjs(e.billDate).format("YYYY-MM-DD HH:mm:ss.SSS")
-        : null,
-      CertificateNo: "123",
-      CertificateIssueDate: "2025-09-10",
+      ChallanNo: null,
+      ChallanDate: null,
+      CertificateNo: null,
+      CertificateIssueDate: null,
       VATAmount: 0,
       TaxPerc: 0,
       TaxPercStd: 0,
@@ -1337,9 +1365,10 @@ const saveVoucher = async () => {
     voucherEntries.value = [];
     creating.value = false;
     await fetchVoucherNumber();
+    await fetchChequeRegisterList(form.value.voucherType);
   } catch (err) {
     console.error("Error saving voucher:", err.response?.data || err);
-    showNotification("error", "Failed to save voucher. See console.");
+    showNotification("error", err.response?.data?.message || err);
     creating.value = false;
   }
 };
@@ -1399,9 +1428,9 @@ const fetchChequeRegisterList = async (value, searchValue) => {
   form.value.chequeNo = " ";
   try {
     const res = await axios.get(
-      `${apiBase}/settings/cheque-register-details/allCheque?jvtype=${value}&search=${
-        searchValue || " "
-      }`,
+      `${apiBase}/settings/cheque-register-details/allCheque?jvtype=${
+        value || " "
+      }&search=${searchValue || " "}`,
       getToken()
     );
     if (res.data) {
@@ -1562,48 +1591,48 @@ watch(
   }
 );
 
-// const inputRefs = [
-//   date_ref,
-//   voucher_type_ref,
-//   category_ref,
-//   group_code_ref,
-//   type_ref,
-//   account_head_ref,
-//   sub_ledger_ref,
-//   person_ref,
-//   cheque_no_ref,
-//   cheque_name_ref,
-//   bill_no_ref,
-//   bill_date_ref,
-//   narration_ref,
-//   debit_ref,
-//   credit_ref,
-// ];
-// let currentIndex = -1;
+const inputRefs = [
+  date_ref,
+  voucher_type_ref,
+  category_ref,
+  group_code_ref,
+  type_ref,
+  account_head_ref,
+  sub_ledger_ref,
+  person_ref,
+  cheque_no_ref,
+  cheque_name_ref,
+  bill_no_ref,
+  bill_date_ref,
+  narration_ref,
+  debit_ref,
+  credit_ref,
+];
+let currentIndex = -1;
 
-// // Update currentIndex on focus
-// inputRefs.forEach((refEl, index) => {
-//   watch(refEl, () => {
-//     if (refEl.value) {
-//       refEl.value?.$el?.addEventListener("focusin", () => {
-//         currentIndex = index;
-//       });
-//     }
-//   });
-// });
+// Update currentIndex on focus
+inputRefs.forEach((refEl, index) => {
+  watch(refEl, () => {
+    if (refEl.value) {
+      refEl.value?.$el?.addEventListener("focusin", () => {
+        currentIndex = index;
+      });
+    }
+  });
+});
 
-// // Handle ESC key (go back)
-// const handleKeydown = (e) => {
-//   if (e.key === "Escape" && currentIndex > 0) {
-//     e.preventDefault();
-//     const prevRef = inputRefs[currentIndex - 1];
-//     if (prevRef?.value?.focus) {
-//       prevRef.value.focus();
-//     } else if (prevRef?.value?.$el?.focus) {
-//       prevRef.value.$el.focus();
-//     }
-//   }
-// };
+// Handle ESC key (go back)
+const handleKeydown = (e) => {
+  if (e.key === "Escape" && currentIndex > 0) {
+    e.preventDefault();
+    const prevRef = inputRefs[currentIndex - 1];
+    if (prevRef?.value?.focus) {
+      prevRef.value.focus();
+    } else if (prevRef?.value?.$el?.focus) {
+      prevRef.value.$el.focus();
+    }
+  }
+};
 
 onMounted(() => {
   fetchVoucherTypes();
@@ -1613,10 +1642,10 @@ onMounted(() => {
   fetchgroup();
   fetchAccount_head();
   fetchVendors();
-  // window.addEventListener("keydown", handleKeydown);
+  window.addEventListener("keydown", handleKeydown);
 });
 onUnmounted(() => {
-  // window.removeEventListener("keydown", handleKeydown);
+  window.removeEventListener("keydown", handleKeydown);
 });
 </script>
 
