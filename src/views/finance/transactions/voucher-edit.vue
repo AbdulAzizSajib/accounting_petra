@@ -633,7 +633,7 @@ import { useRoute, useRouter } from "vue-router";
 
 const router = useRouter();
 // const route = useRoute();
-const JVNo_from_params = useRoute().params.JVNo || null;
+const JVNo_from_params = useRoute().query.JVNo || null;
 console.log(JVNo_from_params);
 
 const onVoucherTypeSelect = (value) => {
@@ -1503,9 +1503,9 @@ const isCategoryReceipt = computed(() => form.value.category === "R");
 
 // Get the route parameters
 const route = useRoute();
-const period = ref(route.params.Period);
-const siteCode = ref(route.params.SiteCode);
-const jvNo = ref(route.params.JVNo);
+const period = ref(route.query.Period);
+const siteCode = ref(route.query.SiteCode);
+const jvNo = ref(route.query.JVNo);
 
 const voucher_idwise_data = ref();
 const isEditingExistingVoucher = ref(false);

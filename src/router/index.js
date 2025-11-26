@@ -361,8 +361,9 @@ const routes = [
     name: "voucher-add",
     component: VoucherAdd,
   },
+  // /:Period/:SiteCode/:JVNo
   {
-    path: "/transaction/voucher-list/voucher-edit/:Period/:SiteCode/:JVNo",
+    path: "/transaction/voucher-list/voucher-edit",
     name: "voucher-edit",
     component: VoucherEdit,
   },
@@ -383,7 +384,7 @@ const routes = [
     component: DeleteVoucher,
   },
   {
-    path: "/transaction/voucher-list-print/:Period/:SiteCode/:Type/:Category/:VoucherFrom/:VoucherTo",
+    path: "/transaction/voucher-list-print",
     name: "voucher-list-print",
     component: VoucherListPrint,
   },

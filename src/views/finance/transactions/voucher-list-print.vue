@@ -214,12 +214,12 @@ import printJS from "print-js";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
-const period = ref(route.params.Period);
-const siteCode = ref(route.params.SiteCode);
-const Type = ref(route.params.Type);
-const Category = ref(route.params.Category);
-const VoucherFrom = ref(route.params.VoucherFrom);
-const VoucherTo = ref(route.params.VoucherTo);
+const period = ref(route.query.Period);
+const siteCode = ref(route.query.SiteCode);
+const Type = ref(route.query.Type);
+const Category = ref(route.query.Category);
+const VoucherFrom = ref(route.query.VoucherFrom);
+const VoucherTo = ref(route.query.VoucherTo);
 
 const voucher_idwise = async () => {
   try {
@@ -235,12 +235,12 @@ const voucher_idwise = async () => {
       },
       getToken()
     );
-    if (res.data) {
-      reportData.value = res.data;
+    if (res?.data) {
+      reportData.value = res?.data;
     }
   } catch (error) {
     console.error("Error fetching voucher:", error);
-    showNotification("error", "Failed to load voucher data");
+    showNotification("error", error?.response?.data?.message || error?.message);
   }
 };
 

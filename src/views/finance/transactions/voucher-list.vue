@@ -61,10 +61,17 @@
     <table class="w-full border border-collapse text-left">
       <thead>
         <tr class="bg-primary text-white">
-          <th class="border border-white px-4 py-2">JV No</th>
-          <th class="border border-white px-4 py-2">JV Type</th>
-          <th class="border border-white px-4 py-2">JV Serial</th>
-          <th class="border border-white px-4 py-2">JV Date</th>
+          <th class="border border-white px-4 py-2">Voucher No</th>
+          <th class="border border-white px-4 py-2">Voucher Category</th>
+          <th class="border border-white px-4 py-2">Narration</th>
+          <th class="border border-white px-4 py-2">Period</th>
+          <th class="border border-white px-4 py-2">Type</th>
+          <th class="border border-white px-4 py-2">Voucher Date</th>
+          <th class="border border-white px-4 py-2 text-center">
+            Voucher Serial
+          </th>
+          <th class="border border-white px-4 py-2 text-center">Debit</th>
+          <th class="border border-white px-4 py-2 text-center">Credit</th>
           <th class="border border-white px-4 py-2 text-center">Actions</th>
         </tr>
       </thead>
@@ -72,17 +79,26 @@
         <!-- Changed from paginatedData to allData -->
         <tr v-for="(voucher, index) in allData" :key="index">
           <td class="px-4 border">{{ voucher?.JVNo }}</td>
-          <td class="px-4 border">{{ voucher?.JVType }}</td>
-          <td class="px-4 border">{{ voucher?.JVSerial }}</td>
+          <td class="px-4 border">{{ voucher?.JvCat }}</td>
+          <td class="px-4 border">{{ voucher?.Narration }}</td>
+
           <td class="px-4 border">
-            {{ dayjs(voucher?.JVDate).format("DD-MM-YYYY") }}
+            {{ dayjs(voucher?.Period).format("MM-YYYY ") }}
           </td>
+          <!-- 2025 Nov -->
+          <td class="px-4 border">{{ voucher?.Type }}</td>
+          <td class="px-4 border">
+            {{ dayjs(voucher?.JvDate).format("DD-MM-YYYY") }}
+          </td>
+          <td class="px-4 border text-end">{{ voucher?.JVSerial }}</td>
+          <td class="px-4 border text-end">{{ voucher?.Debit }}</td>
+          <td class="px-4 border text-end">{{ voucher?.Credit }}</td>
           <td class="px-4 border text-center w-8">
             <div class="flex justify-center gap-x-3">
               <router-link
                 :to="{
                   name: 'voucher-edit',
-                  params: {
+                  query: {
                     Period: voucher?.Period,
                     SiteCode: voucher?.SiteCode,
                     JVNo: voucher?.JVNo,
@@ -108,11 +124,11 @@
               <router-link
                 :to="{
                   name: 'voucher-list-print',
-                  params: {
+                  query: {
                     SiteCode: voucher?.SiteCode,
                     Period: voucher?.Period,
-                    Type: voucher?.JVType,
-                    Category: voucher?.JVCat,
+                    Type: voucher?.Type,
+                    Category: voucher?.JvCat,
                     VoucherFrom: voucher?.JVSerial,
                     VoucherTo: voucher?.JVSerial,
                   },
@@ -190,6 +206,8 @@ const fetchAllData = async () => {
     // Store the paginated data from server
     allData.value = res?.data?.data || [];
 
+    console.log("allData--------->", allData.value);
+
     // Use the total from server response
     total.value = res?.data?.total || 0;
     per_page.value = res?.data?.per_page || 10;
@@ -257,18 +275,9 @@ const from_date = ref(null);
 const to_date = ref(null);
 const dateError = ref(false);
 
-// const handleFilterDates = async () => {
-//   try {
-//     const res = await axios.get(
-//       `${apiBase}/journal-master?DateFrom=${DateFrom.value}&DateTo=${DateTo.value}`,
-//       getToken()
-//     );
-//   } catch (error) {
-//     console.log(error.message);
-//   }
-// };
-
-onMounted(() => fetchAllData());
+onMounted(async () => {
+  await fetchAllData();
+});
 </script>
 
 <style>
