@@ -35,6 +35,7 @@
                   class="w-[80px]"
                   placeholder=""
                   option-label-prop="label"
+                  :disabled="voucherEntries.length > 0"
                   @select="onVoucherTypeSelect"
                   @keydown.native.enter.stop="onVoucherTypeEnter"
                   @keydown.native.esc="onVoucherTypeEsc"
@@ -101,7 +102,9 @@
                   class="w-[100px]"
                   placeholder="Select"
                   @select="group_code_ref?.focus()"
-                  :disabled="form.voucherType === 'JVR'"
+                  :disabled="
+                    form.voucherType === 'JVR' || voucherEntries.length > 0
+                  "
                   @keydown.native.enter.stop="onCategoryEnter"
                   @keydown.native.esc="onCategoryEsc"
                 >
@@ -291,7 +294,7 @@
                     :key="cat.ASType"
                     :value="cat.ASType"
                   >
-                    {{ cat.ASType }}
+                    {{ cat.ASType }} - {{ cat.ASDetails }}
                   </a-select-option>
                 </a-select>
               </div>
@@ -636,7 +639,7 @@ const goBack = () => {
   router.push({ name: "temp-voucher" });
 };
 
-const onVoucherTypeSelect = (value) => {
+const onVoucherTypeSelect = async (value) => {
   // Find the selected voucher and store its AMCode
   const selectedVoucher = voucherTypes.value.find(
     (item) => item.JVType === value
@@ -644,25 +647,68 @@ const onVoucherTypeSelect = (value) => {
   if (selectedVoucher) {
     selectedAMCode.value = selectedVoucher.AMCode || "";
   }
+
+  // Fetch cheque register list first
+  await fetchChequeRegisterList(value);
+
   if (value === "JVR") {
     // Focus on Group if Category is disabled
-    group_code_ref.value?.focus();
     form.value.category = "J"; // optionally prefill
-    // const serch
-    // const searchValue = "-";
-    form.value.chequeNo = chequeRegisterList.value[0].ChequeNo;
-    fetchChequeRegisterList(value);
-  } else {
-    // setTimeout(() => {
-    //   if (categories.value.length > 0) {
-    //     form.value.category = categories.value[0].Short;
-    //   }
-    // }, 100);
-    category_ref.value?.focus();
-    fetchChequeRegisterList(value);
 
+    // Auto-select first cheque number
+    if (chequeRegisterList.value.length > 0) {
+      form.value.chequeNo = chequeRegisterList.value[0].ChequeNo;
+    }
+
+    // Auto-select first group
+    await fetchgroup();
+    if (all_group.value.length > 0) {
+      form.value.group = all_group.value[0].GroupCode;
+
+      // Auto-select first type
+      await fetchType(form.value.group, true);
+      if (all_Type.value.length > 0) {
+        // Auto-select first account head
+        await fetchAccount_head(form.value.type, true);
+
+        // Auto-select first sub-ledger if available
+        if (form.value.account_head) {
+          await fetchSubLedgerList(form.value.account_head);
+          if (all_subLedgerList.value.length > 0) {
+            form.value.subLedger = all_subLedgerList.value[0].ASType;
+          }
+        }
+      }
+    }
+
+    group_code_ref.value?.focus();
+  } else {
+    category_ref.value?.focus();
+
+    // Auto-select first cheque number for Receipt category
     if (form.value.category === "R" && chequeRegisterList.value.length > 0) {
       form.value.chequeNo = chequeRegisterList.value[0].ChequeNo;
+    }
+
+    // Auto-select first group
+    await fetchgroup();
+    if (all_group.value.length > 0) {
+      form.value.group = all_group.value[0].GroupCode;
+
+      // Auto-select first type
+      await fetchType(form.value.group, true);
+      if (all_Type.value.length > 0) {
+        // Auto-select first account head
+        await fetchAccount_head(form.value.type, true);
+
+        // Auto-select first sub-ledger if available
+        if (form.value.account_head) {
+          await fetchSubLedgerList(form.value.account_head);
+          if (all_subLedgerList.value.length > 0) {
+            form.value.subLedger = all_subLedgerList.value[0].ASType;
+          }
+        }
+      }
     }
   }
 };
@@ -853,8 +899,10 @@ const all_chequeRegisterList = ref([]);
 const creating = ref(false);
 const save_button_ref = ref(false);
 const selectedAMCode = ref("");
-const fetchAccount_head = async (value) => {
-  form.value.account_head = "";
+const fetchAccount_head = async (value, autoSelect = false) => {
+  if (!autoSelect) {
+    form.value.account_head = "";
+  }
   try {
     const { data } = await axios.get(
       `${apiBase}/journal/account-head?ACType1=${value || ""}&JVType=${
@@ -865,7 +913,13 @@ const fetchAccount_head = async (value) => {
 
     if (Array.isArray(data)) {
       account_head.value = data;
+      // set first index[0] to account_head
+      form.value.account_head = data[0].AMCode;
       all_account_head.value = data;
+      // Auto-select first account head if requested and not already set
+      if (autoSelect && data.length > 0 && !form.value.account_head) {
+        form.value.account_head = data[0].AMCode;
+      }
     }
     // if (account_head.length === 0) {
     //   subLedgerList.value = [];
@@ -883,14 +937,20 @@ const isBankPayment = computed(() => {
   const selectedVoucher = voucherTypes.value.find(
     (v) => v.JVType === form.value.voucherType
   );
-  return selectedVoucher?.Category === "BANK" && form.value.category === "P"; // Assuming 'P' is short for Payment
+  return (
+    selectedVoucher?.Category?.toUpperCase() === "BANK" &&
+    form.value.category === "P"
+  ); // Assuming 'P' is short for Payment
 });
 
 const isBankReceipt = computed(() => {
   const selectedVoucher = voucherTypes.value.find(
     (v) => v.JVType === form.value.voucherType
   );
-  return selectedVoucher?.Category === "BANK" && form.value.category === "R"; // Assuming 'R' is short for Receipt
+  return (
+    selectedVoucher?.Category?.toUpperCase() === "BANK" &&
+    form.value.category === "R"
+  ); // Assuming 'R' is short for Receipt
 });
 
 const handleNumberFocus = (field) => {
@@ -948,12 +1008,6 @@ const vendorIdToChequeNo = () => {
   }
 };
 
-// const handleAccHeadSelect = (value) => {
-//   sub_ledger_ref.value?.focus();
-//   form.value.subLedger = "";
-//   fetchSubLedgerList(value);
-// };
-
 const handleAccHeadSelect = async (value) => {
   form.value.subLedger = "";
   await fetchSubLedgerList(value);
@@ -1001,9 +1055,11 @@ const handleGroupSelect = (value) => {
   fetchType(value);
 };
 
-const fetchType = async (group) => {
-  form.value.type = "";
-  form.value.account_head = "";
+const fetchType = async (group, autoSelect = false) => {
+  if (!autoSelect) {
+    form.value.type = "";
+    form.value.account_head = "";
+  }
   try {
     const { data } = await axios.get(
       `${apiBase}/journal/type?GroupCode=${group}&JVType=${form.value.voucherType}`,
@@ -1011,7 +1067,13 @@ const fetchType = async (group) => {
     );
     if (Array.isArray(data)) {
       Type.value = data;
+      // add default index[0] to type
+      form.value.type = data[0].ACType1;
       all_Type.value = data;
+      // Auto-select first type if requested and not already set
+      if (autoSelect && data.length > 0 && !form.value.type) {
+        form.value.type = data[0].ACType1;
+      }
     }
   } catch (err) {
     console.error("Error fetching types:", err);
@@ -1109,6 +1171,7 @@ const fetchVoucherTypes = async () => {
   try {
     const { data } = await axios.get(`${apiBase}/voucher/type`, getToken());
     voucherTypes.value = data;
+    console.log("--------------------->", voucherTypes.value);
     all_voucherTypes.value = data; // Store all voucher types
     voucherTypesLoading.value = false;
   } catch (err) {
@@ -1119,52 +1182,6 @@ const fetchVoucherTypes = async () => {
 
 const lastFocusedField = ref(null);
 
-// const addEntry = () => {
-//   if (!form.value.narration) {
-//     return showNotification("warning", "Please insert Narration");
-//   }
-
-//   const f = form.value;
-
-//   // Check Vendor ID first
-//   if (f.vendorId && !vendorList.value.some((v) => v.VendorId === f.vendorId)) {
-//     showNotification(
-//       "error",
-//       `Vendor ID "${f.vendorId}" not found in vendor list.`
-//     );
-//     return;
-//   }
-
-//   if (f.debit > 0 && f.credit === 0) {
-//     f.credit = 0;
-//   } else if (f.debit === 0 && f.credit > 0) {
-//     f.debit = 0;
-//   } else if (f.debit > 0 && f.credit > 0) {
-//     if (lastFocusedField.value === "debit") f.credit = 0;
-//     else if (lastFocusedField.value === "credit") f.debit = 0;
-//     else f.credit = 0;
-//   } else {
-//     showNotification("error", "Please enter either Debit or Credit amount.");
-//     return;
-//   }
-
-//   // Construct entry
-//   const entry = {
-//     ...JSON.parse(JSON.stringify(f)),
-//     accountDetails: getAccountDetails(f.account_head),
-//     vendorInfo: vendorList.value.find((v) => v.VendorId === f.vendorId) || null,
-//     isEditing: false,
-//   };
-
-//   voucherEntries.value.push(entry);
-
-//   // Clear the editing index when a new entry is added
-//   editingIndex.value = null;
-
-//   // Reset
-//   resetForm();
-//   // showNotification("success", "Entry added successfully");
-// };
 const addEntry = () => {
   // Check required fields and show specific notifications
   if (!form.value.voucherType) {
@@ -1208,14 +1225,6 @@ const addEntry = () => {
   }
 
   const f = form.value;
-
-  // Check Vendor ID first
-  // if (f.vendorId && !vendorList.value.some((v) => v.VendorId === f.vendorId)) {
-  //   showNotification(
-  //     "error",
-  //     `Vendor ID "${f.vendorId}" not found in vendor list.`
-  //   );
-  //   return;
   if (
     f.vendorId &&
     f.vendorId.trim() !== "" &&
@@ -1326,7 +1335,7 @@ const saveVoucher = async () => {
     EditDate: dayjs().format("YYYY-MM-DD HH:mm:ss.SSS"),
     details: voucherEntries.value.map((e) => ({
       AMCode: e.account_head,
-      ASCode: e.type || "0",
+      ASCode: e.subLedger || 0,
       Person: e.person || "",
       ChequeNo: e.chequeNo || "",
       ChequeName: e.chequeName || "",
@@ -1384,7 +1393,9 @@ const fetchSubLedgerList = async (value) => {
     isloading.value = false;
     if (res.data) {
       subLedgerList.value = res.data.sub_ledger;
-
+      // fist index[0] to subLedger
+      form.value.subLedger = res.data.sub_ledger[0]?.ASType;
+      console.log("first----------", subLedgerList.value);
       all_subLedgerList.value = res.data.sub_ledger;
     }
   } catch (err) {
@@ -1438,6 +1449,10 @@ const fetchChequeRegisterList = async (value, searchValue) => {
         (c) => c.Status === "ACTIVE" || c.Status === null
       );
       chequeRegisterList.value = activeAndNullCheques;
+
+      form.value.chequeNo = chequeRegisterList.value.length
+        ? chequeRegisterList.value[0].ChequeNo
+        : " ";
       all_chequeRegisterList.value = activeAndNullCheques;
     }
   } catch (err) {
@@ -1453,9 +1468,9 @@ const fetchVendors = async () => {
       `${apiBase}/settings/vendor-list/all`,
       getToken()
     );
-    console.log("res", res);
+    // console.log("res", res);
     if (res.data.success) {
-      console.log("res.data", res.data);
+      // console.log("res.data", res.data);
       vendorList.value = res.data.data.filter((v) => v.Active === "1");
     } else {
       showNotification("error", "Failed to fetch vendor list");
@@ -1640,7 +1655,7 @@ onMounted(() => {
   fetchChequeRegisterList();
   fetchCategories();
   fetchgroup();
-  fetchAccount_head();
+  // fetchAccount_head();
   fetchVendors();
   window.addEventListener("keydown", handleKeydown);
 });

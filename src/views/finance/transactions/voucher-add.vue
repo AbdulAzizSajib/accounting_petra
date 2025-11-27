@@ -1171,6 +1171,7 @@ const fetchVoucherTypes = async () => {
   try {
     const { data } = await axios.get(`${apiBase}/voucher/type`, getToken());
     voucherTypes.value = data;
+    console.log("--------------------->", voucherTypes.value);
     all_voucherTypes.value = data; // Store all voucher types
     voucherTypesLoading.value = false;
   } catch (err) {
@@ -1254,12 +1255,145 @@ const addEntry = () => {
     isEditing: false,
   };
 
-  voucherEntries.value.push(entry);
+  // Check if Voucher Type is Bank and Category is Payment or Receipt
+  const selectedVoucher = voucherTypes.value.find(
+    (v) => v.JVType === f.voucherType
+  );
+  const isBankVoucher = selectedVoucher?.Category?.toUpperCase() === "BANK";
+  const isPaymentCategory = f.category === "P";
+  const isReceiptCategory = f.category === "R";
+
+  if (isBankVoucher && isPaymentCategory) {
+    // Check if bank contra entry already exists (should be at index 0)
+    const existingBankEntry = voucherEntries.value.find(
+      (e) => e.account_head === selectedVoucher.AMCode && e.isBankContra
+    );
+
+    if (f.debit > 0) {
+      // User entered debit - add to bank credit
+      if (existingBankEntry) {
+        // Update existing bank contra entry credit amount
+        existingBankEntry.credit =
+          Number(existingBankEntry.credit) + Number(f.debit);
+      } else {
+        // Create new bank contra entry at index 0
+        const bankContraEntry = {
+          date: f.date,
+          voucherType: f.voucherType,
+          category: f.category,
+          voucherNumber: f.voucherNumber,
+          account_head: selectedVoucher.AMCode,
+          type: f.type,
+          group: f.group,
+          accountDetails: selectedVoucher.JVDetails,
+          subLedger: null,
+          person: "",
+          chequeNo: null,
+          chequeName: null,
+          billNo: null,
+          billDate: null,
+          narration: f.narration,
+          debit: 0,
+          credit: Number(f.debit),
+          vendorId: null,
+          vendorInfo: null,
+          isEditing: false,
+          isBankContra: true, // Flag to identify this as a bank contra entry
+        };
+
+        voucherEntries.value.unshift(bankContraEntry); // Add at index 0
+      }
+      // Add user entry after bank entry
+      voucherEntries.value.push(entry);
+    } else if (f.credit > 0) {
+      // Add user entry first
+      voucherEntries.value.push(entry);
+
+      // User entered credit - subtract from bank credit (rare case)
+      if (existingBankEntry) {
+        existingBankEntry.credit =
+          Number(existingBankEntry.credit) - Number(f.credit);
+
+        // Remove bank entry if credit becomes 0 or negative
+        if (existingBankEntry.credit <= 0) {
+          const index = voucherEntries.value.findIndex(
+            (e) => e.isBankContra && e.account_head === selectedVoucher.AMCode
+          );
+          if (index !== -1) {
+            voucherEntries.value.splice(index, 1);
+          }
+        }
+      }
+    }
+  } else if (isBankVoucher && isReceiptCategory) {
+    // Check if bank contra entry already exists for Receipt (should be at index 0)
+    const existingBankEntry = voucherEntries.value.find(
+      (e) => e.account_head === selectedVoucher.AMCode && e.isBankContra
+    );
+
+    if (f.credit > 0) {
+      // User entered credit - add to bank debit
+      if (existingBankEntry) {
+        // Update existing bank contra entry debit amount
+        existingBankEntry.debit =
+          Number(existingBankEntry.debit) + Number(f.credit);
+      } else {
+        // Create new bank contra entry at index 0
+        const bankContraEntry = {
+          date: f.date,
+          voucherType: f.voucherType,
+          category: f.category,
+          voucherNumber: f.voucherNumber,
+          account_head: selectedVoucher.AMCode,
+          type: f.type,
+          group: f.group,
+          accountDetails: selectedVoucher.JVDetails,
+          subLedger: null,
+          person: "",
+          chequeNo: null,
+          chequeName: null,
+          billNo: null,
+          billDate: null,
+          narration: f.narration,
+          debit: Number(f.credit),
+          credit: 0,
+          vendorId: null,
+          vendorInfo: null,
+          isEditing: false,
+          isBankContra: true, // Flag to identify this as a bank contra entry
+        };
+
+        voucherEntries.value.unshift(bankContraEntry); // Add at index 0
+      }
+      // Add user entry after bank entry
+      voucherEntries.value.push(entry);
+    } else if (f.debit > 0) {
+      // Add user entry first
+      voucherEntries.value.push(entry);
+
+      // User entered debit - subtract from bank debit (rare case)
+      if (existingBankEntry) {
+        existingBankEntry.debit =
+          Number(existingBankEntry.debit) - Number(f.debit);
+
+        // Remove bank entry if debit becomes 0 or negative
+        if (existingBankEntry.debit <= 0) {
+          const index = voucherEntries.value.findIndex(
+            (e) => e.isBankContra && e.account_head === selectedVoucher.AMCode
+          );
+          if (index !== -1) {
+            voucherEntries.value.splice(index, 1);
+          }
+        }
+      }
+    }
+  } else {
+    // Not a bank voucher, just add the entry normally
+    voucherEntries.value.push(entry);
+  }
 
   // Clear the editing index when a new entry is added
-  editingIndex.value = null;
-
-  // Reset
+  editingIndex.value = null; // Reset
   resetForm();
   // showNotification("success", "Entry added successfully");
 };
@@ -1448,7 +1582,7 @@ const fetchChequeRegisterList = async (value, searchValue) => {
         (c) => c.Status === "ACTIVE" || c.Status === null
       );
       chequeRegisterList.value = activeAndNullCheques;
-      console.log("--------------->", chequeRegisterList.value);
+
       form.value.chequeNo = chequeRegisterList.value.length
         ? chequeRegisterList.value[0].ChequeNo
         : " ";
@@ -1467,9 +1601,9 @@ const fetchVendors = async () => {
       `${apiBase}/settings/vendor-list/all`,
       getToken()
     );
-    console.log("res", res);
+    // console.log("res", res);
     if (res.data.success) {
-      console.log("res.data", res.data);
+      // console.log("res.data", res.data);
       vendorList.value = res.data.data.filter((v) => v.Active === "1");
     } else {
       showNotification("error", "Failed to fetch vendor list");
