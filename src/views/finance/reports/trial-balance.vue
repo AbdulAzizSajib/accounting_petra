@@ -2,21 +2,53 @@
   <MainLayout>
     <div class="flex items-center">
       <h1 class="text-2xl font-bold text-primary">Trial Balance</h1>
-      <div class="p-8">
-        <a-form-item
-          class="mb-0"
-          label="As on"
-          name="fromDate"
-          :rules="[{ required: false, message: 'Please input your username!' }]"
-        >
-          <a-date-picker
-            v-model:value="selectedDate"
-            class="w-full"
-            @change="handleDateChange"
-          />
-        </a-form-item>
+
+      <div
+        class="grid filter-grid m-auto grid-cols-12 border border-gray-200 rounded-md py-4 px-3 gap-2 mb-2"
+      >
+        <div class="col-span-4">
+          <div class="flex items-center">
+            <label for="period" class="w-36 font-bold">Form Date:</label>
+            <div class="w-full">
+              <input
+                type="date"
+                v-model="FromDate"
+                :max="ToDate"
+                class="w-full border p-1 border-black rounded-md"
+                :class="{ 'border-red-500': dateError }"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="col-span-4">
+          <div class="flex items-center">
+            <label for="period" class="w-36 font-bold">To Date:</label>
+            <div class="w-full">
+              <input
+                type="date"
+                v-model="ToDate"
+                :min="FromDate"
+                class="w-full border p-1 border-black rounded-md"
+                :class="{ 'border-red-500': dateError }"
+              />
+              <p v-if="dateError" class="text-red-500 text-xs mt-1">
+                To Date must be greater than or equal to From Date
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-span-1">
+          <div>
+            <a-button
+              type="primary"
+              @click="fetchAllData"
+              :loading="loading"
+              :disabled="dateError"
+              >Preview</a-button
+            >
+          </div>
+        </div>
       </div>
-      <a-button type="primary" class="" @click="fetchAllData">Preview</a-button>
     </div>
 
     <div v-if="loading" class="flex justify-center mt-4">
@@ -69,7 +101,7 @@
             <!-- title -->
             <h1 class="text-2xl font-bold text-gray-800">Trial Balance</h1>
             <p class="text-base text-gray-700 font-semibold">
-              Petra Food and Snacks
+              P-ERP Food and Snacks
             </p>
             <p class="text-base text-gray-700">As on {{ formattedDate }}</p>
           </div>
@@ -288,15 +320,16 @@ const excelLoading = ref(false);
 const SuspendingAccount = ref();
 
 // Fetch allData with search and pagination
+
+const FromDate = ref(dayjs().startOf("month").format("YYYY-MM-DD"));
+const ToDate = ref(dayjs().endOf("month").format("YYYY-MM-DD"));
+
 const fetchAllData = async () => {
   loading.value = true;
   try {
-    // Format the date for API request
-    const formattedDateForApi = selectedDate.value.format("YYYY-MM-DD");
-
     const res = await axios.post(
       `${apiBase}/journal-master/trial-balance`,
-      { Date: formattedDateForApi },
+      { FromDate: FromDate.value, ToDate: ToDate.value },
       getToken()
     );
 

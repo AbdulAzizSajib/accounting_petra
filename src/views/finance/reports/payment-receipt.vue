@@ -79,7 +79,7 @@
 
       <!-- Organization Name -->
       <div class="org-section">
-        <h2 class="org-name">Petra Food and Snacks</h2>
+        <h2 class="org-name">P-ERP Food and Snacks</h2>
         <p class="org-address">145, Siddique Bazar (1st Floor), Dhaka-1000.</p>
       </div>
 

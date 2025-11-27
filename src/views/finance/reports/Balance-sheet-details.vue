@@ -87,7 +87,7 @@
     >
       <!-- Header -->
       <div class="text-center mb-6 relative">
-        <h1 class="text-2xl font-bold mb-2">PETRA PRODUCTS</h1>
+        <h1 class="text-2xl font-bold mb-2">P-ERP PRODUCTS</h1>
         <p class="text-sm text-gray-600 mb-1">
           House No.# 90, Main Road, Nolvog, Nishat Nagar, Turag, Dhaka-1230
         </p>
@@ -465,7 +465,7 @@ const exportExcel = () => {
   excelLoading.value = true;
   try {
     const wsData = [
-      ["PETRA PRODUCTS"],
+      ["P-ERP PRODUCTS"],
       ["House No.# 90, Main Road, Nolvog, Nishat Nagar, Turag, Dhaka-1230"],
       ["Management Statement of Financial Position"],
       [`Period: ${formatRange(DateFrom.value, DateTo.value)}`],
@@ -564,7 +564,7 @@ const exportPDF = () => {
     <div style="width: 100%; max-width: 800px; margin: 0 auto; padding: 30px; font-family: Arial, sans-serif;">
       <!-- Header - matching UI exactly -->
       <div style="text-align: center; margin-bottom: 24px;">
-        <h1 style="font-size: 24px; font-weight: bold; margin: 0 0 8px 0;">PETRA PRODUCTS</h1>
+        <h1 style="font-size: 24px; font-weight: bold; margin: 0 0 8px 0;">P-ERP PRODUCTS</h1>
         <p style="font-size: 12px; color: #666; margin: 0 0 4px 0;">
           House No.# 90, Main Road, Nolvog, Nishat Nagar, Turag, Dhaka-1230
         </p>

@@ -63,7 +63,7 @@
               <label for="period" class="w-36 font-bold">Form Date:</label>
               <a-date-picker
                 v-model:value="fromDate"
-                format="DD/MM/YYYY"
+                format="YYYY/MM/DD"
                 class="w-full"
                 @change="handleDateFromChange"
               />
@@ -74,7 +74,7 @@
               <label for="period" class="w-36 font-bold">To Date:</label>
               <a-date-picker
                 v-model:value="toDate"
-                format="DD/MM/YYYY"
+                format="YYYY/MM/DD"
                 class="w-full"
                 @change="handleDateToChange"
               />
@@ -124,7 +124,7 @@
             <div class="flex justify-between mb-4 items-center space-x-10">
               <div class="text-left mb-6">
                 <h1 class="text-2xl font-bold text-gray-800">
-                  Petra Food and Snacks
+                  P-ERP Food and Snacks
                 </h1>
                 <p class="text-xl text-gray-700 font-bold">
                   Journal Book (Temporary)
@@ -412,8 +412,8 @@ const fetchVouchers = async () => {
     const formData = new FormData();
     formData.append("SiteCode", SiteCode);
     formData.append("Category", category.value);
-    formData.append("FromDate", fromDate.value.format("DD/MM/YYYY"));
-    formData.append("ToDate", toDate.value.format("DD/MM/YYYY"));
+    formData.append("FromDate", fromDate.value.format("YYYY-MM-DD"));
+    formData.append("ToDate", toDate.value.format("YYYY-MM-DD"));
 
     const res = await axios.post(
       `${apiBase}/journal-master/journal_book`,

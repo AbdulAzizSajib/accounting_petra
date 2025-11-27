@@ -146,7 +146,7 @@
       </h2>
 
       <h3 class="font-semibold text-base capitalize mb-3 text-center">
-        Petra Food and Snacks
+        P-ERP Food and Snacks
       </h3>
 
       <div>
@@ -312,7 +312,10 @@
               </td>
             </tr>
             <tr>
-              <td colspan="3" class="border-b-2 border-b-gray-600 pt-10 signature-line"></td>
+              <td
+                colspan="3"
+                class="border-b-2 border-b-gray-600 pt-10 signature-line"
+              ></td>
             </tr>
             <tr>
               <td class="text-sm" colspan="3">Posted By:</td>

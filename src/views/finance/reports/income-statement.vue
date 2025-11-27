@@ -58,28 +58,10 @@
 
     <div v-if="voucherData" id="receiptPaymentReport" class="report-container">
       <!-- Header Section -->
-      <div class="report-header">
-        <div class="header-left">
-          <h1 class="company-name border-2 border-red-600 p-5">
-            Need Report Format
-          </h1>
-          <!-- <p class="company-subtitle border-2 border-red-600 p-5">
-           Need Report Format
-          </p> -->
-        </div>
-        <div class="header-right border-2 border-red-600 p-5">
-          Need Report Format
-          <!-- <p>Dom-Inno Apartment, B-1</p>
-          <p>23/16, Khilji Road, Block-B</p>
-          <p>Shaymoli, Mohammadpur, Dhaka-1207</p>
-          <p>Tel : 88-02-48117178, 01711-536193</p>
-          <p>E-mail : macaudit.2002@gmail.com</p> -->
-        </div>
-      </div>
 
       <!-- Organization Name -->
       <div class="org-section">
-        <h2 class="org-name">Petra Food and Snacks</h2>
+        <h2 class="org-name">P-ERP Food and Snacks</h2>
         <p class="org-address">145, Siddique Bazar (1st Floor), Dhaka-1000.</p>
       </div>
 
@@ -213,10 +195,10 @@
           <div class="date-section">
             <p>Dated, Dhaka</p>
           </div>
-          <div class="auditor-section border-2 border-red-600 p-5">
+          <div class="auditor-section p-5">
             <!-- <p class="auditor-name">(MASUD ALTAF & CO.)</p> -->
             <!-- <p>Chartered Accountants</p> -->
-            Need Report Format
+            <!-- Need Report Format -->
           </div>
         </div>
       </div>

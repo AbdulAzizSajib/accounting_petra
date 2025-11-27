@@ -27,7 +27,7 @@
             <!-- title -->
             <h1 class="text-2xl font-bold text-gray-800">Chart of Accounts</h1>
             <p class="text-xl text-gray-700 font-semibold">
-              Petra Food and Snacks
+              P-ERP Food and Snacks
             </p>
           </div>
         </div>

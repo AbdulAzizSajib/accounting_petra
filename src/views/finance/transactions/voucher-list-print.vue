@@ -28,7 +28,7 @@
       </h2>
 
       <h3 class="font-semibold text-base capitalize mb-3 text-center">
-        Petra Food and Snacks
+        P-ERP Food and Snacks
       </h3>
 
       <div>

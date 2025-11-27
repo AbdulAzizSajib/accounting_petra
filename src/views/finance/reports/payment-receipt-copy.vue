@@ -59,7 +59,7 @@
 
       <!-- Organization Name -->
       <div class="text-center mb-6">
-        <h2 class="text-2xl font-bold">Petra Food and Snacks</h2>
+        <h2 class="text-2xl font-bold">P-ERP Food and Snacks</h2>
         <p class="text-sm underline">
           145, Siddique Bazar (1st Floor), Dhaka-1000.
         </p>

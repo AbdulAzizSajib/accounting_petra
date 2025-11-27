@@ -273,31 +273,9 @@ const items = reactive([
     icon: () => h(FileTextOutlined),
     children: [
       {
-        key: "/reports/journal-book-report",
-        label: "Journal Book",
-        onClick: () => router.push("/reports/journal-book-report"),
-      },
-
-      {
         key: "/reports/voucher-print",
         label: "Voucher Print",
         onClick: () => router.push("/reports/voucher-print"),
-      },
-
-      {
-        key: "/reports/statement-of-finance",
-        label: "Statement of Finance",
-        onClick: () => router.push("/reports/statement-of-finance"),
-      },
-      {
-        key: "/reports/income-statement",
-        label: "Income Statement",
-        onClick: () => router.push("/reports/income-statement"),
-      },
-      {
-        key: "/reports/payment-receipt",
-        label: "Payment Receipt",
-        onClick: () => router.push("/reports/payment-receipt"),
       },
       {
         key: "/reports/search-voucher-report",
@@ -305,30 +283,52 @@ const items = reactive([
         onClick: () => router.push("/reports/search-voucher-report"),
       },
       {
+        key: "/reports/journal-book-report",
+        label: "Journal Book",
+        onClick: () => router.push("/reports/journal-book-report"),
+      },
+
+      {
         key: "/reports/ledger-report",
         label: "Ledger",
         onClick: () => router.push("/reports/ledger-report"),
-      },
-      {
-        key: "/reports/chart-of-accounts-reports",
-        label: "Chart of Accounts",
-        onClick: () => router.push("/reports/chart-of-accounts-reports"),
-      },
-      {
-        key: "/reports/trial-balance",
-        label: "Trial Balance",
-        onClick: () => router.push("/reports/trial-balance"),
       },
       {
         key: "/reports/balance-sheet",
         label: "Balance Sheet",
         onClick: () => router.push("/reports/balance-sheet"),
       },
+
       {
         key: "/reports/balance-sheet-details",
         label: "Balance Sheet Details",
         onClick: () => router.push("/reports/balance-sheet-details"),
       },
+
+      {
+        key: "/reports/payment-receipt",
+        label: "Payment Receipt",
+        onClick: () => router.push("/reports/payment-receipt"),
+      },
+
+      {
+        key: "/reports/income-statement",
+        label: "Income Statement",
+        onClick: () => router.push("/reports/income-statement"),
+      },
+
+      {
+        key: "/reports/statement-of-finance",
+        label: "Statement of Finance",
+        onClick: () => router.push("/reports/statement-of-finance"),
+      },
+
+      {
+        key: "/reports/chart-of-accounts-reports",
+        label: "Chart of Accounts",
+        onClick: () => router.push("/reports/chart-of-accounts-reports"),
+      },
+
       {
         key: "/reports/cash-flow-statement-report",
         label: "Cash Flow Statement",
@@ -338,6 +338,12 @@ const items = reactive([
         key: "/reports/account-ratio-report",
         label: "Account Ratio",
         onClick: () => router.push("/reports/account-ratio-report"),
+      },
+
+      {
+        key: "/reports/trial-balance",
+        label: "Trial Balance",
+        onClick: () => router.push("/reports/trial-balance"),
       },
 
       // {

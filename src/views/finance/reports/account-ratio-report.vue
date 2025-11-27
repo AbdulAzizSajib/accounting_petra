@@ -57,7 +57,7 @@
         <!-- header area start -->
         <div class="flex justify-center mb-4 items-center space-x-10 relative">
           <div class="text-center mb-6">
-            <h1 class="text-2xl font-bold mb-2">PETRA PRODUCTS</h1>
+            <h1 class="text-2xl font-bold mb-2">P-ERP PRODUCTS</h1>
             <p class="text-sm text-gray-600 mb-1">
               House No.# 90, Main Road, Nolvog, Nishat Nagar, Turag, Dhaka-1230
             </p>

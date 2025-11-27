@@ -141,7 +141,7 @@
           <div class="text-left mb-6">
             <h1 class="text-xl font-bold text-gray-800">Ledger Book</h1>
             <p class="text-lg text-gray-700 font-semibold">
-              Petra Food and Snacks
+              P-ERP Food and Snacks
             </p>
             <p class="text-base font-bold">
               <span>{{ allData?.[0].AMCode }}</span
