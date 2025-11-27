@@ -913,6 +913,8 @@ const fetchAccount_head = async (value, autoSelect = false) => {
 
     if (Array.isArray(data)) {
       account_head.value = data;
+      // set first index[0] to account_head
+      form.value.account_head = data[0].AMCode;
       all_account_head.value = data;
       // Auto-select first account head if requested and not already set
       if (autoSelect && data.length > 0 && !form.value.account_head) {
@@ -1065,6 +1067,8 @@ const fetchType = async (group, autoSelect = false) => {
     );
     if (Array.isArray(data)) {
       Type.value = data;
+      // add default index[0] to type
+      form.value.type = data[0].ACType1;
       all_Type.value = data;
       // Auto-select first type if requested and not already set
       if (autoSelect && data.length > 0 && !form.value.type) {
@@ -1388,7 +1392,9 @@ const fetchSubLedgerList = async (value) => {
     isloading.value = false;
     if (res.data) {
       subLedgerList.value = res.data.sub_ledger;
-
+      // fist index[0] to subLedger
+      form.value.subLedger = res.data.sub_ledger[0]?.ASType;
+      console.log("first----------", subLedgerList.value);
       all_subLedgerList.value = res.data.sub_ledger;
     }
   } catch (err) {
@@ -1648,7 +1654,7 @@ onMounted(() => {
   fetchChequeRegisterList();
   fetchCategories();
   fetchgroup();
-  fetchAccount_head();
+  // fetchAccount_head();
   fetchVendors();
   window.addEventListener("keydown", handleKeydown);
 });

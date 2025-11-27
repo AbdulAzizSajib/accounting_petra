@@ -289,24 +289,30 @@
             </tfoot>
           </table>
         </div>
-        <div class="overflow-x-auto">
-          <table class="w-full">
+        <div class="overflow-x-auto mt-16">
+          <table class="w-full signature-table">
             <tr>
               <td class="text-sm">
-                Prepared <br />
-                By
+                <span class="">
+                  Prepared <br />
+                  By
+                </span>
               </td>
               <td class="text-sm">
-                Check <br />
-                By
+                <span class="mt-16">
+                  Check <br />
+                  By
+                </span>
               </td>
               <td class="text-sm">
-                Authorised <br />
-                By
+                <span class="mt-16">
+                  Authorised <br />
+                  By
+                </span>
               </td>
             </tr>
             <tr>
-              <td colspan="3" class="border-b-2 border-b-gray-600 pt-10"></td>
+              <td colspan="3" class="border-b-2 border-b-gray-600 pt-10 signature-line"></td>
             </tr>
             <tr>
               <td class="text-sm" colspan="3">Posted By:</td>
@@ -354,6 +360,7 @@ const getCode = async (search = "") => {
     code_loading.value = false;
 
     if (res?.data?.success == true) {
+      formData.value.Type = res?.data?.data[0]?.JVType || "";
       codeData.value = res?.data?.data;
     }
   } catch (err) {
@@ -373,6 +380,7 @@ const getCategory = async (code = "") => {
 
     if (res?.data?.success == true) {
       categoryData.value = res?.data?.data;
+      formData.value.Category = res?.data?.data[0]?.Short || "";
     }
   } catch (err) {
     category_loading.value = false;
@@ -531,6 +539,9 @@ const printAll = () => {
         body { font-family: Arial, sans-serif; font-size: 11px; }
         table { border-collapse: collapse; width: 100%; }
         th, td { border: 1px solid #ccc; padding: 4px; text-align: left; }
+        .signature-table th, .signature-table td { border: none !important; }
+        .signature-table .signature-line { border-bottom: 2px solid #4a5568 !important; padding-top: 2.5rem; }
+        .mt-16 { margin-top: 4rem !important; }
 
         th.debit-credit-label{
           text-align: center !important;
@@ -575,6 +586,16 @@ const printSingle = (index) => {
     border: 1px solid #ccc;
     padding: 4px;
     text-align: left;
+  }
+  .signature-table th, .signature-table td {
+    border: none !important;
+  }
+  .signature-table .signature-line {
+    border-bottom: 2px solid #4a5568 !important;
+    padding-top: 2.5rem;
+  }
+  .mt-16 {
+    margin-top: 2rem !important;
   }
   th.debit-credit-label{
     text-align: center !important;

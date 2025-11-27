@@ -483,7 +483,6 @@ const get_AM_Code = async () => {
     );
     if (res.data) {
       AM_code_info.value = res?.data;
-      AMDetails.value = res?.data?.ACType1Details;
 
       GroupCode.value = res?.data?.GroupCode;
     } else {

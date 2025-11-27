@@ -42,7 +42,7 @@
             <Icon class="text-2xl" icon="fa6-solid:binoculars" />
           </button>
         </div>
-
+        <!-- AMDetails.value = res?.data?.ACType1Details; -->
         <div class="flex items-center gap-4 mt-4">
           <label class="block font-bold w-36">
             <span class="text-red-500">* </span>Account Details
@@ -513,6 +513,7 @@ const getData_idWise = async () => {
         AMCode.value = codeParts[0] || "";
         AMCodeOther_Digit.value = codeParts[1] || "";
         AMDetailShow.value = acMaster?.AMDetails || "";
+        AMDetails.value = acMaster?.AMDetails || "";
         Subledger.value = parseInt(acMaster.Subledger) || 0;
         cashflow.value = parseInt(acMaster.CashflowID) || 0;
         // if (AMCode.value) await get_AM_Code();
