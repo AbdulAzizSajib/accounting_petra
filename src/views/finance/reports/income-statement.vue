@@ -46,11 +46,11 @@
                 >Preview</a-button
               >
             </div>
-            <div>
+            <!-- <div>
               <a-button type="primary" @click="exportPDF" :loading="loading"
                 >PDF</a-button
               >
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
@@ -67,9 +67,7 @@
 
       <!-- Statement Title -->
       <div class="statement-title-section">
-        <h3 class="statement-title">
-          Statements of Receipts & Payments for the year 30th June, 2024.
-        </h3>
+        <h3 class="statement-title">Statements of Receipts & Payments</h3>
       </div>
 
       <!-- Financial Table -->

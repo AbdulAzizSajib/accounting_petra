@@ -830,6 +830,8 @@ const getAccountsHead = async () => {
         value: accountHead.AMCode,
       }));
       accountHeadList.value = mappedData;
+      // set auto index[0] value
+      formData.value.AMCode1 = mappedData[0]?.value || "";
       all_accountHeadList.value = mappedData; // Store all account heads for filtering
       isLoading.value = false;
     }

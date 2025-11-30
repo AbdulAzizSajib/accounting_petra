@@ -46,11 +46,11 @@
                 >Preview</a-button
               >
             </div>
-            <div>
+            <!-- <div>
               <a-button type="primary" @click="exportPDF" :loading="loading"
                 >PDF</a-button
               >
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
@@ -58,24 +58,6 @@
 
     <div v-if="voucherData" id="receiptPaymentReport" class="report-container">
       <!-- Header Section -->
-      <div class="report-header">
-        <div class="header-left">
-          <h1 class="company-name border-2 border-red-600 p-5">
-            Need Report Format
-          </h1>
-          <!-- <p class="company-subtitle border-2 border-red-600 p-5">
-           Need Report Format
-          </p> -->
-        </div>
-        <div class="header-right border-2 border-red-600 p-5">
-          Need Report Format
-          <!-- <p>Dom-Inno Apartment, B-1</p>
-          <p>23/16, Khilji Road, Block-B</p>
-          <p>Shaymoli, Mohammadpur, Dhaka-1207</p>
-          <p>Tel : 88-02-48117178, 01711-536193</p>
-          <p>E-mail : macaudit.2002@gmail.com</p> -->
-        </div>
-      </div>
 
       <!-- Organization Name -->
       <div class="org-section">
@@ -85,9 +67,7 @@
 
       <!-- Statement Title -->
       <div class="statement-title-section">
-        <h3 class="statement-title">
-          Statements of Receipts & Payments for the year 30th June, 2024.
-        </h3>
+        <h3 class="statement-title">Statements of Receipts & Payments</h3>
       </div>
 
       <!-- Financial Table -->
@@ -226,7 +206,7 @@
           </template>
 
           <!-- E.Closing Balance -->
-          <tr>
+          <!-- <tr>
             <td class="table-cell text-center font-bold">E.</td>
             <td class="table-cell font-bold text-underline">
               Closing Balance :
@@ -255,20 +235,20 @@
             <td class="table-cell"></td>
             <td class="table-cell"></td>
             <td class="table-cell text-right total-line">14,000.00</td>
-          </tr>
+          </tr> -->
 
           <!-- F. Total  -->
-          <tr>
+          <!-- <tr>
             <td class="table-cell text-center font-bold">F.</td>
             <td class="table-cell font-bold">Total: (D+E)</td>
             <td class="table-cell"></td>
             <td class="table-cell"></td>
             <td class="table-cell text-right grand-total">24,200.00</td>
-          </tr>
+          </tr> -->
         </tbody>
       </table>
 
-      <div class="footer-section">
+      <!-- <div class="footer-section">
         <p class="footer-text">
           This is the statement of Receipts & Payments prepared referred to in
           our separate report of even date
@@ -277,13 +257,8 @@
           <div class="date-section">
             <p>Dated, Dhaka</p>
           </div>
-          <div class="auditor-section border-2 border-red-600 p-5">
-            <!-- <p class="auditor-name">(MASUD ALTAF & CO.)</p> -->
-            <!-- <p>Chartered Accountants</p> -->
-            Need Report Format
-          </div>
         </div>
-      </div>
+      </div> -->
     </div>
   </MainLayout>
 </template>

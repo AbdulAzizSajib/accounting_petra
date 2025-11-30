@@ -363,8 +363,13 @@ const getCode = async (search = "") => {
     code_loading.value = false;
 
     if (res?.data?.success == true) {
-      formData.value.Type = res?.data?.data[0]?.JVType || "";
       codeData.value = res?.data?.data;
+      // Auto-select first code
+      if (res?.data?.data.length > 0) {
+        formData.value.Type = res?.data?.data[0]?.JVType || "";
+        // Auto-fetch category for the selected code
+        await getCategory(formData.value.Type);
+      }
     }
   } catch (err) {
     code_loading.value = false;
@@ -402,8 +407,8 @@ const formData = ref({
   Period: dayjs(),
   Type: "",
   Category: "",
-  VoucherFrom: "",
-  VoucherTo: "",
+  VoucherFrom: 1,
+  VoucherTo: 100,
 });
 const reportData = ref([]);
 

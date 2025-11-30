@@ -317,11 +317,11 @@ const items = reactive([
         onClick: () => router.push("/reports/income-statement"),
       },
 
-      {
-        key: "/reports/statement-of-finance",
-        label: "Statement of Finance",
-        onClick: () => router.push("/reports/statement-of-finance"),
-      },
+      // {
+      //   key: "/reports/statement-of-finance",
+      //   label: "Statement of Finance",
+      //   onClick: () => router.push("/reports/statement-of-finance"),
+      // },
 
       {
         key: "/reports/chart-of-accounts-reports",

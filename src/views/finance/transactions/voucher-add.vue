@@ -85,12 +85,6 @@
                 </h2>
               </div>
 
-              <!-- Sub-Ledger -->
-              <div class="flex items-center flex-shrink-0">
-                <label for="sub-ledger" class="text-lg mr-1">sub-Ledger:</label>
-                <a-input class="bg-[#006dc1] text-white w-16" disabled />
-              </div>
-
               <!-- Category -->
               <div class="flex items-center flex-shrink-0">
                 <label for="voucher-type" class="text-lg mr-1"
@@ -742,31 +736,6 @@ const onGroupEsc = () => {
 
 const editingIndex = ref(null);
 
-// Add this new function
-// const populateFormFromEntry = (entry, index) => {
-//   // Set editing index FIRST
-//   editingIndex.value = index;
-
-//   form.value.account_head = entry.account_head;
-//   form.value.subLedger = entry.subLedger;
-//   form.value.type = entry.type;
-//   form.value.person = entry.person || "";
-//   form.value.chequeNo = entry.chequeNo || null;
-//   form.value.chequeName = entry.chequeName || null;
-//   form.value.billNo = entry.billNo || null;
-//   form.value.billDate = entry.billDate ? dayjs(entry.billDate) : null;
-//   form.value.narration = entry.narration || null;
-//   form.value.debit = entry.debit || 0;
-//   form.value.credit = entry.credit || 0;
-//   form.value.accountDetails = entry.accountDetails || "";
-
-//   // Store the index being edited
-//   form.value.editingEntryIndex = index;
-
-//   // Remove the entry from the table
-//   voucherEntries.value.splice(index, 1);
-// };
-
 const populateFormFromEntry = async (entry, index) => {
   // Don't allow editing of bank contra entries
   if (entry.isBankContra) {
@@ -933,11 +902,6 @@ const fetchAccount_head = async (value, autoSelect = false) => {
         form.value.account_head = data[0].AMCode;
       }
     }
-    // if (account_head.length === 0) {
-    //   subLedgerList.value = [];
-    //   all_subLedgerList.value = [];
-    //   form.value.subLedger = "";
-    // }
   } catch (err) {
     console.error("Error fetching account heads:", err);
     account_head.value = [];
@@ -1056,15 +1020,43 @@ const handleAccHeadEnter = () => {
   }, 150);
 };
 
-const handleTypeSelect = (value) => {
+const handleTypeSelect = async (value) => {
   account_head_ref.value?.focus();
   // console.log("value----->", value);
-  fetchAccount_head(value);
+  await fetchAccount_head(value);
+
+  // Auto-select first account head if data exists
+  if (all_account_head.value.length > 0) {
+    form.value.account_head = all_account_head.value[0].AMCode;
+
+    // Fetch and auto-select sub-ledger if exists
+    await fetchSubLedgerList(form.value.account_head);
+    if (all_subLedgerList.value.length > 0) {
+      form.value.subLedger = all_subLedgerList.value[0].ASType;
+    }
+  }
 };
 
-const handleGroupSelect = (value) => {
+const handleGroupSelect = async (value) => {
   type_ref.value?.focus();
-  fetchType(value);
+  await fetchType(value);
+
+  // Auto-select first type if data exists
+  if (all_Type.value.length > 0) {
+    form.value.type = all_Type.value[0].ACType1;
+
+    // Fetch and auto-select first account head if exists
+    await fetchAccount_head(form.value.type);
+    if (all_account_head.value.length > 0) {
+      form.value.account_head = all_account_head.value[0].AMCode;
+
+      // Fetch and auto-select sub-ledger if exists
+      await fetchSubLedgerList(form.value.account_head);
+      if (all_subLedgerList.value.length > 0) {
+        form.value.subLedger = all_subLedgerList.value[0].ASType;
+      }
+    }
+  }
 };
 
 const fetchType = async (group, autoSelect = false) => {
