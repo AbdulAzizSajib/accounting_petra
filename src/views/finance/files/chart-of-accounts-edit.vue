@@ -175,7 +175,7 @@
                     :key="cat.ASType"
                     :value="cat.ASType"
                   >
-                    {{ cat.ASType }}
+                    {{ cat.ASType }} - {{ cat.ASDetails }}
                   </a-select-option>
                 </a-select>
               </div>
@@ -227,7 +227,9 @@
               </thead>
               <tbody>
                 <tr v-for="(item, index) in subLedgerRanges" :key="index">
-                  <td class="px-4 py-2 border">{{ item.category }}</td>
+                  <td class="px-4 py-2 border">
+                    {{ item.category }} - {{ item.categoryDetails }}
+                  </td>
                   <td class="px-4 py-2 border text-end">{{ item.startId }}</td>
                   <td class="px-4 py-2 border text-end">{{ item.endId }}</td>
                   <td class="px-4 py-2 border text-end">
@@ -492,8 +494,13 @@ const handleSubLedgerEnter = () => {
       );
       return;
     }
+    // Find the full category object to get ASDetails
+    const selectedCategoryObj = categories.value.find(
+      (cat) => cat.ASType === selectedCategory.value
+    );
     subLedgerRanges.value.push({
       category: selectedCategory.value,
+      categoryDetails: selectedCategoryObj?.ASDetails || "",
       startId: startId.value,
       endId: endId.value,
     });
@@ -528,11 +535,18 @@ const getData_idWise = async () => {
       }
       const subLedger = res.data.sub_ledger;
       if (subLedger && Array.isArray(subLedger)) {
-        subLedgerRanges.value = subLedger.map((item) => ({
-          category: item.ASType,
-          startId: parseInt(item.StartID) || 0,
-          endId: parseInt(item.EndID) || 0,
-        }));
+        subLedgerRanges.value = subLedger.map((item) => {
+          // Find the matching category to get ASDetails
+          const matchingCategory = categories.value.find(
+            (cat) => cat.ASType === item.ASType
+          );
+          return {
+            category: item.ASType,
+            categoryDetails: matchingCategory?.ASDetails || "",
+            startId: parseInt(item.StartID) || 0,
+            endId: parseInt(item.EndID) || 0,
+          };
+        });
       }
     }
   } catch (error) {

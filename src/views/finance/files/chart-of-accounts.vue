@@ -225,7 +225,9 @@
               </thead>
               <tbody>
                 <tr v-for="(item, index) in subLedgerRanges" :key="index">
-                  <td class="px-4 py-2 border">{{ item.category }}</td>
+                  <td class="px-4 py-2 border">
+                    {{ item.category }} - {{ item.categoryDetails }}
+                  </td>
                   <td class="px-4 py-2 border text-end">{{ item.startId }}</td>
                   <td class="px-4 py-2 border text-end">{{ item.endId }}</td>
                   <td class="px-4 py-2 border text-end">
@@ -510,8 +512,14 @@ const handleSubLedgerEnter = () => {
       return;
     }
 
+    // Find the full category object to get ASDetails
+    const selectedCategoryObj = categories.value.find(
+      (cat) => cat.ASType === selectedCategory.value
+    );
+
     subLedgerRanges.value.push({
       category: selectedCategory.value,
+      categoryDetails: selectedCategoryObj?.ASDetails || "",
       startId: startId.value,
       endId: endId.value,
     });

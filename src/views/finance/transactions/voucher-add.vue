@@ -1277,6 +1277,16 @@ const addEntry = () => {
 
     if (f.debit > 0) {
       // User entered debit - add to bank credit
+      // Add user entry before any bank contra entries
+      const bankContraIndex = voucherEntries.value.findIndex(
+        (e) => e.isBankContra
+      );
+      if (bankContraIndex !== -1) {
+        voucherEntries.value.splice(bankContraIndex, 0, entry);
+      } else {
+        voucherEntries.value.push(entry);
+      }
+
       if (existingBankEntry) {
         // If editing, subtract the original debit first, then add the new debit
         if (isEditing) {
@@ -1290,7 +1300,7 @@ const addEntry = () => {
             Number(existingBankEntry.credit) + Number(f.debit);
         }
       } else {
-        // Create new bank contra entry at index 0
+        // Create new bank contra entry at the bottom
         const bankContraEntry = {
           date: f.date,
           voucherType: f.voucherType,
@@ -1315,13 +1325,18 @@ const addEntry = () => {
           isBankContra: true, // Flag to identify this as a bank contra entry
         };
 
-        voucherEntries.value.unshift(bankContraEntry); // Add at index 0
+        voucherEntries.value.push(bankContraEntry); // Add at the bottom
       }
-      // Add user entry after bank entry
-      voucherEntries.value.push(entry);
     } else if (f.credit > 0) {
-      // Add user entry first
-      voucherEntries.value.push(entry);
+      // Add user entry before any bank contra entries
+      const bankContraIndex = voucherEntries.value.findIndex(
+        (e) => e.isBankContra
+      );
+      if (bankContraIndex !== -1) {
+        voucherEntries.value.splice(bankContraIndex, 0, entry);
+      } else {
+        voucherEntries.value.push(entry);
+      }
 
       // User entered credit - subtract from bank credit (rare case)
       if (existingBankEntry) {
@@ -1355,6 +1370,16 @@ const addEntry = () => {
 
     if (f.credit > 0) {
       // User entered credit - add to bank debit
+      // Add user entry before any bank contra entries
+      const bankContraIndex = voucherEntries.value.findIndex(
+        (e) => e.isBankContra
+      );
+      if (bankContraIndex !== -1) {
+        voucherEntries.value.splice(bankContraIndex, 0, entry);
+      } else {
+        voucherEntries.value.push(entry);
+      }
+
       if (existingBankEntry) {
         // If editing, subtract the original credit first, then add the new credit
         if (isEditing) {
@@ -1368,7 +1393,7 @@ const addEntry = () => {
             Number(existingBankEntry.debit) + Number(f.credit);
         }
       } else {
-        // Create new bank contra entry at index 0
+        // Create new bank contra entry at the bottom
         const bankContraEntry = {
           date: f.date,
           voucherType: f.voucherType,
@@ -1393,13 +1418,18 @@ const addEntry = () => {
           isBankContra: true, // Flag to identify this as a bank contra entry
         };
 
-        voucherEntries.value.unshift(bankContraEntry); // Add at index 0
+        voucherEntries.value.push(bankContraEntry); // Add at the bottom
       }
-      // Add user entry after bank entry
-      voucherEntries.value.push(entry);
     } else if (f.debit > 0) {
-      // Add user entry first
-      voucherEntries.value.push(entry);
+      // Add user entry before any bank contra entries
+      const bankContraIndex = voucherEntries.value.findIndex(
+        (e) => e.isBankContra
+      );
+      if (bankContraIndex !== -1) {
+        voucherEntries.value.splice(bankContraIndex, 0, entry);
+      } else {
+        voucherEntries.value.push(entry);
+      }
 
       // User entered debit - subtract from bank debit (rare case)
       if (existingBankEntry) {

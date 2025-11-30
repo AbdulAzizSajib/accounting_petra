@@ -546,6 +546,18 @@
               <span>{{ entry?.narration || "_" }}</span>
             </td>
 
+            <!-- Actions -->
+            <!-- <td class="px-4 border text-center w-8">
+              <div class="flex justify-center gap-x-3">
+                <button
+                  @click="populateFormFromEntry(entry, index)"
+                  class="px-2 py-1 bg-primary text-white rounded-md"
+                >
+                  Edit
+                </button>
+              </div>
+            </td>  -->
+
             <td class="px-4 border text-center w-8">
               <div class="flex justify-center gap-x-3">
                 <button
@@ -707,6 +719,31 @@ const onGroupEsc = () => {
 };
 
 const editingIndex = ref(null);
+
+// Add this new function
+// const populateFormFromEntry = (entry, index) => {
+//   // Set editing index FIRST
+//   editingIndex.value = index;
+
+//   form.value.account_head = entry.account_head;
+//   form.value.subLedger = entry.subLedger;
+//   form.value.type = entry.type;
+//   form.value.person = entry.person || "";
+//   form.value.chequeNo = entry.chequeNo || null;
+//   form.value.chequeName = entry.chequeName || null;
+//   form.value.billNo = entry.billNo || null;
+//   form.value.billDate = entry.billDate ? dayjs(entry.billDate) : null;
+//   form.value.narration = entry.narration || null;
+//   form.value.debit = entry.debit || 0;
+//   form.value.credit = entry.credit || 0;
+//   form.value.accountDetails = entry.accountDetails || "";
+
+//   // Store the index being edited
+//   form.value.editingEntryIndex = index;
+
+//   // Remove the entry from the table
+//   voucherEntries.value.splice(index, 1);
+// };
 
 const populateFormFromEntry = async (entry, index) => {
   // Don't allow editing of bank contra entries
@@ -1522,7 +1559,7 @@ const updateVoucher = async () => {
     EditDate: dayjs().format("YYYY-MM-DD HH:mm:ss.SSS"),
     details: voucherEntries.value.map((e) => ({
       AMCode: e?.account_head,
-      ASCode: e.subLedger || 0,
+      ASCode: e?.type || "0",
       Person: e?.person || "",
       ChequeNo: e?.chequeNo || "-",
       ChequeName: e?.chequeName || "",
@@ -1753,18 +1790,8 @@ const populateFormFromResponse = async () => {
 
   // Populate voucher entries from details
   if (Array.isArray(data.details) && data.details.length > 0) {
-    // Find the selected voucher to get its AMCode for bank contra identification
-    const selectedVoucher = voucherTypes.value.find(
-      (v) => v.JVType === data.JVType
-    );
-    const isBankVoucher = selectedVoucher?.Category?.toUpperCase() === "BANK";
-    const bankAMCode = selectedVoucher?.AMCode;
-
     voucherEntries.value = data.details.map((detail) => {
       const accountDetails = getAccountDetails(detail.AMCode);
-
-      // Check if this entry is a bank contra entry
-      const isBankContra = isBankVoucher && detail.AMCode === bankAMCode;
 
       return {
         account_head: detail.AMCode,
@@ -1784,7 +1811,6 @@ const populateFormFromResponse = async () => {
         category: data.JVCat,
         date: data.JVDate ? dayjs(data.JVDate) : dayjs(),
         isEditing: false,
-        isBankContra: isBankContra, // Mark bank contra entries
         RecNo: detail.RecNo,
         AMCode: detail.AMCode,
         ASCode: detail.ASCode,

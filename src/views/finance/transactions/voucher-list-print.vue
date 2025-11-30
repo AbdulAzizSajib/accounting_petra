@@ -171,29 +171,23 @@
             </tfoot>
           </table>
         </div>
-        <div class="overflow-x-auto">
-          <table class="w-full">
-            <tr>
-              <td class="text-sm">
-                Prepared <br />
-                By
-              </td>
-              <td class="text-sm">
-                Check <br />
-                By
-              </td>
-              <td class="text-sm">
-                Authorised <br />
-                By
-              </td>
-            </tr>
-            <tr>
-              <td colspan="3" class="border-b-2 border-b-gray-600 pt-10"></td>
-            </tr>
-            <tr>
-              <td class="text-sm" colspan="3">Posted By:</td>
-            </tr>
-          </table>
+        <div class="flex justify-between items-start mt-20">
+          <div class="text-sm">
+            Prepared <br />
+            By
+          </div>
+          <div class="text-sm">
+            Check <br />
+            By
+          </div>
+          <div class="text-sm">
+            Authorised <br />
+            By
+          </div>
+          <div class="text-sm">
+            Posted <br />
+            By
+          </div>
         </div>
       </div>
     </div>
@@ -423,6 +417,18 @@ const printSingle = (index) => {
   h2, h3 {
     text-align: center;
     margin: 4px 0;
+  }
+  .flex {
+    display: flex;
+  }
+  .justify-between {
+    justify-content: space-between;
+  }
+  .items-start {
+    align-items: flex-start;
+  }
+  .mt-20 {
+    margin-top: 3rem;
   }
 `,
   });
