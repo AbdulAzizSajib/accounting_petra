@@ -127,25 +127,12 @@ const state = reactive({
   selectedKeys: [route.path],
 });
 
-// Helper function to navigate with Ctrl+Click support
-const navigateTo = (path) => {
-  return (e) => {
-    if (e.ctrlKey || e.metaKey) {
-      // Use router.resolve to get the full URL with base
-      const resolved = router.resolve(path);
-      window.open(resolved.href, "_blank");
-    } else {
-      router.push(path);
-    }
-  };
-};
-
 const items = reactive([
   {
     key: "/finance-dashboard",
     label: "Dashboard",
     icon: () => h(ContainerOutlined),
-    onClick: navigateTo("/finance-dashboard"),
+    onClick: () => router.push("/finance-dashboard"),
   },
   {
     key: "files",
@@ -155,119 +142,128 @@ const items = reactive([
       {
         key: "/files/group-code",
         label: "Group Code",
-        onClick: navigateTo("/files/group-code"),
+        onClick: () => router.push("/files/group-code"),
       },
       {
         key: "/files/voucher-type",
         label: "voucher type",
-        onClick: navigateTo("/files/voucher-type"),
+        onClick: () => router.push("/files/voucher-type"),
       },
       {
         key: "/files/voucher-category",
         label: "voucher category",
-        onClick: navigateTo("/files/voucher-category"),
+        onClick: () => router.push("/files/voucher-category"),
       },
       {
         key: "/files/ac-type",
         label: "A/C Type",
-        onClick: navigateTo("/files/ac-type"),
+        onClick: () => router.push("/files/ac-type"),
       },
       {
         key: "/files/ac-sub-group",
         label: "A/C Sub Group",
-        onClick: navigateTo("/files/ac-sub-group"),
+        onClick: () => router.push("/files/ac-sub-group"),
       },
+
       {
         key: "/files/search-chart-of-accounts",
         label: "Chart of Accounts",
-        onClick: navigateTo("/files/search-chart-of-accounts"),
+        onClick: () => router.push("/files/search-chart-of-accounts"),
       },
+
       {
         key: "/files/sub-ledger-category",
         label: "Sub-Ledger Category",
-        onClick: navigateTo("/files/sub-ledger-category"),
+        onClick: () => router.push("/files/sub-ledger-category"),
+        // icon: () => h(FileTextOutlined),
       },
       {
         key: "/files/sub-ledger",
         label: "Sub Ledger",
-        onClick: navigateTo("/files/sub-ledger"),
+        onClick: () => router.push("/files/sub-ledger"),
       },
       {
         key: "/files/opening",
         label: "Opening",
-        onClick: navigateTo("/files/opening"),
+        onClick: () => router.push("/files/opening"),
       },
       {
         key: "/files/cheque-no",
         label: "Cheque No",
-        onClick: navigateTo("/files/cheque-no"),
+        onClick: () => router.push("/files/cheque-no"),
       },
       {
         key: "/files/cheque-book-entry",
         label: "Cheque Book",
-        onClick: navigateTo("/files/cheque-book-entry"),
+        onClick: () => router.push("/files/cheque-book-entry"),
       },
+
       {
         key: "/files/financial-month",
         label: "Financial Month",
-        onClick: navigateTo("/files/financial-month"),
+        onClick: () => router.push("/files/financial-month"),
       },
+
       {
         key: "/files/set-period",
         label: "Set Period",
-        onClick: navigateTo("/files/set-period"),
+        onClick: () => router.push("/files/set-period"),
       },
       {
         key: "/files/site",
         label: "Site",
-        onClick: navigateTo("/files/site"),
+        onClick: () => router.push("/files/site"),
       },
       {
         key: "/files/vendor-entry",
         label: "Vendor Entry",
-        onClick: navigateTo("/files/vendor-entry"),
+        onClick: () => router.push("/files/vendor-entry"),
       },
       {
         key: "/files/vendor-type",
         label: "Vendor Type",
-        onClick: navigateTo("/files/vendor-type"),
+        onClick: () => router.push("/files/vendor-type"),
       },
     ],
   },
+
   {
-    key: "transaction",
+    key: "transaction", // Changed from specific route to parent
     label: "Transaction",
     icon: () => h(FileTextOutlined),
     children: [
       {
         key: "/transaction/voucher-list",
         label: "Voucher Entry",
-        onClick: navigateTo("/transaction/voucher-list"),
+        onClick: () => router.push("/transaction/voucher-list"),
       },
       {
         key: "/transaction/voucher-date-change",
         label: "Voucher Data Change",
-        onClick: navigateTo("/transaction/voucher-date-change"),
+        onClick: () => router.push("/transaction/voucher-date-change"),
       },
       {
         key: "/transaction/delete-voucher",
         label: "Delete Voucher",
-        onClick: navigateTo("/transaction/delete-voucher"),
+        onClick: () => router.push("/transaction/delete-voucher"),
       },
+
       {
         key: "/transaction/voucher-search-chart-of-accounts",
         label: "Search Chart of Accounts",
-        onClick: navigateTo("/transaction/voucher-search-chart-of-accounts"),
+        onClick: () =>
+          router.push("/transaction/voucher-search-chart-of-accounts"),
       },
+
       {
         key: "/transaction/sales-voucher",
         label: "sales voucher",
-        onClick: navigateTo("/transaction/sales-voucher"),
+        onClick: () => router.push("/transaction/sales-voucher"),
       },
       {
         key: "/transaction/bill-receive",
         label: "bill receive",
-        onClick: navigateTo("/transaction/bill-receive"),
+        onClick: () => router.push("/transaction/bill-receive"),
       },
     ],
   },
@@ -279,65 +275,113 @@ const items = reactive([
       {
         key: "/reports/voucher-print",
         label: "Voucher Print",
-        onClick: navigateTo("/reports/voucher-print"),
+        onClick: () => router.push("/reports/voucher-print"),
       },
       {
         key: "/reports/search-voucher-report",
         label: "Search Voucher",
-        onClick: navigateTo("/reports/search-voucher-report"),
+        onClick: () => router.push("/reports/search-voucher-report"),
       },
       {
         key: "/reports/journal-book-report",
         label: "Journal Book",
-        onClick: navigateTo("/reports/journal-book-report"),
+        onClick: () => router.push("/reports/journal-book-report"),
       },
+
       {
         key: "/reports/ledger-report",
         label: "Ledger",
-        onClick: navigateTo("/reports/ledger-report"),
+        onClick: () => router.push("/reports/ledger-report"),
       },
       {
         key: "/reports/balance-sheet",
         label: "Balance Sheet",
-        onClick: navigateTo("/reports/balance-sheet"),
+        onClick: () => router.push("/reports/balance-sheet"),
       },
+
       {
         key: "/reports/balance-sheet-details",
         label: "Balance Sheet Details",
-        onClick: navigateTo("/reports/balance-sheet-details"),
+        onClick: () => router.push("/reports/balance-sheet-details"),
       },
+
       {
         key: "/reports/payment-receipt",
         label: "Payment Receipt",
-        onClick: navigateTo("/reports/payment-receipt"),
+        onClick: () => router.push("/reports/payment-receipt"),
       },
+
       {
         key: "/reports/income-statement",
         label: "Income Statement",
-        onClick: navigateTo("/reports/income-statement"),
+        onClick: () => router.push("/reports/income-statement"),
       },
+
+      // {
+      //   key: "/reports/statement-of-finance",
+      //   label: "Statement of Finance",
+      //   onClick: () => router.push("/reports/statement-of-finance"),
+      // },
+
       {
         key: "/reports/chart-of-accounts-reports",
         label: "Chart of Accounts",
-        onClick: navigateTo("/reports/chart-of-accounts-reports"),
+        onClick: () => router.push("/reports/chart-of-accounts-reports"),
       },
+
       {
         key: "/reports/cash-flow-statement-report",
         label: "Cash Flow Statement",
-        onClick: navigateTo("/reports/cash-flow-statement-report"),
+        onClick: () => router.push("/reports/cash-flow-statement-report"),
       },
       {
         key: "/reports/account-ratio-report",
         label: "Account Ratio",
-        onClick: navigateTo("/reports/account-ratio-report"),
+        onClick: () => router.push("/reports/account-ratio-report"),
       },
+
       {
         key: "/reports/trial-balance",
         label: "Trial Balance",
-        onClick: navigateTo("/reports/trial-balance"),
+        onClick: () => router.push("/reports/trial-balance"),
       },
+
+      // {
+      //   key: "/reports/monthly-expense-details",
+      //   label: "Monthly Expense Details",
+      //   onClick: () => router.push("/reports/monthly-expense-details"),
+      // },
+
+      // {
+      //   key: "/reports/monthly-expense",
+      //   label: "Monthly Expense",
+      //   onClick: () => router.push("/reports/monthly-expense"),
+      // },
+
+      // {
+      //   key: "/reports/monthly-statement",
+      //   label: "Monthly Expense Statements",
+      //   onClick: () => router.push("/reports/monthly-statement"),
+      // },
+
+      // {
+      //   key: "/reports/sub-ledger-schedule",
+      //   label: "Sub Ledger Schedule",
+      //   onClick: () => router.push("/reports/sub-ledger-schedule"),
+      // },
+      // {
+      //   key: "/reports/sub-ledger-details",
+      //   label: "Sub Ledger Details",
+      //   onClick: () => router.push("/reports/sub-ledger-details"),
+      // },
+      // {
+      //   key: "/reports/sub-ledger-wise-expense",
+      //   label: "Sub Ledger Wise Expense",
+      //   onClick: () => router.push("/reports/sub-ledger-wise-expense"),
+      // },
     ],
   },
+
   {
     key: "user",
     label: "User Management",
@@ -346,17 +390,17 @@ const items = reactive([
       {
         key: "/user",
         label: "User",
-        onClick: navigateTo("/user"),
+        onClick: () => router.push("/user"),
       },
       {
         key: "/role",
         label: "Role",
-        onClick: navigateTo("/role"),
+        onClick: () => router.push("/role"),
       },
       {
         key: "/permission",
         label: "Permission",
-        onClick: navigateTo("/permission"),
+        onClick: () => router.push("/permission"),
       },
     ],
   },
@@ -365,7 +409,6 @@ const items = reactive([
 const normalizeKey = (key) => {
   return key.replace(/^\/+/, "");
 };
-
 function flattenItems(list, out = []) {
   list.forEach((it) => {
     out.push(it);
@@ -442,3 +485,5 @@ watch(
   @apply !pl-10;
 }
 </style>
+
+<!-- i want repotrs chart of account sub ledger financial year expose ratio user device access -->

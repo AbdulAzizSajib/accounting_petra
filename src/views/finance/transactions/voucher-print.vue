@@ -289,38 +289,23 @@
             </tfoot>
           </table>
         </div>
-        <div class="overflow-x-auto mt-16">
-          <table class="w-full signature-table">
-            <tr>
-              <td class="text-sm">
-                <span class="">
-                  Prepared <br />
-                  By
-                </span>
-              </td>
-              <td class="text-sm">
-                <span class="mt-16">
-                  Check <br />
-                  By
-                </span>
-              </td>
-              <td class="text-sm">
-                <span class="mt-16">
-                  Authorised <br />
-                  By
-                </span>
-              </td>
-            </tr>
-            <tr>
-              <td
-                colspan="3"
-                class="border-b-2 border-b-gray-600 pt-10 signature-line"
-              ></td>
-            </tr>
-            <tr>
-              <td class="text-sm" colspan="3">Posted By:</td>
-            </tr>
-          </table>
+        <div class="flex justify-between items-start mt-20">
+          <div class="text-sm">
+            Prepared <br />
+            By
+          </div>
+          <div class="text-sm">
+            Check <br />
+            By
+          </div>
+          <div class="text-sm">
+            Authorised <br />
+            By
+          </div>
+          <div class="text-sm">
+            Posted <br />
+            By
+          </div>
         </div>
       </div>
     </div>
@@ -595,16 +580,6 @@ const printSingle = (index) => {
     padding: 4px;
     text-align: left;
   }
-  .signature-table th, .signature-table td {
-    border: none !important;
-  }
-  .signature-table .signature-line {
-    border-bottom: 2px solid #4a5568 !important;
-    padding-top: 2.5rem;
-  }
-  .mt-16 {
-    margin-top: 2rem !important;
-  }
   th.debit-credit-label{
     text-align: center !important;
     }
@@ -614,6 +589,18 @@ const printSingle = (index) => {
   h2, h3 {
     text-align: center;
     margin: 4px 0;
+  }
+  .flex {
+    display: flex;
+  }
+  .justify-between {
+    justify-content: space-between;
+  }
+  .items-start {
+    align-items: flex-start;
+  }
+  .mt-20 {
+    margin-top: 3rem;
   }
 `,
   });

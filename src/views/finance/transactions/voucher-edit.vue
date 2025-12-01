@@ -444,7 +444,11 @@
                   :disabled="isDebitDisabled"
                   @focus="handleNumberFocus('debit')"
                   @blur="handleNumberBlur('debit')"
-                  @keydown.enter="credit_ref?.focus()"
+                  @keydown.enter="
+                    isCreditDisabled
+                      ? add_button_ref?.$el?.focus()
+                      : credit_ref?.focus()
+                  "
                 />
               </div>
               <div class="flex items-center">
@@ -533,7 +537,9 @@
 
             <!-- Sub Ledger -->
             <td class="px-4 border">
-              <span>{{ entry?.subLedger || "_" }}</span>
+              <span>{{
+                entry?.subLedger === "0" ? "-" : entry?.subLedger
+              }}</span>
             </td>
 
             <!-- Debit -->
@@ -989,12 +995,25 @@ const handlecheckNameToVendorId = () => {
   vendor_id_ref.value?.focus();
 };
 
+// const handleNarrationToDebit = () => {
+//   if (!form.value.narration) {
+//     showNotification("warning", "Please input narration");
+//     return;
+//   } else {
+//     debit_ref.value.focus();
+//   }
+// };
+
 const handleNarrationToDebit = () => {
   if (!form.value.narration) {
     showNotification("warning", "Please input narration");
     return;
   } else {
-    debit_ref.value.focus();
+    if (isDebitDisabled.value) {
+      credit_ref.value?.focus();
+    } else {
+      debit_ref.value?.focus();
+    }
   }
 };
 const handleChequeNoToVendorId = () => {
@@ -1064,14 +1083,20 @@ const handleTypeSelect = async (value) => {
   // console.log("value----->", value);
   await fetchAccount_head(value);
 
-  // Auto-select first account head if data exists
+  // Auto-select first account head if data exists with visual feedback
   if (all_account_head.value.length > 0) {
+    isAutoSelectingAccountHead.value = true;
     form.value.account_head = all_account_head.value[0].AMCode;
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    isAutoSelectingAccountHead.value = false;
 
     // Fetch and auto-select sub-ledger if exists
     await fetchSubLedgerList(form.value.account_head);
     if (all_subLedgerList.value.length > 0) {
+      isAutoSelectingSubLedger.value = true;
       form.value.subLedger = all_subLedgerList.value[0].ASType;
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      isAutoSelectingSubLedger.value = false;
     }
   }
 };
@@ -1080,19 +1105,28 @@ const handleGroupSelect = async (value) => {
   type_ref.value?.focus();
   await fetchType(value);
 
-  // Auto-select first type if data exists
+  // Auto-select first type if data exists with visual feedback
   if (all_Type.value.length > 0) {
+    isAutoSelectingType.value = true;
     form.value.type = all_Type.value[0].ACType1;
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    isAutoSelectingType.value = false;
 
     // Fetch and auto-select first account head if exists
     await fetchAccount_head(form.value.type);
     if (all_account_head.value.length > 0) {
+      isAutoSelectingAccountHead.value = true;
       form.value.account_head = all_account_head.value[0].AMCode;
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      isAutoSelectingAccountHead.value = false;
 
       // Fetch and auto-select sub-ledger if exists
       await fetchSubLedgerList(form.value.account_head);
       if (all_subLedgerList.value.length > 0) {
+        isAutoSelectingSubLedger.value = true;
         form.value.subLedger = all_subLedgerList.value[0].ASType;
+        await new Promise((resolve) => setTimeout(resolve, 300));
+        isAutoSelectingSubLedger.value = false;
       }
     }
   }
