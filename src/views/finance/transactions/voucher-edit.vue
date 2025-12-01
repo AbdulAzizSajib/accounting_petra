@@ -28,7 +28,8 @@
                 >
                 <a-select
                   show-search
-                  allowClear
+                  :allowClear="true"
+                  @clear="handleVoucherTypeClear"
                   :filter-option="false"
                   v-model:value="form.voucherType"
                   ref="voucher_type_ref"
@@ -143,7 +144,10 @@
                     ref="group_code_ref"
                     @keydown.native.enter.stop="onGroupEnter"
                     @keydown.native.esc="onGroupEsc"
-                    class="flex-1 cursor-pointer"
+                    :class="[
+                      'flex-1 cursor-pointer',
+                      { 'auto-selecting': isAutoSelectingGroup },
+                    ]"
                     @select="handleGroupSelect"
                     @search="
                       (event) => {
@@ -181,7 +185,10 @@
                   allowClear
                   :filter-option="false"
                   v-model:value="form.type"
-                  class="flex-1 text-white"
+                  :class="[
+                    'flex-1 text-white',
+                    { 'auto-selecting': isAutoSelectingType },
+                  ]"
                   ref="type_ref"
                   @select="handleTypeSelect"
                   @search="
@@ -221,7 +228,10 @@
                 allow-clear
                 v-model:value="form.account_head"
                 placeholder=""
-                class="flex-1"
+                :class="[
+                  'flex-1',
+                  { 'auto-selecting': isAutoSelectingAccountHead },
+                ]"
                 ref="account_head_ref"
                 @select="handleAccHeadSelect"
                 @keydown.enter="handleAccHeadEnter"
@@ -262,7 +272,10 @@
                   allow-clear
                   v-model:value="form.subLedger"
                   placeholder=""
-                  class="flex-1"
+                  :class="[
+                    'flex-1',
+                    { 'auto-selecting': isAutoSelectingSubLedger },
+                  ]"
                   ref="sub_ledger_ref"
                   @select="person_ref?.focus()"
                   @keydown.enter="handleSubLedgerEnter"
@@ -428,6 +441,7 @@
                   class="flex-1"
                   ref="debit_ref"
                   :class="{ '!bg-green-200 !text-white': isBankPayment }"
+                  :disabled="isDebitDisabled"
                   @focus="handleNumberFocus('debit')"
                   @blur="handleNumberBlur('debit')"
                   @keydown.enter="credit_ref?.focus()"
@@ -440,6 +454,7 @@
                   class="flex-1"
                   ref="credit_ref"
                   :class="{ '!bg-green-200 !text-white': isBankReceipt }"
+                  :disabled="isCreditDisabled"
                   @focus="handleNumberFocus('credit')"
                   @blur="handleNumberBlur('credit')"
                   @keydown.enter="add_button_ref?.$el?.focus()"
@@ -642,16 +657,26 @@ const onVoucherTypeSelect = async (value) => {
       form.value.chequeNo = chequeRegisterList.value[0].ChequeNo;
     }
 
-    // Auto-select first group
+    // Auto-select first group with visual feedback
     await fetchgroup();
     if (all_group.value.length > 0) {
+      isAutoSelectingGroup.value = true;
       form.value.group = all_group.value[0].GroupCode;
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      isAutoSelectingGroup.value = false;
 
       // Auto-select first type
       await fetchType(form.value.group, true);
       if (all_Type.value.length > 0) {
+        isAutoSelectingType.value = true;
+        await new Promise((resolve) => setTimeout(resolve, 300));
+        isAutoSelectingType.value = false;
+
         // Auto-select first account head
         await fetchAccount_head(form.value.type, true);
+        isAutoSelectingAccountHead.value = true;
+        await new Promise((resolve) => setTimeout(resolve, 300));
+        isAutoSelectingAccountHead.value = false;
       }
     }
 
@@ -664,16 +689,26 @@ const onVoucherTypeSelect = async (value) => {
       form.value.chequeNo = chequeRegisterList.value[0].ChequeNo;
     }
 
-    // Auto-select first group
+    // Auto-select first group with visual feedback
     await fetchgroup();
     if (all_group.value.length > 0) {
+      isAutoSelectingGroup.value = true;
       form.value.group = all_group.value[0].GroupCode;
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      isAutoSelectingGroup.value = false;
 
       // Auto-select first type
       await fetchType(form.value.group, true);
       if (all_Type.value.length > 0) {
+        isAutoSelectingType.value = true;
+        await new Promise((resolve) => setTimeout(resolve, 300));
+        isAutoSelectingType.value = false;
+
         // Auto-select first account head
         await fetchAccount_head(form.value.type, true);
+        isAutoSelectingAccountHead.value = true;
+        await new Promise((resolve) => setTimeout(resolve, 300));
+        isAutoSelectingAccountHead.value = false;
       }
     }
   }
@@ -852,6 +887,13 @@ const all_chequeRegisterList = ref([]);
 const creating = ref(false);
 const save_button_ref = ref(false);
 const selectedAMCode = ref("");
+
+// Auto-selection visual feedback
+const isAutoSelectingGroup = ref(false);
+const isAutoSelectingType = ref(false);
+const isAutoSelectingAccountHead = ref(false);
+const isAutoSelectingSubLedger = ref(false);
+
 const fetchAccount_head = async (value, autoSelect = false) => {
   if (!autoSelect) {
     form.value.account_head = "";
@@ -904,6 +946,20 @@ const isBankReceipt = computed(() => {
     selectedVoucher?.Category?.toUpperCase() === "BANK" &&
     form.value.category === "R"
   ); // Assuming 'R' is short for Receipt
+});
+
+const isCreditDisabled = computed(() => {
+  // Disable credit field when:
+  // 1. Voucher Type is BANK and Category is Payment
+  // 2. No entries have been added yet
+  return isBankPayment.value && voucherEntries.value.length === 0;
+});
+
+const isDebitDisabled = computed(() => {
+  // Disable debit field when:
+  // 1. Voucher Type is BANK and Category is Receipt
+  // 2. No entries have been added yet
+  return isBankReceipt.value && voucherEntries.value.length === 0;
 });
 
 const handleNumberFocus = (field) => {
@@ -1211,6 +1267,54 @@ const addEntry = () => {
   }
 
   const f = form.value;
+
+  // Validate credit/debit amounts for BANK vouchers
+  const selectedVoucherForValidation = voucherTypes.value.find(
+    (v) => v.JVType === f.voucherType
+  );
+  const isBankVoucherValidation =
+    selectedVoucherForValidation?.Category?.toUpperCase() === "BANK";
+
+  if (isBankVoucherValidation && f.category === "P" && f.credit > 0) {
+    // For BANK Payment: Check if credit exceeds existing bank contra credit
+    const existingBankEntry = voucherEntries.value.find(
+      (e) =>
+        e.account_head === selectedVoucherForValidation.AMCode && e.isBankContra
+    );
+
+    if (existingBankEntry) {
+      const availableCredit = Number(existingBankEntry.credit);
+      if (f.credit >= availableCredit) {
+        showNotification(
+          "error",
+          `Credit amount must be less than ${availableCredit}. Available credit: ${availableCredit}`
+        );
+        credit_ref.value?.focus();
+        return;
+      }
+    }
+  }
+
+  if (isBankVoucherValidation && f.category === "R" && f.debit > 0) {
+    // For BANK Receipt: Check if debit exceeds existing bank contra debit
+    const existingBankEntry = voucherEntries.value.find(
+      (e) =>
+        e.account_head === selectedVoucherForValidation.AMCode && e.isBankContra
+    );
+
+    if (existingBankEntry) {
+      const availableDebit = Number(existingBankEntry.debit);
+      if (f.debit >= availableDebit) {
+        showNotification(
+          "error",
+          `Debit amount must be less than ${availableDebit}. Available debit: ${availableDebit}`
+        );
+        debit_ref.value?.focus();
+        return;
+      }
+    }
+  }
+
   if (
     f.vendorId &&
     f.vendorId.trim() !== "" &&
@@ -1933,6 +2037,20 @@ const handleKeydown = (e) => {
   }
 };
 
+const handleVoucherTypeClear = () => {
+  form.value.group = "";
+  form.value.category = "";
+  form.value.type = "";
+  form.value.account_head = "";
+  form.value.subLedger = null;
+
+  // Also clear the arrays if needed
+  group.value = [];
+  Type.value = [];
+  account_head.value = [];
+  subLedgerList.value = [];
+};
+
 onMounted(() => {
   fetchVoucherTypes();
   // fetchSubLedgerList();
@@ -1961,5 +2079,38 @@ input:focus,
   background-color: #fff8c4 !important;
   /* light yellow */
   transition: background-color 0.2s ease;
+}
+
+/* Auto-selection visual feedback */
+.auto-selecting .ant-select-selector {
+  background-color: #a7f3d0 !important; /* Light green */
+  border-color: #10b981 !important; /* Green border */
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
+  transition: all 0.3s ease;
+}
+
+.auto-selecting .ant-select-selector:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(16, 185, 129, 0.1),
+    transparent
+  );
+  animation: shimmer 1s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
 </style>
