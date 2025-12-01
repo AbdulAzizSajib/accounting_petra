@@ -267,9 +267,8 @@ const confirmDelete = (voucher) => {
   });
 };
 
-// const from_date = ref(dayjs().startOf("month").format("YYYY-MM-DD"));
-const from_date = ref(null);
-const to_date = ref(null);
+const from_date = ref(dayjs().subtract(7, "day").format("YYYY-MM-DD"));
+const to_date = ref(dayjs().format("YYYY-MM-DD"));
 const dateError = ref(false);
 
 onMounted(async () => {

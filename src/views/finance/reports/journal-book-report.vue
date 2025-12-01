@@ -91,6 +91,10 @@
       </div>
     </div>
 
+    <div v-if="voucherData.length === 0" class="text-center py-8">
+      <a-empty description="No data found " />
+    </div>
+
     <div class="grid grid-cols-12 gap-4">
       <div class="col-span-2"></div>
       <div class="col-span-8">
@@ -423,7 +427,7 @@ const fetchVouchers = async () => {
     voucherData.value = res.data;
     loading.value = false;
   } catch (err) {
-    showNotification("error", err?.response?.data?.message || err?.message);
+    showNotification("warning", err?.response?.data?.message || err?.message);
     loading.value = false;
   }
 };

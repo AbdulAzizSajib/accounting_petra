@@ -126,6 +126,10 @@
       </div>
     </div>
 
+    <div v-if="allData.length === 0" class="text-center py-8">
+      <a-empty description="No data found " />
+    </div>
+
     <div v-if="allData.length" ref="printSection">
       <div class="mt-8" id="voucherSearchToPrint">
         <!-- Export Buttons -->

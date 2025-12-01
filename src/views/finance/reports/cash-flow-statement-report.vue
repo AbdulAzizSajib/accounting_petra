@@ -34,6 +34,10 @@
       <a-spin></a-spin>
     </div>
 
+    <div v-if="allData.length === 0" class="text-center py-8">
+      <a-empty description="No data found " />
+    </div>
+
     <div class="" v-if="allData.length">
       <!-- report table -->
       <div
@@ -130,7 +134,7 @@
                   {{ data?.Details || "_" }}
                 </td>
                 <td class="px-2 py-1.5 text-sm border border-gray-700 text-end">
-                  {{ data?.Amount || "_" }}
+                  {{ data?.Amount ? formatNumber(Number(data?.Amount)) : "0" }}
                 </td>
               </tr>
             </tbody>

@@ -118,6 +118,10 @@
 
     <hr class="my-4" />
 
+    <div v-if="reportData.length === 0" class="text-center py-8">
+      <a-empty description="No data found " />
+    </div>
+
     <div
       v-for="(data, index) in reportData"
       :key="index"
@@ -435,7 +439,7 @@ const getReport = async () => {
   } catch (err) {
     report_Loading.value = false;
     reportData.value = [];
-    showNotification("error", err?.response?.data?.message || err?.message);
+    showNotification("warning", err?.response?.data?.message || err?.message);
   }
 };
 

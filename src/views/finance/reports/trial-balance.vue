@@ -3,9 +3,7 @@
     <div class="flex items-center">
       <h1 class="text-2xl font-bold text-primary">Trial Balance</h1>
 
-      <div
-        class="grid filter-grid m-auto grid-cols-12 border border-gray-200 rounded-md py-4 px-3 gap-2 mb-2"
-      >
+      <div class="grid filter-grid m-auto grid-cols-12 py-4 px-3 gap-2 mb-2">
         <div class="col-span-4">
           <div class="flex items-center">
             <label for="period" class="w-36 font-bold">Form Date:</label>
@@ -53,6 +51,10 @@
 
     <div v-if="loading" class="flex justify-center mt-4">
       <a-spin></a-spin>
+    </div>
+
+    <div v-if="allData.length === 0" class="text-center py-8">
+      <a-empty description="No data found " />
     </div>
 
     <!-- Export Buttons -->
