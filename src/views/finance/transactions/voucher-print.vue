@@ -174,8 +174,6 @@
                 <th class="border border-gray-400"></th>
                 <th class="border border-gray-400"></th>
                 <th class="border border-gray-400"></th>
-                <th class="border border-gray-400"></th>
-                <th class="border border-gray-400"></th>
               </tr>
               <tr class="text-center">
                 <th
@@ -199,11 +197,6 @@
                   SUB Ledger
                 </th>
                 <th
-                  class="uppercase w-2 border border-gray-400 px-3 py-1 text-sm font-normal"
-                >
-                  SUB Ledger Name
-                </th>
-                <th
                   class="uppercase w-2 border border-gray-400 px-3 py-1 text-sm font-normal debit-credit-label"
                 >
                   DEBIT-TAKA
@@ -217,10 +210,10 @@
             </thead>
             <tbody>
               <tr v-if="report_Loading">
-                <td colspan="6"><a-skeleton /></td>
+                <td colspan="5"><a-skeleton /></td>
               </tr>
               <tr v-if="!report_Loading && !data?.length">
-                <td colspan="6"><a-empty /></td>
+                <td colspan="5"><a-empty /></td>
               </tr>
 
               <tr v-for="item in data">
@@ -234,11 +227,11 @@
                   {{ item?.Narration || "-" }}
                 </td>
                 <td class="capitalize border border-gray-400 px-3 py-1 text-sm">
-                  -
+                  {{ item?.AsCode === "0" ? "-" : item?.AsCode }}
                 </td>
-                <td class="capitalize border border-gray-400 px-3 py-1 text-sm">
+                <!-- <td class="capitalize border border-gray-400 px-3 py-1 text-sm">
                   -
-                </td>
+                </td> -->
                 <td
                   class="capitalize border border-gray-400 px-3 py-1 text-sm text-right debit-credit-value"
                 >
@@ -257,7 +250,7 @@
                   class="capitalize border border-t-2 border-gray-400 border-t-gray-600 px-3 py-1 text-sm"
                 ></td>
                 <td
-                  colspan="4"
+                  colspan="3"
                   class="capitalize border border-t-2 border-gray-400 border-t-gray-600 px-3 py-1 text-sm text-right"
                 >
                   TOTAL ===>
@@ -275,7 +268,7 @@
               </tr>
               <tr>
                 <td
-                  colspan="7"
+                  colspan="6"
                   class="capitalize border border-gray-400 px-3 py-1 text-sm font-semibold"
                 >
                   {{ numberToTakaWords(calculateTotal(data, "Debit")) }}
@@ -283,17 +276,17 @@
               </tr>
               <tr>
                 <td
-                  colspan="7"
+                  colspan="6"
                   class="border border-gray-400 px-3 py-1 text-xs"
                 >
                   <!-- {{ data[0]?.Narration }} -->
-                  {{ "_" }}
+                  {{ "-" }}
                 </td>
               </tr>
             </tfoot>
           </table>
         </div>
-        <div class="flex justify-between items-start mt-20">
+        <div class="flex justify-between items-start mt-28">
           <div class="text-sm">
             Prepared <br />
             By
@@ -603,8 +596,8 @@ const printSingle = (index) => {
   .items-start {
     align-items: flex-start;
   }
-  .mt-20 {
-    margin-top: 3rem;
+  .mt-28 {
+    margin-top: 125px;
   }
 `,
   });

@@ -758,6 +758,45 @@ const populateFormFromEntry = async (entry, index) => {
   // Set editing index FIRST
   editingIndex.value = index;
 
+  // Check if this is a BANK voucher and adjust bank contra entry
+  const selectedVoucher = voucherTypes.value.find(
+    (v) => v.JVType === form.value.voucherType
+  );
+  const isBankVoucher = selectedVoucher?.Category?.toUpperCase() === "BANK";
+
+  if (isBankVoucher) {
+    const bankContraEntry = voucherEntries.value.find(
+      (e) => e.isBankContra && e.account_head === selectedVoucher.AMCode
+    );
+
+    if (bankContraEntry) {
+      // Adjust bank contra based on category
+      if (form.value.category === "P") {
+        // Payment: subtract debit from bank credit, add back credit to bank credit
+        bankContraEntry.credit =
+          Number(bankContraEntry.credit) -
+          Number(entry.debit || 0) +
+          Number(entry.credit || 0);
+      } else if (form.value.category === "R") {
+        // Receipt: subtract credit from bank debit, add back debit to bank debit
+        bankContraEntry.debit =
+          Number(bankContraEntry.debit) -
+          Number(entry.credit || 0) +
+          Number(entry.debit || 0);
+      }
+
+      // Remove bank contra if it becomes 0
+      if (bankContraEntry.credit <= 0 && bankContraEntry.debit <= 0) {
+        const bankIndex = voucherEntries.value.findIndex(
+          (e) => e.isBankContra && e.account_head === selectedVoucher.AMCode
+        );
+        if (bankIndex !== -1) {
+          voucherEntries.value.splice(bankIndex, 1);
+        }
+      }
+    }
+  }
+
   // Extract group and type from account_head
   // Format: XXX-XXXXX where first 2 digits are group, first 3 digits are type
   const accountCode = entry.account_head;
@@ -1408,17 +1447,9 @@ const addEntry = () => {
       }
 
       if (existingBankEntry) {
-        // If editing, subtract the original debit first, then add the new debit
-        if (isEditing) {
-          existingBankEntry.credit =
-            Number(existingBankEntry.credit) -
-            Number(originalDebit.value) +
-            Number(f.debit);
-        } else {
-          // Not editing, just add the new debit
-          existingBankEntry.credit =
-            Number(existingBankEntry.credit) + Number(f.debit);
-        }
+        // Just add the new debit (editing already adjusted the bank contra)
+        existingBankEntry.credit =
+          Number(existingBankEntry.credit) + Number(f.debit);
       } else {
         // Create new bank contra entry at the bottom
         const bankContraEntry = {
@@ -1460,16 +1491,8 @@ const addEntry = () => {
 
       // User entered credit - subtract from bank credit (rare case)
       if (existingBankEntry) {
-        // If editing, add back the original credit first, then subtract the new credit
-        if (isEditing) {
-          existingBankEntry.credit =
-            Number(existingBankEntry.credit) +
-            Number(originalCredit.value) -
-            Number(f.credit);
-        } else {
-          existingBankEntry.credit =
-            Number(existingBankEntry.credit) - Number(f.credit);
-        }
+        existingBankEntry.credit =
+          Number(existingBankEntry.credit) - Number(f.credit);
 
         // Remove bank entry if credit becomes 0 or negative
         if (existingBankEntry.credit <= 0) {
@@ -1501,17 +1524,9 @@ const addEntry = () => {
       }
 
       if (existingBankEntry) {
-        // If editing, subtract the original credit first, then add the new credit
-        if (isEditing) {
-          existingBankEntry.debit =
-            Number(existingBankEntry.debit) -
-            Number(originalCredit.value) +
-            Number(f.credit);
-        } else {
-          // Not editing, just add the new credit
-          existingBankEntry.debit =
-            Number(existingBankEntry.debit) + Number(f.credit);
-        }
+        // Just add the new credit (editing already adjusted the bank contra)
+        existingBankEntry.debit =
+          Number(existingBankEntry.debit) + Number(f.credit);
       } else {
         // Create new bank contra entry at the bottom
         const bankContraEntry = {
@@ -1553,16 +1568,8 @@ const addEntry = () => {
 
       // User entered debit - subtract from bank debit (rare case)
       if (existingBankEntry) {
-        // If editing, add back the original debit first, then subtract the new debit
-        if (isEditing) {
-          existingBankEntry.debit =
-            Number(existingBankEntry.debit) +
-            Number(originalDebit.value) -
-            Number(f.debit);
-        } else {
-          existingBankEntry.debit =
-            Number(existingBankEntry.debit) - Number(f.debit);
-        }
+        existingBankEntry.debit =
+          Number(existingBankEntry.debit) - Number(f.debit);
 
         // Remove bank entry if debit becomes 0 or negative
         if (existingBankEntry.debit <= 0) {
