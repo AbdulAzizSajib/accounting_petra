@@ -44,22 +44,21 @@
         id="trialBalanceToPrint"
         class="p-6 bg-white rounded-lg shadow-md max-w-6xl mx-auto border"
       >
-        <!-- @click="exportExcel" -->
-        <!-- <div class="flex justify-end gap-2 pb-4">
-          <button class="" :disabled="excelLoading">
+        <div class="flex justify-end gap-2 pb-4">
+          <!-- <button class="" :disabled="excelLoading" @click="exportExcel">
             <a-spin v-if="excelLoading" size="small" class="spinner-white" />
             <span>
               <Icon icon="vscode-icons:file-type-excel" class="text-4xl" />
             </span>
-          </button>
+          </button> -->
 
-          <button :disabled="pdfLoading">
+          <button :disabled="pdfLoading" @click="exportPDF">
             <a-spin v-if="pdfLoading" size="small" class="spinner-white" />
             <span v-if="!pdfLoading">
               <Icon icon="vscode-icons:file-type-pdf2" class="text-4xl" />
             </span>
           </button>
-        </div> -->
+        </div>
         <!-- header area start -->
         <div class="flex justify-between mb-4 items-center space-x-10">
           <div class="text-left mb-6">
@@ -474,29 +473,17 @@ const exportPDF = () => {
 
         /* Column widths and alignment */
         table.table-print tbody td:nth-child(1) {
-          width: 5% !important;
+          width: 10% !important;
           text-align: right !important;
         }
 
         table.table-print tbody td:nth-child(2) {
-          width: 15% !important;
+          width: 60% !important;
           text-align: left !important;
         }
 
         table.table-print tbody td:nth-child(3) {
-          width: 45% !important;
-          text-align: left !important;
-        }
-
-        table.table-print tbody td:nth-child(4),
-        table.table-print tfoot td:nth-child(2) {
-          width: 17.5% !important;
-          text-align: right !important;
-        }
-
-        table.table-print tbody td:nth-child(5),
-        table.table-print tfoot td:nth-child(3) {
-          width: 17.5% !important;
+          width: 30% !important;
           text-align: right !important;
         }
 

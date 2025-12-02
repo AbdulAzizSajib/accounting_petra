@@ -52,6 +52,7 @@
                 <th class="border border-gray-400"></th>
                 <th class="border border-gray-400"></th>
                 <th class="border border-gray-400"></th>
+                <th class="border border-gray-400"></th>
               </tr>
               <tr class="text-center">
                 <th
@@ -400,6 +401,13 @@ const printSingle = (index) => {
     border: 1px solid #ccc;
     padding: 4px;
     text-align: left;
+  }
+  thead tr:first-child th {
+    border: 1px solid #999 !important;
+  }
+  thead tr:nth-child(2) th {
+    text-align: center !important;
+    border: 1px solid #999 !important;
   }
   th.debit-credit-label{
     text-align: center !important;
