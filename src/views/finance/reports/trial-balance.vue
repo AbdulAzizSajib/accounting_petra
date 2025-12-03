@@ -105,7 +105,7 @@
             <p class="text-base text-gray-700 font-semibold">
               P-ERP Food and Snacks
             </p>
-            <p class="text-base text-gray-700">As on {{ formattedDate }}</p>
+            <!-- <p class="text-base text-gray-700">As on {{ formattedDate }}</p> -->
           </div>
           <div>
             <table class="w-[200px] table-auto border-collapse">

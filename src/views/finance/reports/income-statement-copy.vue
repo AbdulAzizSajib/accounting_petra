@@ -56,111 +56,64 @@
       </div>
     </div>
 
-    <div
-      v-if="voucherData"
-      id="receiptPaymentReport"
-      class="w-full max-w-[72rem] mx-auto p-8 bg-white border border-gray-200"
-    >
+    <div v-if="voucherData" id="receiptPaymentReport" class="report-container">
       <!-- Header Section -->
 
       <!-- Organization Name -->
-      <div class="text-center my-6 relative">
-        <h2 class="text-3xl font-bold mb-2">P-ERP Food and Snacks</h2>
-        <p class="text-base underline">
-          145, Siddique Bazar (1st Floor), Dhaka-1000.
-        </p>
-
-        <div class="absolute top-0 right-0 no-print">
-          <button @click="printReport">
-            <Icon icon="vscode-icons:file-type-pdf2" width="30" height="30" />
-          </button>
-        </div>
+      <div class="org-section">
+        <h2 class="org-name">P-ERP Food and Snacks</h2>
+        <p class="org-address">145, Siddique Bazar (1st Floor), Dhaka-1000.</p>
       </div>
 
-      <p class="text-sm text-center">
-        {{ formatRange(formData.DateFrom, formData.DateTo) }}
-      </p>
-
       <!-- Statement Title -->
-      <div class="text-center my-6">
-        <h3 class="text-lg font-semibold inline-block px-4 py-1">
-          Statements of Receipts & Payments
-        </h3>
+      <div class="statement-title-section">
+        <h3 class="statement-title">Statements of Receipts & Payments</h3>
       </div>
 
       <!-- Financial Table -->
-      <table class="w-full border-collapse">
+      <table class="report-table">
         <!-- Table Header -->
         <thead>
           <tr>
-            <th
-              class="border border-black p-2 text-center font-bold"
-              rowspan="2"
-            >
-              Sl. #
-            </th>
-            <th
-              class="border border-black p-2 text-center font-bold"
-              rowspan="2"
-            >
-              Particulars
-            </th>
-            <th
-              class="border border-black p-2 text-center font-bold"
-              rowspan="2"
-            >
-              Notes/Sch.
-            </th>
-            <th
-              class="border border-black p-2 text-center font-bold"
-              colspan="2"
-            >
-              Amount (Tk.)
-            </th>
+            <th class="" rowspan="2">Sl. #</th>
+            <th class="" rowspan="2">Particulars</th>
+            <th class="" rowspan="2">Notes/Sch.</th>
+            <th class="" colspan="2">Amount (Tk.)</th>
           </tr>
           <tr>
-            <th
-              class="border border-black p-2 text-center font-bold"
-              colspan="2"
-            >
-              2024-2025
-            </th>
+            <th class="" colspan="2">2024-2025</th>
           </tr>
         </thead>
         <tbody>
           <!-- A. Income -->
           <template v-if="A_data?.length > 0">
             <tr>
-              <td class="align-top py-1 px-2 text-center font-bold">
+              <td class="table-cell text-center font-bold">
                 {{ A_data[0]?.GroupSerial }}
               </td>
-              <td class="align-top py-1 px-2 font-bold underline">
+              <td class="table-cell font-bold text-underline">
                 {{ A_data[0]?.GroupType }} :
               </td>
-              <td class="align-top py-1 px-2"></td>
-              <td class="align-top py-1 px-2"></td>
-              <td class="align-top py-1 px-2"></td>
+              <td class="table-cell"></td>
+              <td class="table-cell"></td>
+              <td class="table-cell"></td>
             </tr>
             <tr v-for="(item, index) in A_data" :key="`a-${index}`">
-              <td class="align-top py-1 px-2"></td>
-              <td class="align-top py-1 px-2 pl-8">
-                {{ item?.AccountDetails }}
-              </td>
-              <td class="align-top py-1 px-2 text-center"></td>
-              <td class="align-top py-1 px-2 text-right"></td>
-              <td class="align-top py-1 px-2 text-right">
+              <td class="table-cell"></td>
+              <td class="table-cell indent-text">{{ item?.AccountDetails }}</td>
+              <td class="table-cell text-center"></td>
+              <td class="table-cell text-right"></td>
+              <td class="table-cell text-right">
                 {{ formatAmount(item?.Amount) }}
               </td>
             </tr>
             <!-- sum of A -->
             <tr>
-              <td class="align-top py-1 px-2"></td>
-              <td class="align-top py-1 px-2 font-bold">Total Income</td>
-              <td class="align-top py-1 px-2"></td>
-              <td class="align-top py-1 px-2"></td>
-              <td
-                class="align-top py-1 px-2 text-right border-t border-b border-black font-semibold"
-              >
+              <td class="table-cell"></td>
+              <td class="table-cell font-bold">Total Income</td>
+              <td class="table-cell"></td>
+              <td class="table-cell"></td>
+              <td class="table-cell text-right total-line">
                 <!-- {{ calculateTotals(A_data) }} -->
                 {{ formatAmount(A_total) }}
               </td>
@@ -170,62 +123,46 @@
           <!-- B. Expenditure -->
           <template v-if="B_data?.length > 0">
             <tr>
-              <td class="align-top py-1 px-2 text-center font-bold">
+              <td class="table-cell text-center font-bold">
                 {{ B_data[0]?.GroupSerial }}
               </td>
-              <td class="align-top py-1 px-2 font-bold underline">
+              <td class="table-cell font-bold text-underline">
                 {{ B_data[0]?.GroupType }}
               </td>
-              <td class="align-top py-1 px-2"></td>
-              <td class="align-top py-1 px-2"></td>
-              <td class="align-top py-1 px-2"></td>
+              <td class="table-cell"></td>
+              <td class="table-cell"></td>
+              <td class="table-cell"></td>
             </tr>
             <tr v-for="(item, index) in B_data" :key="`b-${index}`">
-              <td class="align-top py-1 px-2"></td>
-              <td class="align-top py-1 px-2 pl-8">
-                {{ item?.AccountDetails }}
-              </td>
-              <td class="align-top py-1 px-2 text-center"></td>
-              <td class="align-top py-1 px-2 text-center"></td>
-              <td class="align-top py-1 px-2 text-right">
+              <td class="table-cell"></td>
+              <td class="table-cell indent-text">{{ item?.AccountDetails }}</td>
+              <td class="table-cell text-center"></td>
+              <td class="table-cell text-center"></td>
+              <td class="table-cell text-right">
                 {{ formatAmount(item?.Amount) }}
               </td>
             </tr>
             <!-- sum of B -->
             <tr>
-              <td class="align-top py-1 px-2"></td>
-              <td class="align-top py-1 px-2 font-bold"></td>
-              <td class="align-top py-1 px-2"></td>
-              <td class="align-top py-1 px-2"></td>
-              <td
-                class="align-top py-1 px-2 text-right border-t font-bold border-black"
-              >
+              <td class="table-cell"></td>
+              <td class="table-cell font-bold"></td>
+              <td class="table-cell"></td>
+              <td class="table-cell"></td>
+              <td class="table-cell text-right border-t font-bold border-black">
                 {{ formatAmount(B_total) }}
               </td>
             </tr>
           </template>
 
-          <!-- C.-->
+          <!-- C. Fund available for Utilization -->
           <template v-if="C_data?.length > 0">
-            <tr>
-              <td class="align-top py-1 px-2 text-center font-bold">
-                {{ C_data[0]?.GroupSerial }}
-              </td>
-              <td class="align-top py-1 px-2 font-bold underline">
-                {{ C_data[0]?.GroupType }}
-              </td>
-              <td class="align-top py-1 px-2"></td>
-              <td class="align-top py-1 px-2"></td>
-              <td class="align-top py-1 px-2"></td>
-            </tr>
-            <tr v-for="(item, index) in C_data" :key="`c-${index}`">
-              <td class="align-top py-1 px-2"></td>
-              <td class="align-top py-1 px-2 pl-8">
-                {{ item?.AccountDetails }}
-              </td>
-              <td class="align-top py-1 px-2 text-center"></td>
-              <td class="align-top py-1 px-2 text-center"></td>
-              <td class="align-top py-1 px-2 text-right border-b border-black">
+            <tr class="" v-for="(item, index) in C_data" :key="`c-${index}`">
+              <td class="table-cell font-bold">{{ item?.GroupSerial }}</td>
+              <td class="table-cell indent-text">{{ item?.AccountDetails }}</td>
+              <td class="table-cell indent-text"></td>
+              <td class="table-cell text-center"></td>
+
+              <td class="table-cell text-right border-b border-black">
                 ({{ formatAmount(item?.Amount) }})
               </td>
             </tr>
@@ -233,14 +170,12 @@
           <!-- D. Payment during the year -->
           <template v-if="D_data?.length > 0">
             <tr v-for="(item, index) in D_data" :key="`d-${index}`">
-              <td class="align-top py-1 px-2">{{ D_data[0]?.ReportCode }}</td>
-              <td class="align-top py-1 px-2 pl-8">
-                {{ item?.AccountDetails }}
-              </td>
-              <td class="align-top py-1 px-2"></td>
-              <td class="align-top py-1 px-2"></td>
+              <td class="table-cell">{{ D_data[0]?.ReportCode }}</td>
+              <td class="table-cell indent-text">{{ item?.AccountDetails }}</td>
+              <td class="table-cell"></td>
+              <td class="table-cell"></td>
               <td
-                class="align-top py-1 px-2 text-right border-b-[3px] border-double border-black font-bold"
+                class="table-cell text-right border-b border-black font-bold border-double"
               >
                 {{ formatAmount(item?.Amount) }}
               </td>
@@ -249,17 +184,17 @@
         </tbody>
       </table>
 
-      <div class="mt-12">
-        <p class="text-center text-lg mb-12">
+      <div class="footer-section">
+        <p class="footer-text">
           This is the statement of Receipts & Payments prepared referred to in
           our separate report of even date
         </p>
-        <div class="flex justify-between mt-16">
-          <div class="flex-1 text-base">
+        <div class="signature-section">
+          <div class="date-section">
             <p>Dated, Dhaka</p>
           </div>
-          <div class="text-center text-base p-5">
-            <!-- <p class="font-bold uppercase">(MASUD ALTAF & CO.)</p> -->
+          <div class="auditor-section p-5">
+            <!-- <p class="auditor-name">(MASUD ALTAF & CO.)</p> -->
             <!-- <p>Chartered Accountants</p> -->
             <!-- Need Report Format -->
           </div>
@@ -351,28 +286,10 @@ const formatAmount = (amount) => {
   });
 };
 
-// Helpers to format dates for display like `1st November 2025`
-const getOrdinal = (d) => {
-  const j = d % 10,
-    k = d % 100;
-  if (k >= 11 && k <= 13) return "th";
-  if (j === 1) return "st";
-  if (j === 2) return "nd";
-  if (j === 3) return "rd";
-  return "th";
-};
-
-const formatDisplayDate = (date) => {
-  if (!date) return "";
-  const d = dayjs(date);
-  if (!d.isValid()) return date;
-  const dayNum = d.date();
-  const ord = getOrdinal(dayNum);
-  return `${dayNum}${ord} ${d.format("MMMM YYYY")}`;
-};
-
-const formatRange = (from, to) => {
-  return `${formatDisplayDate(from)} to ${formatDisplayDate(to)}`;
+const calculateTotals = (data) => {
+  const total =
+    data?.reduce((acc, item) => acc + Number(item?.Amount || 0), 0) || 0;
+  return formatAmount(total);
 };
 
 onMounted(() => {
@@ -421,7 +338,7 @@ const exportExcel = () => {
   }
 };
 
-const printReport = () => {
+const exportPDF = () => {
   printJS({
     printable: "receiptPaymentReport",
     type: "html",
@@ -431,199 +348,227 @@ const printReport = () => {
         size: A4;
         margin: 15mm;
       }
-
+      
       @media print {
         /* Hide non-print elements */
         .no-print {
           display: none !important;
         }
-
+        
         /* Base styles */
-        * {
-          -webkit-print-color-adjust: exact !important;
-          print-color-adjust: exact !important;
-        }
-
         body {
           font-family: Arial, sans-serif !important;
           font-size: 11px !important;
-          line-height: 1.4 !important;
+          line-height: 1.3 !important;
           margin: 0 !important;
           padding: 0 !important;
-          color: #000 !important;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
         }
-
+        
         /* Container */
-        #receiptPaymentReport {
+        .report-container {
+          width: 100% !important;
           max-width: 100% !important;
-          padding: 10mm !important;
+          padding: 0 !important;
           margin: 0 !important;
-          background: white !important;
-          border: none !important;
         }
-
-        /* Organization header */
-        h2 {
-          font-size: 20px !important;
-          font-weight: bold !important;
-          margin-bottom: 5px !important;
-        }
-
-        h3 {
-          font-size: 14px !important;
-          font-weight: 600 !important;
-        }
-
-        p {
-          margin: 3px 0 !important;
-        }
-
-        /* Center alignment */
-        .text-center {
-          text-align: center !important;
-        }
-
-        /* Spacing */
-        .my-6 {
-          margin-top: 15px !important;
+        
+        /* Header Section */
+        .report-header {
+          display: flex !important;
+          justify-content: space-between !important;
           margin-bottom: 15px !important;
         }
-
-        .mb-2 {
-          margin-bottom: 5px !important;
+        
+        .header-left {
+          flex: 1 !important;
         }
-
-        .mt-12 {
-          margin-top: 30px !important;
+        
+        .header-right {
+          text-align: right !important;
+          font-size: 9px !important;
+          line-height: 1.2 !important;
         }
-
-        .mt-16 {
-          margin-top: 40px !important;
+        
+        .header-right p {
+          margin: 1px 0 !important;
         }
-
-        /* Table styles */
-        table {
+        
+        .company-name {
+          font-size: 14px !important;
+          font-weight: bold !important;
+          margin: 0 0 3px 0 !important;
+        }
+        
+        .company-subtitle {
+          font-size: 10px !important;
+          margin: 0 !important;
+        }
+        
+        /* Organization Section */
+        .org-section {
+          text-align: center !important;
+          margin: 15px 0 !important;
+        }
+        
+        .org-name {
+          font-size: 20px !important;
+          font-weight: bold !important;
+          margin: 0 0 5px 0 !important;
+        }
+        
+        .org-address {
+          font-size: 11px !important;
+          text-decoration: underline !important;
+          margin: 0 !important;
+        }
+        
+        /* Statement Title */
+        .statement-title-section {
+          text-align: center !important;
+          margin: 20px 0 15px 0 !important;
+        }
+        
+        .statement-title {
+          font-size: 13px !important;
+          font-weight: 600 !important;
+          margin: 0 !important;
+          display: inline-block !important;
+        }
+        
+        /* Table Styles */
+        .report-table {
           width: 100% !important;
           border-collapse: collapse !important;
           margin: 10px 0 !important;
         }
-
-        thead th {
+        
+        .report-table thead th {
           border: 1px solid #000 !important;
-          padding: 8px !important;
+          padding: 5px !important;
+          font-size: 10px !important;
           font-weight: bold !important;
           text-align: center !important;
           background-color: #fff !important;
-          font-size: 11px !important;
         }
-
-        tbody td {
-          padding: 4px 8px !important;
-          font-size: 11px !important;
+        
+        .report-table tbody td {
+          padding: 3px 5px !important;
+          font-size: 10px !important;
+          border: none !important;
+        }
+        
+        /* Column widths */
+        .col-sl {
+          width: 60px !important;
+        }
+        
+        .col-particulars {
+          width: auto !important;
+          text-align: left !important;
+          padding-left: 8px !important;
+        }
+        
+        .col-notes {
+          width: 100px !important;
+        }
+        
+        .col-amount-header {
+          width: 150px !important;
+        }
+        
+        .col-amount-year {
+          border-top: 1px solid #000 !important;
+        }
+        
+        /* Table cell styles */
+        .table-cell {
           vertical-align: top !important;
         }
-
-        /* Text alignment */
+        
         .text-center {
           text-align: center !important;
         }
-
+        
         .text-right {
           text-align: right !important;
+          padding-right: 8px !important;
         }
-
-        /* Font weights */
+        
         .font-bold {
           font-weight: bold !important;
         }
-
-        .font-semibold {
-          font-weight: 600 !important;
-        }
-
-        /* Text decoration */
-        .underline {
+        
+        .text-underline {
           text-decoration: underline !important;
         }
-
-        /* Padding */
-        .py-1 {
-          padding-top: 4px !important;
-          padding-bottom: 4px !important;
-        }
-
-        .px-2 {
-          padding-left: 8px !important;
-          padding-right: 8px !important;
-        }
-
-        .pl-8 {
+        
+        .indent-text {
           padding-left: 25px !important;
         }
-
-        .p-2 {
-          padding: 8px !important;
-        }
-
-        /* Borders */
-        .border {
-          border-width: 1px !important;
-        }
-
-        .border-black {
-          border-color: #000 !important;
-        }
-
-        .border-t {
+        
+        /* Total lines */
+        .total-line {
           border-top: 1px solid #000 !important;
-        }
-
-        .border-b {
           border-bottom: 1px solid #000 !important;
+          font-weight: 600 !important;
+          padding: 3px 8px 3px 5px !important;
         }
-
-        .border-b-\\[3px\\] {
-          border-bottom-width: 3px !important;
+        
+        .grand-total {
+          border-top: 2px solid #000 !important;
+          border-bottom: 3px double #000 !important;
+          font-weight: bold !important;
+          padding: 4px 8px 4px 5px !important;
         }
-
-        .border-double {
-          border-bottom-style: double !important;
+        
+        /* Footer Section */
+        .footer-section {
+          margin-top: 40px !important;
         }
-
-        /* Alignment */
-        .align-top {
-          vertical-align: top !important;
+        
+        .footer-text {
+          text-align: center !important;
+          font-size: 11px !important;
+          margin: 0 0 40px 0 !important;
+          line-height: 1.4 !important;
         }
-
-        /* Footer section */
-        .flex {
+        
+        .signature-section {
           display: flex !important;
-        }
-
-        .justify-between {
           justify-content: space-between !important;
+          align-items: flex-end !important;
+          margin-top: 50px !important;
         }
-
-        .flex-1 {
+        
+        .date-section {
           flex: 1 !important;
+          font-size: 11px !important;
         }
-
+        
+        .auditor-section {
+          text-align: center !important;
+          font-size: 11px !important;
+        }
+        
+        .auditor-name {
+          font-weight: bold !important;
+          text-transform: uppercase !important;
+          margin: 0 0 2px 0 !important;
+        }
+        
         /* Page break control */
-        table {
+        .report-table {
           page-break-inside: auto !important;
         }
-
-        tr {
+        
+        .report-table tr {
           page-break-inside: avoid !important;
-          page-break-after: auto !important;
         }
-
-        thead {
+        
+        .report-table thead {
           display: table-header-group !important;
-        }
-
-        tbody {
-          display: table-row-group !important;
         }
       }
     `,
@@ -665,3 +610,179 @@ const handleDateToChange = () => {
   }
 };
 </script>
+
+<style scoped>
+/* Screen styles */
+.report-container {
+  width: 100%;
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 2rem;
+  background: white;
+  border: 1px solid #e5e7eb;
+}
+
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.header-right {
+  text-align: right;
+  font-size: 0.875rem;
+}
+
+.header-right p {
+  margin: 0.125rem 0;
+}
+
+.company-name {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+}
+
+.company-subtitle {
+  font-size: 0.875rem;
+}
+
+.org-section {
+  text-align: center;
+  margin: 1.5rem 0;
+}
+
+.org-name {
+  font-size: 1.875rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.org-address {
+  font-size: 1rem;
+  text-decoration: underline;
+}
+
+.statement-title-section {
+  text-align: center;
+  margin: 1.5rem 0;
+}
+
+.statement-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  display: inline-block;
+  padding: 0.25rem 1rem;
+}
+
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.report-table thead th {
+  border: 1px solid #000;
+  /* padding: 0.5rem; */
+  text-align: center;
+  font-weight: bold;
+}
+
+.report-table tbody td {
+  padding: 0.25rem 0.5rem;
+}
+
+.table-cell {
+  vertical-align: top;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.font-bold {
+  font-weight: bold;
+}
+
+.text-underline {
+  text-decoration: underline;
+}
+
+.indent-text {
+  padding-left: 2rem;
+}
+
+.total-line {
+  border-top: 1px solid #000;
+  border-bottom: 1px solid #000;
+  font-weight: 600;
+}
+
+.grand-total {
+  border-top: 2px solid #000;
+  border-bottom: 3px double #000;
+  font-weight: bold;
+}
+
+.footer-section {
+  margin-top: 3rem;
+}
+
+.footer-text {
+  text-align: center;
+  font-size: 1.125rem;
+  margin-bottom: 3rem;
+}
+
+.signature-section {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4rem;
+}
+
+.auditor-section {
+  text-align: center;
+}
+
+.auditor-name {
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+/* Ant Design overrides */
+.ant-input-number-input {
+  @apply !text-right !pr-10;
+}
+
+/* Scrollbar hide */
+.overflow-x-auto::-webkit-scrollbar,
+.overflow-y-auto::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.overflow-x-auto,
+.overflow-y-auto {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+/* Responsive adjustments */
+@media (min-width: 992px) and (max-width: 1400px) {
+  .filter-grid.max-w-6xl {
+    max-width: 62rem !important;
+  }
+
+  .print-view.max-w-6xl {
+    max-width: 62rem !important;
+  }
+
+  .voucher-page-title {
+    font-size: 14px !important;
+  }
+}
+</style>

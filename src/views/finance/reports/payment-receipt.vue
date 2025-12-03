@@ -19,7 +19,6 @@
           <div class="col-span-4">
             <div class="flex items-center">
               <label for="period" class="w-36 font-bold">Form Date:</label>
-              <!-- v-model:value="formData.DateFrom" -->
               <a-date-picker
                 v-model:value="formData.DateFrom"
                 format="DD/MM/YYYY"
@@ -31,7 +30,6 @@
           <div class="col-span-4">
             <div class="flex items-center">
               <label for="period" class="w-36 font-bold">To Date:</label>
-              <!-- v-model:value="formData.DateTo" -->
               <a-date-picker
                 v-model:value="formData.DateTo"
                 format="DD/MM/YYYY"
@@ -46,74 +44,116 @@
                 >Preview</a-button
               >
             </div>
-            <!-- <div>
-              <a-button type="primary" @click="exportPDF" :loading="loading"
-                >PDF</a-button
-              >
-            </div> -->
           </div>
         </div>
       </div>
     </div>
 
-    <div v-if="voucherData" id="receiptPaymentReport" class="report-container">
+    <div
+      v-if="voucherData"
+      id="receiptPaymentReport"
+      class="w-full max-w-5xl mx-auto p-8 bg-white border border-gray-200"
+    >
       <!-- Header Section -->
 
       <!-- Organization Name -->
-      <div class="org-section">
-        <h2 class="org-name">P-ERP Food and Snacks</h2>
-        <p class="org-address">145, Siddique Bazar (1st Floor), Dhaka-1000.</p>
+      <div class="text-center relative">
+        <h2 class="text-3xl font-bold mb-2">P-ERP Food and Snacks</h2>
+        <p class="text-base underline">
+          145, Siddique Bazar (1st Floor), Dhaka-1000.
+        </p>
+
+        <div class="absolute top-0 right-0 no-print">
+          <button @click="printReport">
+            <Icon icon="vscode-icons:file-type-pdf2" width="30" height="30" />
+          </button>
+        </div>
       </div>
 
+      <p class="text-sm text-center">
+        {{ formatRange(formData.DateFrom, formData.DateTo) }}
+      </p>
+
       <!-- Statement Title -->
-      <div class="statement-title-section">
-        <h3 class="statement-title">Statements of Receipts & Payments</h3>
+      <div class="text-center my-6">
+        <h3 class="text-lg font-semibold inline-block py-1 px-4">
+          Statements of Receipts & Payments
+        </h3>
       </div>
 
       <!-- Financial Table -->
-      <table class="report-table">
+      <table class="w-full border-collapse">
         <!-- Table Header -->
         <thead>
           <tr>
-            <th class="" rowspan="2">Sl. #</th>
-            <th class="" rowspan="2">Particulars</th>
-            <th class="" rowspan="2">Notes/Sch.</th>
-            <th class="" colspan="2">Amount (Tk.)</th>
+            <th
+              class="border border-black p-2 text-center font-bold"
+              rowspan="2"
+            >
+              Sl. #
+            </th>
+            <th
+              class="border border-black p-2 text-center font-bold"
+              rowspan="2"
+            >
+              Particulars
+            </th>
+            <th
+              class="border border-black p-2 text-center font-bold"
+              rowspan="2"
+            >
+              Notes/Sch.
+            </th>
+            <th
+              class="border border-black p-2 text-center font-bold"
+              colspan="2"
+            >
+              Amount (Tk.)
+            </th>
           </tr>
           <tr>
-            <th class="" colspan="2">2024-2025</th>
+            <th
+              class="border border-black p-2 text-center font-bold"
+              colspan="2"
+            >
+              2024-2025
+            </th>
           </tr>
         </thead>
         <tbody>
           <!-- A. Opening Balance -->
           <template v-if="A_data?.length > 0">
             <tr>
-              <td class="table-cell text-center font-bold">
+              <td class="align-top py-1 px-2 text-center font-bold">
                 {{ A_data[0]?.ReportCode }}
               </td>
-              <td class="table-cell font-bold text-underline">
+              <td class="align-top py-1 px-2 font-bold underline">
                 {{ A_data[0]?.ReportGroup }}
               </td>
-              <td class="table-cell"></td>
-              <td class="table-cell"></td>
-              <td class="table-cell"></td>
+              <td class="align-top py-1 px-2"></td>
+              <td class="align-top py-1 px-2"></td>
+              <td class="align-top py-1 px-2"></td>
             </tr>
             <tr v-for="(item, index) in A_data" :key="`a-${index}`">
-              <td class="table-cell"></td>
-              <td class="table-cell indent-text">{{ item?.AccountDetails }}</td>
-              <td class="table-cell text-center"></td>
-              <td class="table-cell text-right"></td>
-              <td class="table-cell text-right">
+              <td class="align-top py-1 px-2"></td>
+              <td class="align-top py-1 px-2 pl-8">
+                {{ item?.AccountDetails }}
+              </td>
+              <td class="align-top py-1 px-2 text-center"></td>
+              <td class="align-top py-1 px-2 text-right"></td>
+              <td class="align-top py-1 px-2 text-right">
                 {{ formatAmount(item?.Amount) }}
               </td>
             </tr>
             <!-- sum of A -->
             <tr>
-              <td class="table-cell"></td>
-              <td class="table-cell"></td>
-              <td class="table-cell"></td>
-              <td class="table-cell"></td>
-              <td class="table-cell text-right total-line">
+              <td class="align-top py-1 px-2"></td>
+              <td class="align-top py-1 px-2"></td>
+              <td class="align-top py-1 px-2"></td>
+              <td class="align-top py-1 px-2"></td>
+              <td
+                class="align-top py-1 px-2 text-right border-t border-b border-black font-semibold"
+              >
                 {{ calculateTotals(A_data) }}
               </td>
             </tr>
@@ -122,32 +162,36 @@
           <!-- B. Receipts during the year -->
           <template v-if="B_data?.length > 0">
             <tr>
-              <td class="table-cell text-center font-bold">
+              <td class="align-top py-1 px-2 text-center font-bold">
                 {{ B_data[0]?.ReportCode }}
               </td>
-              <td class="table-cell font-bold text-underline">
+              <td class="align-top py-1 px-2 font-bold underline">
                 {{ B_data[0]?.ReportGroup }}
               </td>
-              <td class="table-cell"></td>
-              <td class="table-cell"></td>
-              <td class="table-cell"></td>
+              <td class="align-top py-1 px-2"></td>
+              <td class="align-top py-1 px-2"></td>
+              <td class="align-top py-1 px-2"></td>
             </tr>
             <tr v-for="(item, index) in B_data" :key="`b-${index}`">
-              <td class="table-cell"></td>
-              <td class="table-cell indent-text">{{ item?.AccountDetails }}</td>
-              <td class="table-cell text-center"></td>
-              <td class="table-cell text-center"></td>
-              <td class="table-cell text-right">
+              <td class="align-top py-1 px-2"></td>
+              <td class="align-top py-1 px-2 pl-8">
+                {{ item?.AccountDetails }}
+              </td>
+              <td class="align-top py-1 px-2 text-center"></td>
+              <td class="align-top py-1 px-2 text-center"></td>
+              <td class="align-top py-1 px-2 text-right">
                 {{ formatAmount(item?.Amount) }}
               </td>
             </tr>
             <!-- sum of B -->
             <tr>
-              <td class="table-cell"></td>
-              <td class="table-cell font-bold">Total Receipts</td>
-              <td class="table-cell"></td>
-              <td class="table-cell"></td>
-              <td class="table-cell text-right total-line">
+              <td class="align-top py-1 px-2"></td>
+              <td class="align-top py-1 px-2 font-bold">Total Receipts</td>
+              <td class="align-top py-1 px-2"></td>
+              <td class="align-top py-1 px-2"></td>
+              <td
+                class="align-top py-1 px-2 text-right border-t border-b border-black font-semibold"
+              >
                 {{ calculateTotals(B_data) }}
               </td>
             </tr>
@@ -155,13 +199,15 @@
 
           <!-- C. Fund available for Utilization -->
           <tr>
-            <td class="table-cell text-center font-bold">C.</td>
-            <td class="table-cell font-bold">
+            <td class="align-top py-1 px-2 text-center font-bold">C.</td>
+            <td class="align-top py-1 px-2 font-bold">
               Fund available for Utilization : (A+B)
             </td>
-            <td class="table-cell"></td>
-            <td class="table-cell"></td>
-            <td class="table-cell text-right grand-total">
+            <td class="align-top py-1 px-2"></td>
+            <td class="align-top py-1 px-2"></td>
+            <td
+              class="align-top py-1 px-2 text-right border-t-2 border-b-4 border-double border-black font-bold"
+            >
               {{
                 formatAmount(
                   Number(calculateTotals(A_data)) +
@@ -174,91 +220,42 @@
           <!-- D. Payment during the year -->
           <template v-if="D_data?.length > 0">
             <tr>
-              <td class="table-cell text-center font-bold">
+              <td class="align-top py-1 px-2 text-center font-bold">
                 {{ D_data[0]?.ReportCode }}
               </td>
-              <td class="table-cell font-bold text-underline">
+              <td class="align-top py-1 px-2 font-bold underline">
                 {{ D_data[0]?.ReportGroup }}
               </td>
-              <td class="table-cell"></td>
-              <td class="table-cell"></td>
-              <td class="table-cell"></td>
+              <td class="align-top py-1 px-2"></td>
+              <td class="align-top py-1 px-2"></td>
+              <td class="align-top py-1 px-2"></td>
             </tr>
             <tr v-for="(item, index) in D_data" :key="`d-${index}`">
-              <td class="table-cell"></td>
-              <td class="table-cell indent-text">{{ item?.AccountDetails }}</td>
-              <td class="table-cell"></td>
-              <td class="table-cell"></td>
-              <td class="table-cell text-right">
+              <td class="align-top py-1 px-2"></td>
+              <td class="align-top py-1 px-2 pl-8">
+                {{ item?.AccountDetails }}
+              </td>
+              <td class="align-top py-1 px-2"></td>
+              <td class="align-top py-1 px-2"></td>
+              <td class="align-top py-1 px-2 text-right">
                 {{ formatAmount(item?.Amount) }}
               </td>
             </tr>
             <!-- sum of D -->
             <tr>
-              <td class="table-cell"></td>
-              <td class="table-cell font-bold">Total Payment</td>
-              <td class="table-cell"></td>
-              <td class="table-cell"></td>
-              <td class="table-cell text-right total-line">
+              <td class="align-top py-1 px-2"></td>
+              <td class="align-top py-1 px-2 font-bold">Total Payment</td>
+              <td class="align-top py-1 px-2"></td>
+              <td class="align-top py-1 px-2"></td>
+              <td
+                class="align-top py-1 px-2 text-right border-t border-b border-black font-semibold"
+              >
                 {{ calculateTotals(D_data) }}
               </td>
             </tr>
           </template>
-
-          <!-- E.Closing Balance -->
-          <!-- <tr>
-            <td class="table-cell text-center font-bold">E.</td>
-            <td class="table-cell font-bold text-underline">
-              Closing Balance :
-            </td>
-            <td class="table-cell"></td>
-            <td class="table-cell"></td>
-            <td class="table-cell"></td>
-          </tr>
-          <tr>
-            <td class="table-cell"></td>
-            <td class="table-cell indent-text">Cash in hand:</td>
-            <td class="table-cell"></td>
-            <td class="table-cell"></td>
-            <td class="table-cell text-right">7,000.00</td>
-          </tr>
-          <tr>
-            <td class="table-cell"></td>
-            <td class="table-cell indent-text">Cash in Bank:</td>
-            <td class="table-cell"></td>
-            <td class="table-cell"></td>
-            <td class="table-cell text-right">7,000.00</td>
-          </tr>
-          <tr>
-            <td class="table-cell"></td>
-            <td class="table-cell"></td>
-            <td class="table-cell"></td>
-            <td class="table-cell"></td>
-            <td class="table-cell text-right total-line">14,000.00</td>
-          </tr> -->
-
-          <!-- F. Total  -->
-          <!-- <tr>
-            <td class="table-cell text-center font-bold">F.</td>
-            <td class="table-cell font-bold">Total: (D+E)</td>
-            <td class="table-cell"></td>
-            <td class="table-cell"></td>
-            <td class="table-cell text-right grand-total">24,200.00</td>
-          </tr> -->
         </tbody>
       </table>
-
-      <!-- <div class="footer-section">
-        <p class="footer-text">
-          This is the statement of Receipts & Payments prepared referred to in
-          our separate report of even date
-        </p>
-        <div class="signature-section">
-          <div class="date-section">
-            <p>Dated, Dhaka</p>
-          </div>
-        </div>
-      </div> -->
     </div>
   </MainLayout>
 </template>
@@ -336,6 +333,30 @@ const calculateTotals = (data) => {
   return formatAmount(total);
 };
 
+// Helpers to format dates for display like `1st November 2025`
+const getOrdinal = (d) => {
+  const j = d % 10,
+    k = d % 100;
+  if (k >= 11 && k <= 13) return "th";
+  if (j === 1) return "st";
+  if (j === 2) return "nd";
+  if (j === 3) return "rd";
+  return "th";
+};
+
+const formatDisplayDate = (date) => {
+  if (!date) return "";
+  const d = dayjs(date);
+  if (!d.isValid()) return date;
+  const dayNum = d.date();
+  const ord = getOrdinal(dayNum);
+  return `${dayNum}${ord} ${d.format("MMMM YYYY")}`;
+};
+
+const formatRange = (from, to) => {
+  return `${formatDisplayDate(from)} to ${formatDisplayDate(to)}`;
+};
+
 onMounted(() => {
   // fetchVoucherTypes();
   // fetchVouchers();
@@ -382,7 +403,7 @@ const exportExcel = () => {
   }
 };
 
-const exportPDF = () => {
+const printReport = () => {
   printJS({
     printable: "receiptPaymentReport",
     type: "html",
@@ -394,12 +415,10 @@ const exportPDF = () => {
       }
       
       @media print {
-        /* Hide non-print elements */
         .no-print {
           display: none !important;
         }
         
-        /* Base styles */
         body {
           font-family: Arial, sans-serif !important;
           font-size: 11px !important;
@@ -410,209 +429,56 @@ const exportPDF = () => {
           print-color-adjust: exact !important;
         }
         
-        /* Container */
-        .report-container {
-          width: 100% !important;
-          max-width: 100% !important;
-          padding: 0 !important;
-          margin: 0 !important;
-        }
-        
-        /* Header Section */
-        .report-header {
-          display: flex !important;
-          justify-content: space-between !important;
-          margin-bottom: 15px !important;
-        }
-        
-        .header-left {
-          flex: 1 !important;
-        }
-        
-        .header-right {
-          text-align: right !important;
-          font-size: 9px !important;
-          line-height: 1.2 !important;
-        }
-        
-        .header-right p {
-          margin: 1px 0 !important;
-        }
-        
-        .company-name {
-          font-size: 14px !important;
-          font-weight: bold !important;
-          margin: 0 0 3px 0 !important;
-        }
-        
-        .company-subtitle {
-          font-size: 10px !important;
-          margin: 0 !important;
-        }
-        
-        /* Organization Section */
-        .org-section {
-          text-align: center !important;
-          margin: 15px 0 !important;
-        }
-        
-        .org-name {
-          font-size: 20px !important;
-          font-weight: bold !important;
-          margin: 0 0 5px 0 !important;
-        }
-        
-        .org-address {
-          font-size: 11px !important;
-          text-decoration: underline !important;
-          margin: 0 !important;
-        }
-        
-        /* Statement Title */
-        .statement-title-section {
-          text-align: center !important;
-          margin: 20px 0 15px 0 !important;
-        }
-        
-        .statement-title {
-          font-size: 13px !important;
-          font-weight: 600 !important;
-          margin: 0 !important;
-          display: inline-block !important;
-        }
-        
-        /* Table Styles */
-        .report-table {
+        table {
           width: 100% !important;
           border-collapse: collapse !important;
-          margin: 10px 0 !important;
         }
         
-        .report-table thead th {
+        th {
           border: 1px solid #000 !important;
           padding: 5px !important;
-          font-size: 10px !important;
           font-weight: bold !important;
           text-align: center !important;
-          background-color: #fff !important;
         }
         
-        .report-table tbody td {
-          padding: 3px 5px !important;
-          font-size: 10px !important;
-          border: none !important;
+        td {
+          padding: 3px 8px !important;
         }
         
-        /* Column widths */
-        .col-sl {
-          width: 60px !important;
-        }
-        
-        .col-particulars {
-          width: auto !important;
-          text-align: left !important;
-          padding-left: 8px !important;
-        }
-        
-        .col-notes {
-          width: 100px !important;
-        }
-        
-        .col-amount-header {
-          width: 150px !important;
-        }
-        
-        .col-amount-year {
-          border-top: 1px solid #000 !important;
-        }
-        
-        /* Table cell styles */
-        .table-cell {
-          vertical-align: top !important;
+        .text-right {
+          text-align: right !important;
         }
         
         .text-center {
           text-align: center !important;
         }
         
-        .text-right {
-          text-align: right !important;
-          padding-right: 8px !important;
-        }
-        
         .font-bold {
           font-weight: bold !important;
         }
         
-        .text-underline {
+        .underline {
           text-decoration: underline !important;
         }
         
-        .indent-text {
-          padding-left: 25px !important;
+        .pl-8 {
+          padding-left: 2rem !important;
         }
         
-        /* Total lines */
-        .total-line {
+        .border-t {
           border-top: 1px solid #000 !important;
+        }
+        
+        .border-b {
           border-bottom: 1px solid #000 !important;
-          font-weight: 600 !important;
-          padding: 3px 8px 3px 5px !important;
         }
         
-        .grand-total {
+        .border-t-2 {
           border-top: 2px solid #000 !important;
-          border-bottom: 3px double #000 !important;
-          font-weight: bold !important;
-          padding: 4px 8px 4px 5px !important;
         }
         
-        /* Footer Section */
-        .footer-section {
-          margin-top: 40px !important;
-        }
-        
-        .footer-text {
-          text-align: center !important;
-          font-size: 11px !important;
-          margin: 0 0 40px 0 !important;
-          line-height: 1.4 !important;
-        }
-        
-        .signature-section {
-          display: flex !important;
-          justify-content: space-between !important;
-          align-items: flex-end !important;
-          margin-top: 50px !important;
-        }
-        
-        .date-section {
-          flex: 1 !important;
-          font-size: 11px !important;
-        }
-        
-        .auditor-section {
-          text-align: center !important;
-          font-size: 11px !important;
-        }
-        
-        .auditor-name {
-          font-weight: bold !important;
-          text-transform: uppercase !important;
-          margin: 0 0 2px 0 !important;
-        }
-        
-        /* Page break control */
-        .report-table {
-          page-break-inside: auto !important;
-        }
-        
-        .report-table tr {
-          page-break-inside: avoid !important;
-        }
-        
-        .report-table thead {
-          display: table-header-group !important;
+        .border-b-4 {
+          border-bottom: 4px double #000 !important;
         }
       }
     `,
@@ -642,7 +508,6 @@ const handleDateFromChange = () => {
   }
 };
 
-// Handle Date To change
 const handleDateToChange = () => {
   if (!formData.value.DateFrom) return;
   const voucherFrom = new Date(formData.value.DateFrom);
@@ -656,152 +521,14 @@ const handleDateToChange = () => {
 </script>
 
 <style scoped>
-/* Screen styles */
-.report-container {
-  width: 100%;
-  max-width: 72rem;
-  margin: 0 auto;
-  padding: 2rem;
-  background: white;
-  border: 1px solid #e5e7eb;
+/* Responsive title adjustment */
+@media (min-width: 992px) and (max-width: 1400px) {
+  .voucher-page-title {
+    font-size: 14px !important;
+  }
 }
 
-.report-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 1.5rem;
-}
-
-.header-right {
-  text-align: right;
-  font-size: 0.875rem;
-}
-
-.header-right p {
-  margin: 0.125rem 0;
-}
-
-.company-name {
-  font-size: 1.25rem;
-  font-weight: bold;
-  margin-bottom: 0.25rem;
-}
-
-.company-subtitle {
-  font-size: 0.875rem;
-}
-
-.org-section {
-  text-align: center;
-  margin: 1.5rem 0;
-}
-
-.org-name {
-  font-size: 1.875rem;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-}
-
-.org-address {
-  font-size: 1rem;
-  text-decoration: underline;
-}
-
-.statement-title-section {
-  text-align: center;
-  margin: 1.5rem 0;
-}
-
-.statement-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  display: inline-block;
-  padding: 0.25rem 1rem;
-}
-
-.report-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.report-table thead th {
-  border: 1px solid #000;
-  /* padding: 0.5rem; */
-  text-align: center;
-  font-weight: bold;
-}
-
-.report-table tbody td {
-  padding: 0.25rem 0.5rem;
-}
-
-.table-cell {
-  vertical-align: top;
-}
-
-.text-center {
-  text-align: center;
-}
-
-.text-right {
-  text-align: right;
-}
-
-.font-bold {
-  font-weight: bold;
-}
-
-.text-underline {
-  text-decoration: underline;
-}
-
-.indent-text {
-  padding-left: 2rem;
-}
-
-.total-line {
-  border-top: 1px solid #000;
-  border-bottom: 1px solid #000;
-  font-weight: 600;
-}
-
-.grand-total {
-  border-top: 2px solid #000;
-  border-bottom: 3px double #000;
-  font-weight: bold;
-}
-
-.footer-section {
-  margin-top: 3rem;
-}
-
-.footer-text {
-  text-align: center;
-  font-size: 1.125rem;
-  margin-bottom: 3rem;
-}
-
-.signature-section {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 4rem;
-}
-
-.auditor-section {
-  text-align: center;
-}
-
-.auditor-name {
-  font-weight: bold;
-  text-transform: uppercase;
-}
-
-/* Ant Design overrides */
-.ant-input-number-input {
-  @apply !text-right !pr-10;
-}
-
-/* Scrollbar hide */
+/* Hide scrollbars */
 .overflow-x-auto::-webkit-scrollbar,
 .overflow-y-auto::-webkit-scrollbar {
   display: none;
@@ -815,18 +542,10 @@ const handleDateToChange = () => {
   -ms-overflow-style: none;
 }
 
-/* Responsive adjustments */
-@media (min-width: 992px) and (max-width: 1400px) {
-  .filter-grid.max-w-6xl {
-    max-width: 62rem !important;
-  }
-
-  .print-view.max-w-6xl {
-    max-width: 62rem !important;
-  }
-
-  .voucher-page-title {
-    font-size: 14px !important;
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
   }
 }
 </style>
