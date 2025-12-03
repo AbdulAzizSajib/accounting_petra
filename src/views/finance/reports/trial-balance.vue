@@ -105,7 +105,10 @@
             <p class="text-base text-gray-700 font-semibold">
               P-ERP Food and Snacks
             </p>
-            <!-- <p class="text-base text-gray-700">As on {{ formattedDate }}</p> -->
+            <p class="text-base text-gray-700">
+              From {{ DateFrom }} to {{ DateTo }}
+            </p>
+            <!-- here want to show from date to To Date  -->
           </div>
           <div>
             <table class="w-[200px] table-auto border-collapse">
@@ -325,6 +328,15 @@ const SuspendingAccount = ref();
 
 const FromDate = ref(dayjs().startOf("month").format("YYYY-MM-DD"));
 const ToDate = ref(dayjs().endOf("month").format("YYYY-MM-DD"));
+
+// Computed properties for displaying formatted dates
+const DateFrom = computed(() => {
+  return FromDate.value ? dayjs(FromDate.value).format("DD-MMM-YYYY") : "";
+});
+
+const DateTo = computed(() => {
+  return ToDate.value ? dayjs(ToDate.value).format("DD-MMM-YYYY") : "";
+});
 
 const fetchAllData = async () => {
   loading.value = true;

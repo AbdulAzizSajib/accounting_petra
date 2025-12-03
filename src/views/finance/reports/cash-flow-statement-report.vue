@@ -69,7 +69,9 @@
             <p class="text-base text-gray-700 font-semibold">
               P-ERP Food and Snacks
             </p>
-            <!-- <p class="text-base text-gray-700">As on {{ formattedDate }}</p> -->
+            <p class="text-base text-gray-700">
+              From {{ DateFromValue }} to {{ DateToValue }}
+            </p>
           </div>
           <div>
             <table class="w-[200px] table-auto border-collapse">
@@ -537,6 +539,15 @@ const exportPDF = () => {
     },
   });
 };
+
+// Computed properties for displaying formatted dates
+const DateFromValue = computed(() => {
+  return DateFrom.value ? dayjs(DateFrom.value).format("DD-MMM-YYYY") : "";
+});
+
+const DateToValue = computed(() => {
+  return DateTo.value ? dayjs(DateTo.value).format("DD-MMM-YYYY") : "";
+});
 </script>
 
 <style scoped>
