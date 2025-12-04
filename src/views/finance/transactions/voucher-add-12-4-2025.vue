@@ -35,8 +35,8 @@
                   ref="voucher_type_ref"
                   class="w-[80px]"
                   placeholder=""
-                  :disabled="voucherEntries.length > 0"
                   option-label-prop="label"
+                  :disabled="voucherEntries.length > 0"
                   @select="onVoucherTypeSelect"
                   @keydown.native.enter.stop="onVoucherTypeEnter"
                   @keydown.native.esc="onVoucherTypeEsc"
@@ -184,11 +184,9 @@
                   show-search
                   allowClear
                   :filter-option="false"
+                  allow-clear
                   v-model:value="form.type"
-                  :class="[
-                    'flex-1 text-white',
-                    { 'auto-selecting': isAutoSelectingType },
-                  ]"
+                  :class="['flex-1', { 'auto-selecting': isAutoSelectingType }]"
                   ref="type_ref"
                   @select="handleTypeSelect"
                   @search="
@@ -301,7 +299,7 @@
                     :key="cat.ASType"
                     :value="cat.ASType"
                   >
-                    {{ cat.ASType }}
+                    {{ cat.ASType }} - {{ cat.ASDetails }}
                   </a-select-option>
                 </a-select>
               </div>
@@ -424,6 +422,7 @@
                 >Narration <span class="text-red-500">*</span></label
               >
 
+              <!-- @keydown.enter="isDebitDisabled ? add_button_ref?.$el?.focus() : credit_ref?.focus()" -->
               <a-input
                 class="flex-1"
                 v-model:value="form.narration"
@@ -471,11 +470,11 @@
             <a-button
               type="primary"
               class="px-6 bg-primary text-white"
-              @click="updateVoucher"
+              @click="saveVoucher"
               :loading="creating"
               :disabled="!canSaveVoucher"
               ref="save_button_ref"
-              >Update</a-button
+              >Save</a-button
             >
             <!-- :disabled="!canAddEntry" -->
             <a-button
@@ -527,45 +526,55 @@
           >
             <!-- Account Code -->
             <td class="px-4 border">
-              <span>{{ entry?.account_head || "_" }}</span>
+              <span>{{ entry.account_head }}</span>
             </td>
 
             <!-- Account Details -->
             <td class="px-4 border">
-              <span>{{ entry?.accountDetails || "_" }}</span>
+              <span>{{ entry.accountDetails }}</span>
             </td>
 
             <!-- Sub Ledger -->
             <td class="px-4 border">
-              <span>{{
-                entry?.subLedger === "0" ? "-" : entry?.subLedger
-              }}</span>
+              <span>{{ entry.subLedger }}</span>
             </td>
 
             <!-- Debit -->
             <td class="px-4 border text-right w-40">
-              <span>{{ entry?.debit || 0 }}</span>
+              <span>{{ entry.debit }}</span>
             </td>
 
             <!-- Credit -->
             <td class="px-4 border text-right w-40">
-              <span>{{ entry?.credit || 0 }}</span>
+              <span>{{ entry.credit }}</span>
             </td>
 
             <!-- Cheque No -->
             <td class="px-4 border w-40">
-              <span>{{ entry?.chequeNo || "_" }}</span>
+              <span>{{ entry.chequeNo }}</span>
             </td>
 
             <!-- Cheque Name -->
             <td class="px-4 border">
-              <span>{{ entry?.chequeName || "_" }}</span>
+              <span>{{ entry.chequeName }}</span>
             </td>
 
             <!-- Narration -->
             <td class="px-4 border">
-              <span>{{ entry?.narration || "_" }}</span>
+              <span>{{ entry.narration }}</span>
             </td>
+
+            <!-- Actions -->
+            <!-- <td class="px-4 border text-center w-8">
+              <div class="flex justify-center gap-x-3">
+                <button
+                  @click="populateFormFromEntry(entry, index)"
+                  class="px-2 py-1 bg-primary text-white rounded-md"
+                >
+                  Edit
+                </button>
+              </div>
+            </td>  -->
 
             <td class="px-4 border text-center w-8">
               <div class="flex justify-center gap-x-3">
@@ -635,12 +644,12 @@ import axios from "axios";
 import { apiBase } from "@/config.js";
 import { getToken, showNotification } from "@/utilities/common.js";
 import { Icon } from "@iconify/vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 
 const router = useRouter();
-// const route = useRoute();
-const JVNo_from_params = useRoute().query.JVNo || null;
-console.log(JVNo_from_params);
+const goBack = () => {
+  router.push({ name: "temp-voucher" });
+};
 
 const onVoucherTypeSelect = async (value) => {
   // Find the selected voucher and store its AMCode
@@ -683,6 +692,17 @@ const onVoucherTypeSelect = async (value) => {
         isAutoSelectingAccountHead.value = true;
         await new Promise((resolve) => setTimeout(resolve, 300));
         isAutoSelectingAccountHead.value = false;
+
+        // Auto-select first sub-ledger if available
+        if (form.value.account_head) {
+          await fetchSubLedgerList(form.value.account_head);
+          if (all_subLedgerList.value.length > 0) {
+            isAutoSelectingSubLedger.value = true;
+            form.value.subLedger = all_subLedgerList.value[0].ASType;
+            await new Promise((resolve) => setTimeout(resolve, 300));
+            isAutoSelectingSubLedger.value = false;
+          }
+        }
       }
     }
 
@@ -715,6 +735,17 @@ const onVoucherTypeSelect = async (value) => {
         isAutoSelectingAccountHead.value = true;
         await new Promise((resolve) => setTimeout(resolve, 300));
         isAutoSelectingAccountHead.value = false;
+
+        // Auto-select first sub-ledger if available
+        if (form.value.account_head) {
+          await fetchSubLedgerList(form.value.account_head);
+          if (all_subLedgerList.value.length > 0) {
+            isAutoSelectingSubLedger.value = true;
+            form.value.subLedger = all_subLedgerList.value[0].ASType;
+            await new Promise((resolve) => setTimeout(resolve, 300));
+            isAutoSelectingSubLedger.value = false;
+          }
+        }
       }
     }
   }
@@ -757,47 +788,6 @@ const populateFormFromEntry = async (entry, index) => {
 
   // Set editing index FIRST
   editingIndex.value = index;
-
-  // Check if this is a BANK/CASH voucher and adjust bank contra entry
-  const selectedVoucher = voucherTypes.value.find(
-    (v) => v.JVType === form.value.voucherType
-  );
-  const isBankVoucher =
-    selectedVoucher?.Category?.toUpperCase() === "BANK" ||
-    selectedVoucher?.Category?.toUpperCase() === "CASH";
-
-  if (isBankVoucher) {
-    const bankContraEntry = voucherEntries.value.find(
-      (e) => e.isBankContra && e.account_head === selectedVoucher.AMCode
-    );
-
-    if (bankContraEntry) {
-      // Adjust bank contra based on category
-      if (form.value.category === "P") {
-        // Payment: subtract debit from bank credit, add back credit to bank credit
-        bankContraEntry.credit =
-          Number(bankContraEntry.credit) -
-          Number(entry.debit || 0) +
-          Number(entry.credit || 0);
-      } else if (form.value.category === "R") {
-        // Receipt: subtract credit from bank debit, add back debit to bank debit
-        bankContraEntry.debit =
-          Number(bankContraEntry.debit) -
-          Number(entry.credit || 0) +
-          Number(entry.debit || 0);
-      }
-
-      // Remove bank contra if it becomes 0
-      if (bankContraEntry.credit <= 0 && bankContraEntry.debit <= 0) {
-        const bankIndex = voucherEntries.value.findIndex(
-          (e) => e.isBankContra && e.account_head === selectedVoucher.AMCode
-        );
-        if (bankIndex !== -1) {
-          voucherEntries.value.splice(bankIndex, 1);
-        }
-      }
-    }
-  }
 
   // Extract group and type from account_head
   // Format: XXX-XXXXX where first 2 digits are group, first 3 digits are type
@@ -940,7 +930,6 @@ const isAutoSelectingGroup = ref(false);
 const isAutoSelectingType = ref(false);
 const isAutoSelectingAccountHead = ref(false);
 const isAutoSelectingSubLedger = ref(false);
-
 const fetchAccount_head = async (value, autoSelect = false) => {
   if (!autoSelect) {
     form.value.account_head = "";
@@ -963,11 +952,6 @@ const fetchAccount_head = async (value, autoSelect = false) => {
         form.value.account_head = data[0].AMCode;
       }
     }
-    // if (account_head.length === 0) {
-    //   subLedgerList.value = [];
-    //   all_subLedgerList.value = [];
-    //   form.value.subLedger = "";
-    // }
   } catch (err) {
     console.error("Error fetching account heads:", err);
     account_head.value = [];
@@ -980,8 +964,7 @@ const isBankPayment = computed(() => {
     (v) => v.JVType === form.value.voucherType
   );
   return (
-    (selectedVoucher?.Category?.toUpperCase() === "BANK" ||
-      selectedVoucher?.Category?.toUpperCase() === "CASH") &&
+    selectedVoucher?.Category?.toUpperCase() === "BANK" &&
     form.value.category === "P"
   ); // Assuming 'P' is short for Payment
 });
@@ -991,22 +974,21 @@ const isBankReceipt = computed(() => {
     (v) => v.JVType === form.value.voucherType
   );
   return (
-    (selectedVoucher?.Category?.toUpperCase() === "BANK" ||
-      selectedVoucher?.Category?.toUpperCase() === "CASH") &&
+    selectedVoucher?.Category?.toUpperCase() === "BANK" &&
     form.value.category === "R"
   ); // Assuming 'R' is short for Receipt
 });
 
 const isCreditDisabled = computed(() => {
   // Disable credit field when:
-  // 1. Voucher Type is BANK/CASH and Category is Payment
+  // 1. Voucher Type is BANK and Category is Payment
   // 2. No entries have been added yet
   return isBankPayment.value && voucherEntries.value.length === 0;
 });
 
 const isDebitDisabled = computed(() => {
   // Disable debit field when:
-  // 1. Voucher Type is BANK/CASH and Category is Receipt
+  // 1. Voucher Type is BANK and Category is Receipt
   // 2. No entries have been added yet
   return isBankReceipt.value && voucherEntries.value.length === 0;
 });
@@ -1043,7 +1025,9 @@ const handlecheckNameToVendorId = () => {
 //     showNotification("warning", "Please input narration");
 //     return;
 //   } else {
+
 //     debit_ref.value.focus();
+
 //   }
 // };
 
@@ -1078,12 +1062,6 @@ const vendorIdToChequeNo = () => {
     cheque_no_ref.value?.focus();
   }
 };
-
-// const handleAccHeadSelect = (value) => {
-//   sub_ledger_ref.value?.focus();
-//   form.value.subLedger = "";
-//   fetchSubLedgerList(value);
-// };
 
 const handleAccHeadSelect = async (value) => {
   form.value.subLedger = "";
@@ -1291,6 +1269,7 @@ const fetchVoucherTypes = async () => {
   try {
     const { data } = await axios.get(`${apiBase}/voucher/type`, getToken());
     voucherTypes.value = data;
+    console.log("--------------------->", voucherTypes.value);
     all_voucherTypes.value = data; // Store all voucher types
     voucherTypesLoading.value = false;
   } catch (err) {
@@ -1345,13 +1324,12 @@ const addEntry = () => {
 
   const f = form.value;
 
-  // Validate credit/debit amounts for BANK/CASH vouchers
+  // Validate credit/debit amounts for BANK vouchers
   const selectedVoucherForValidation = voucherTypes.value.find(
     (v) => v.JVType === f.voucherType
   );
   const isBankVoucherValidation =
-    selectedVoucherForValidation?.Category?.toUpperCase() === "BANK" ||
-    selectedVoucherForValidation?.Category?.toUpperCase() === "CASH";
+    selectedVoucherForValidation?.Category?.toUpperCase() === "BANK";
 
   if (isBankVoucherValidation && f.category === "P" && f.credit > 0) {
     // For BANK Payment: Check if credit exceeds existing bank contra credit
@@ -1423,13 +1401,11 @@ const addEntry = () => {
     isEditing: false,
   };
 
-  // Check if Voucher Type is Bank/Cash and Category is Payment or Receipt
+  // Check if Voucher Type is Bank and Category is Payment or Receipt
   const selectedVoucher = voucherTypes.value.find(
     (v) => v.JVType === f.voucherType
   );
-  const isBankVoucher =
-    selectedVoucher?.Category?.toUpperCase() === "BANK" ||
-    selectedVoucher?.Category?.toUpperCase() === "CASH";
+  const isBankVoucher = selectedVoucher?.Category?.toUpperCase() === "BANK";
   const isPaymentCategory = f.category === "P";
   const isReceiptCategory = f.category === "R";
   const isEditing =
@@ -1454,9 +1430,17 @@ const addEntry = () => {
       }
 
       if (existingBankEntry) {
-        // Just add the new debit (editing already adjusted the bank contra)
-        existingBankEntry.credit =
-          Number(existingBankEntry.credit) + Number(f.debit);
+        // If editing, subtract the original debit first, then add the new debit
+        if (isEditing) {
+          existingBankEntry.credit =
+            Number(existingBankEntry.credit) -
+            Number(originalDebit.value) +
+            Number(f.debit);
+        } else {
+          // Not editing, just add the new debit
+          existingBankEntry.credit =
+            Number(existingBankEntry.credit) + Number(f.debit);
+        }
       } else {
         // Create new bank contra entry at the bottom
         const bankContraEntry = {
@@ -1498,8 +1482,16 @@ const addEntry = () => {
 
       // User entered credit - subtract from bank credit (rare case)
       if (existingBankEntry) {
-        existingBankEntry.credit =
-          Number(existingBankEntry.credit) - Number(f.credit);
+        // If editing, add back the original credit first, then subtract the new credit
+        if (isEditing) {
+          existingBankEntry.credit =
+            Number(existingBankEntry.credit) +
+            Number(originalCredit.value) -
+            Number(f.credit);
+        } else {
+          existingBankEntry.credit =
+            Number(existingBankEntry.credit) - Number(f.credit);
+        }
 
         // Remove bank entry if credit becomes 0 or negative
         if (existingBankEntry.credit <= 0) {
@@ -1531,9 +1523,17 @@ const addEntry = () => {
       }
 
       if (existingBankEntry) {
-        // Just add the new credit (editing already adjusted the bank contra)
-        existingBankEntry.debit =
-          Number(existingBankEntry.debit) + Number(f.credit);
+        // If editing, subtract the original credit first, then add the new credit
+        if (isEditing) {
+          existingBankEntry.debit =
+            Number(existingBankEntry.debit) -
+            Number(originalCredit.value) +
+            Number(f.credit);
+        } else {
+          // Not editing, just add the new credit
+          existingBankEntry.debit =
+            Number(existingBankEntry.debit) + Number(f.credit);
+        }
       } else {
         // Create new bank contra entry at the bottom
         const bankContraEntry = {
@@ -1575,8 +1575,16 @@ const addEntry = () => {
 
       // User entered debit - subtract from bank debit (rare case)
       if (existingBankEntry) {
-        existingBankEntry.debit =
-          Number(existingBankEntry.debit) - Number(f.debit);
+        // If editing, add back the original debit first, then subtract the new debit
+        if (isEditing) {
+          existingBankEntry.debit =
+            Number(existingBankEntry.debit) +
+            Number(originalDebit.value) -
+            Number(f.debit);
+        } else {
+          existingBankEntry.debit =
+            Number(existingBankEntry.debit) - Number(f.debit);
+        }
 
         // Remove bank entry if debit becomes 0 or negative
         if (existingBankEntry.debit <= 0) {
@@ -1651,7 +1659,7 @@ const deleteEntry = (index) => {
   showNotification("success", "Entry deleted successfully");
 };
 
-const updateVoucher = async () => {
+const saveVoucher = async () => {
   if (["JVR", "BPV"].includes(form.value.voucherType)) {
     if (debitTotal.value !== creditTotal.value) {
       showNotification("error", "Debit balance is not equal to Credit balance");
@@ -1661,8 +1669,7 @@ const updateVoucher = async () => {
 
   const userInfo = JSON.parse(localStorage.getItem("user_info"));
   const payload = {
-    SiteCode: "01",
-    JVNo: JVNo_from_params,
+    SiteCode: "02",
     Period: dayjs(form.value.date).format("YYYYMM"),
     JVType: form.value.voucherType,
     JVCat: form.value.category || "",
@@ -1673,21 +1680,22 @@ const updateVoucher = async () => {
     EditUserID: userInfo?.UserId,
     EditDate: dayjs().format("YYYY-MM-DD HH:mm:ss.SSS"),
     details: voucherEntries.value.map((e) => ({
-      AMCode: e?.account_head,
+      AMCode: e.account_head,
       ASCode: e.subLedger || 0,
-      Person: e?.person || "",
-      ChequeNo: e?.chequeNo || "-",
-      ChequeName: e?.chequeName || "",
-      Narration: e?.narration || "",
-      Debit: Number(e?.debit) || 0,
-      Credit: Number(e?.credit) || 0,
-      AntiCode: e?.account_head,
+      Person: e.person || "",
+      ChequeNo: e.chequeNo || "",
+      ChequeName: e.chequeName || "",
+      Narration: e.narration || "",
+      Debit: Number(e.debit) || 0,
+
+      Credit: Number(e.credit) || 0,
+      AntiCode: e.account_head,
       AntiSCode: "0",
       ChequePayDate: dayjs().format("YYYY-MM-DD HH:mm:ss.SSS"),
       ChequeStatus: "Pending",
-      VendorId: e?.vendorId || null,
-      BillNo: e?.billNo || "",
-      BillDate: e?.billDate
+      VendorId: e.vendorId || null,
+      BillNo: e.billNo || "",
+      BillDate: e.billDate
         ? dayjs(e.billDate).format("YYYY-MM-DD HH:mm:ss.SSS")
         : null,
       TransType: "pu",
@@ -1703,7 +1711,7 @@ const updateVoucher = async () => {
 
   creating.value = true;
   try {
-    const res = await axios.put(
+    const res = await axios.post(
       `${apiBase}/journal-master`,
       payload,
       getToken()
@@ -1733,7 +1741,7 @@ const fetchSubLedgerList = async (value) => {
       subLedgerList.value = res.data.sub_ledger;
       // fist index[0] to subLedger
       form.value.subLedger = res.data.sub_ledger[0]?.ASType;
-
+      console.log("first----------", subLedgerList.value);
       all_subLedgerList.value = res.data.sub_ledger;
     }
   } catch (err) {
@@ -1787,10 +1795,10 @@ const fetchChequeRegisterList = async (value, searchValue) => {
         (c) => c.Status === "ACTIVE" || c.Status === null
       );
       chequeRegisterList.value = activeAndNullCheques;
-      form.value.chequeNo =
-        activeAndNullCheques.length > 0
-          ? activeAndNullCheques[0].ChequeNo
-          : " ";
+
+      form.value.chequeNo = chequeRegisterList.value.length
+        ? chequeRegisterList.value[0].ChequeNo
+        : " ";
       all_chequeRegisterList.value = activeAndNullCheques;
     }
   } catch (err) {
@@ -1806,9 +1814,9 @@ const fetchVendors = async () => {
       `${apiBase}/settings/vendor-list/all`,
       getToken()
     );
-    console.log("res", res);
+    // console.log("res", res);
     if (res.data.success) {
-      console.log("res.data", res.data);
+      // console.log("res.data", res.data);
       vendorList.value = res.data.data.filter((v) => v.Active === "1");
     } else {
       showNotification("error", "Failed to fetch vendor list");
@@ -1846,106 +1854,6 @@ const onBillDateEnter = (e) => {
 };
 
 const isCategoryReceipt = computed(() => form.value.category === "R");
-
-// Get the route parameters
-const route = useRoute();
-const period = ref(route.query.Period);
-const siteCode = ref(route.query.SiteCode);
-const jvNo = ref(route.query.JVNo);
-
-const voucher_idwise_data = ref();
-const isEditingExistingVoucher = ref(false);
-const voucher_idwise = async () => {
-  try {
-    const res = await axios.get(
-      `${apiBase}/journal-master/show?Period=${period.value}&JVNo=${jvNo.value}&SiteCode=${siteCode.value}`,
-      getToken()
-    );
-    if (res.data) {
-      isEditingExistingVoucher.value = true;
-      voucher_idwise_data.value = res.data;
-      // Populate form after data is loaded
-      populateFormFromResponse();
-      // After population is complete, allow fetching new voucher numbers for new entries
-      setTimeout(() => {
-        isEditingExistingVoucher.value = false;
-      }, 500);
-    }
-  } catch (error) {
-    console.error("Error fetching voucher:", error);
-    showNotification("error", "Failed to load voucher data");
-  }
-};
-
-// Populate form from API response
-const populateFormFromResponse = async () => {
-  if (!voucher_idwise_data.value) return;
-
-  const data = voucher_idwise_data.value;
-
-  // Populate master form fields
-  form.value.date = data.JVDate ? dayjs(data.JVDate) : dayjs();
-  form.value.voucherType = data.JVType;
-  form.value.category = data.JVCat;
-  form.value.voucherNumber = data.JVSerial || data.JVNo;
-
-  // Fetch all account heads first to ensure we have the data
-  try {
-    const { data: accountHeadsData } = await axios.get(
-      `${apiBase}/journal/account-head?JVType=${form.value.voucherType}`,
-      getToken()
-    );
-    if (Array.isArray(accountHeadsData)) {
-      account_head.value = accountHeadsData;
-      all_account_head.value = accountHeadsData;
-    }
-  } catch (err) {
-    console.error("Error fetching account heads:", err);
-  }
-
-  // Populate voucher entries from details
-  if (Array.isArray(data.details) && data.details.length > 0) {
-    // Find the selected voucher to get its AMCode for bank contra identification
-    const selectedVoucher = voucherTypes.value.find(
-      (v) => v.JVType === data.JVType
-    );
-    const isBankVoucher =
-      selectedVoucher?.Category?.toUpperCase() === "BANK" ||
-      selectedVoucher?.Category?.toUpperCase() === "CASH";
-    const bankAMCode = selectedVoucher?.AMCode;
-
-    voucherEntries.value = data.details.map((detail) => {
-      const accountDetails = getAccountDetails(detail.AMCode);
-
-      // Check if this entry is a bank contra entry
-      const isBankContra = isBankVoucher && detail.AMCode === bankAMCode;
-
-      return {
-        account_head: detail.AMCode,
-        accountDetails: accountDetails || detail.AMCode, // Fallback to AMCode if not found
-        // type: detail.ASCode,
-        subLedger: detail.ASCode,
-        person: detail.Person || "",
-        chequeNo: detail.ChequeNo || "",
-        chequeName: detail.ChequeName || "",
-        narration: detail.Narration || "",
-        debit: parseFloat(detail.Debit) || 0,
-        credit: parseFloat(detail.Credit) || 0,
-        billNo: detail.BillNo || "",
-        billDate: detail.BillDate ? dayjs(detail.BillDate) : dayjs(),
-        group: "",
-        voucherType: data.JVType,
-        category: data.JVCat,
-        date: data.JVDate ? dayjs(data.JVDate) : dayjs(),
-        isEditing: false,
-        isBankContra: isBankContra, // Mark bank contra entries
-        RecNo: detail.RecNo,
-        AMCode: detail.AMCode,
-        ASCode: detail.ASCode,
-      };
-    });
-  }
-};
 
 watch(
   () => form.value.voucherType,
@@ -2038,7 +1946,7 @@ watch(
     () => form.value.date,
   ],
   ([newType, newCat, newDate]) => {
-    if (newType && newCat && newDate && !isEditingExistingVoucher.value) {
+    if (newType && newCat && newDate) {
       fetchVoucherNumber();
     }
   }
@@ -2104,7 +2012,6 @@ const handleVoucherTypeClear = () => {
 onMounted(() => {
   fetchVoucherTypes();
   // fetchSubLedgerList();
-  voucher_idwise();
   fetchChequeRegisterList();
   fetchCategories();
   fetchgroup();
@@ -2133,9 +2040,9 @@ input:focus,
 
 /* Auto-selection visual feedback */
 .auto-selecting .ant-select-selector {
-  background-color: #a7f3d0 !important; /* Light green */
-  border-color: #10b981 !important; /* Green border */
-  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
+  background-color: #f3a7a7 !important; /* Light green */
+  border-color: #b91010 !important; /* Green border */
+  box-shadow: 0 0 0 2px rgba(185, 16, 16, 0.2) !important;
   transition: all 0.3s ease;
 }
 
