@@ -42,7 +42,7 @@
             <label class="font-semibold block w-48"
               ><span class="text-red-500">* </span>Account Code :
             </label>
-            <a-input
+            <!-- <a-input
               @input="handle_fixed_three_digit(AMCode)"
               v-model:value="AMCode"
               @change="get_AM_Code"
@@ -52,12 +52,33 @@
               @keydown.enter="AMCodeOther_Digit_ref?.focus()"
               @focus="focusedField = 'AMCode'"
               :class="{ 'bg-yellow-100': focusedField === 'AMCode' }"
-            />
+            /> -->
+            <a-select
+              v-model:value="AMCode"
+              class="w-full"
+              placeholder="Select Account Type"
+              show-search
+              allowClear
+              :filter-option="false"
+              ref="AMCode_ref"
+              @keydown.enter="AMCodeOther_Digit_ref?.focus()"
+              @focus="focusedField = 'AMCode'"
+              :class="{ 'bg-yellow-100': focusedField === 'AMCode' }"
+            >
+              <a-select-option
+                v-for="ac in glAcType"
+                :value="ac?.ACType1"
+                :key="ac?.ACType1"
+              >
+                {{ ac?.ACType1 }} - {{ ac?.ACType1Details }}
+              </a-select-option>
+            </a-select>
           </div>
           <!-- <h2 class="absolute -top-10 left-[44%] text-white bg-indigo-500 border px-16">
             Item
           </h2> -->
-          <!-- <a-input
+          <a-input
+            v-show="false"
             @input="handle_fixed_five_digit(AMCodeOther_Digit)"
             v-model:value="AMCodeOther_Digit"
             type="number"
@@ -67,7 +88,7 @@
             @keydown.esc="AMCode_ref?.focus()"
             @focus="focusedField = 'AMCodeOther_Digit'"
             :class="{ 'bg-yellow-100': focusedField === 'AMCodeOther_Digit' }"
-          /> -->
+          />
           <button class="border px-6 py-1 rounded" @click="open = true">
             <Icon class="text-2xl" icon="fa6-solid:binoculars" />
           </button>
@@ -403,6 +424,7 @@ import axios from "axios";
 
 import { useRouter } from "vue-router";
 import debounce from "debounce";
+import AcType from "./ac-type.vue";
 const router = useRouter();
 const goBack = () => {
   router.push({ name: "search-chart-of-accounts" });
@@ -510,6 +532,16 @@ const Subledger = ref(0);
 const selectedCategory = ref("");
 const startId = ref(0);
 const endId = ref(0);
+
+//account code fetch from GL_ACType
+const glAcType = ref([]);
+const get_ACType = async () => {
+  try {
+    const res = await axios.get(`${apiBase}/settings/ac-types`, getToken());
+    glAcType.value = res?.data?.data?.data;
+    console.log(res.data?.data?.data);
+  } catch (error) {}
+};
 
 const categories = ref([]);
 
@@ -749,6 +781,7 @@ onMounted(() => {
   get_AC_subcategory();
   getCashFlow();
   getGroupCode();
+  get_ACType();
 });
 </script>
 <style scoped>
