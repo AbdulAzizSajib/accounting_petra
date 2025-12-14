@@ -102,6 +102,10 @@ import CashFlowStatementReport from "@/views/finance/reports/cash-flow-statement
 import BalanceSheetDetails from "@/views/finance/reports/Balance-sheet-details.vue";
 import AccountRatioReport from "@/views/finance/reports/account-ratio-report.vue";
 
+//sale voucher
+import SaleVoucher from "@/views/finance/reports/sale-voucher.vue";
+import SaleVoucherAdd from "@/views/finance/reports/sale-voucher-add.vue";
+
 const routes = [
   {
     path: "/",
@@ -497,6 +501,22 @@ const routes = [
     path: "/transaction/sales-voucher",
     name: "sales-voucher",
     component: SalesVoucher,
+  },
+
+    {
+    path: "/transaction/voucher-list/voucher-add",
+    name: "voucher-add",
+    component: VoucherAdd,
+  },
+  {
+    path: "/transaction/sale-voucher",
+    name: "sale-voucher",
+    component: SaleVoucher,
+  },
+    {
+    path: "/transaction/sale-voucher/sale-voucher-add",
+    name: "sale-voucher-add",
+    component: SaleVoucherAdd,
   },
   {
     path: "/transaction/bill-receive",
