@@ -39,7 +39,7 @@
               Type
             </h2> -->
             <label class="font-semibold block w-48"
-              ><span class="text-red-500">* </span>Account Type :
+              ><span class="text-red-500">* </span>Account Head :
             </label>
             <!-- <a-input
               @input="handle_fixed_three_digit(AMCode)"
@@ -696,6 +696,13 @@ const saveAccount = async () => {
 watch(AMCode, (newType, oldType) => {
   if (newType !== oldType) {
     AMDetails.value = "";
+  }
+});
+
+watch(type, (newType, oldType) => {
+  if (newType !== oldType) {
+    AMDetails.value = "";
+    AMCode.value = "";
   }
 });
 
