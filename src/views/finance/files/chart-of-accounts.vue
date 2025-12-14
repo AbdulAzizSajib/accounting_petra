@@ -27,7 +27,6 @@
               v-model:value="type"
               class="w-60"
               placeholder="Select Type"
-              default="others"
               @change="typeValuehandler"
             >
               <a-select-option value="others">Others</a-select-option>
@@ -40,7 +39,7 @@
               Type
             </h2> -->
             <label class="font-semibold block w-48"
-              ><span class="text-red-500">* </span>Account Code :
+              ><span class="text-red-500">* </span>Account Type :
             </label>
             <!-- <a-input
               @input="handle_fixed_three_digit(AMCode)"
@@ -64,6 +63,7 @@
               @keydown.enter="AMCodeOther_Digit_ref?.focus()"
               @focus="focusedField = 'AMCode'"
               :class="{ 'bg-yellow-100': focusedField === 'AMCode' }"
+              @search="get_ACType"
             >
               <a-select-option
                 v-for="ac in glAcType"
@@ -155,6 +155,8 @@
             v-model:value="GroupCode"
             class="w-full"
             placeholder="Select Group Type"
+            @search="fetchTypeCustomer"
+            :filter-option="false"
           >
             <a-select-option
               v-for="item in groupcodeList"
@@ -535,9 +537,12 @@ const endId = ref(0);
 
 //account code fetch from GL_ACType
 const glAcType = ref([]);
-const get_ACType = async () => {
+const get_ACType = async (search = "") => {
   try {
-    const res = await axios.get(`${apiBase}/settings/ac-types`, getToken());
+    const res = await axios.get(
+      `${apiBase}/settings/ac-types?search=${search}`,
+      getToken()
+    );
     glAcType.value = res?.data?.data?.data;
     console.log(res.data?.data?.data);
   } catch (error) {}
@@ -672,7 +677,13 @@ const saveAccount = async () => {
 
     if (res?.data) {
       showNotification("success", res?.data?.message);
+      setTimeout(() => {
+        window.location.reload();
+        // goBack();
+      }, 500);
     }
+
+    // reset form
   } catch (error) {
     console.log(error);
     isSaveAccount.value = false;
@@ -680,6 +691,13 @@ const saveAccount = async () => {
     showNotification("error", error?.response.data.message);
   }
 };
+
+//watcher for account type and account details
+watch(AMCode, (newType, oldType) => {
+  if (newType !== oldType) {
+    AMDetails.value = "";
+  }
+});
 
 const handle_fixed_three_digit = (digit) => {
   if (digit && digit.length > 3) {
