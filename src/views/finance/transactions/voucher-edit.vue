@@ -758,11 +758,13 @@ const populateFormFromEntry = async (entry, index) => {
   // Set editing index FIRST
   editingIndex.value = index;
 
-  // Check if this is a BANK voucher and adjust bank contra entry
+  // Check if this is a BANK/CASH voucher and adjust bank contra entry
   const selectedVoucher = voucherTypes.value.find(
     (v) => v.JVType === form.value.voucherType
   );
-  const isBankVoucher = selectedVoucher?.Category?.toUpperCase() === "BANK";
+  const isBankVoucher =
+    selectedVoucher?.Category?.toUpperCase() === "BANK" ||
+    selectedVoucher?.Category?.toUpperCase() === "CASH";
 
   if (isBankVoucher) {
     const bankContraEntry = voucherEntries.value.find(
@@ -978,7 +980,8 @@ const isBankPayment = computed(() => {
     (v) => v.JVType === form.value.voucherType
   );
   return (
-    selectedVoucher?.Category?.toUpperCase() === "BANK" &&
+    (selectedVoucher?.Category?.toUpperCase() === "BANK" ||
+      selectedVoucher?.Category?.toUpperCase() === "CASH") &&
     form.value.category === "P"
   ); // Assuming 'P' is short for Payment
 });
@@ -988,21 +991,22 @@ const isBankReceipt = computed(() => {
     (v) => v.JVType === form.value.voucherType
   );
   return (
-    selectedVoucher?.Category?.toUpperCase() === "BANK" &&
+    (selectedVoucher?.Category?.toUpperCase() === "BANK" ||
+      selectedVoucher?.Category?.toUpperCase() === "CASH") &&
     form.value.category === "R"
   ); // Assuming 'R' is short for Receipt
 });
 
 const isCreditDisabled = computed(() => {
   // Disable credit field when:
-  // 1. Voucher Type is BANK and Category is Payment
+  // 1. Voucher Type is BANK/CASH and Category is Payment
   // 2. No entries have been added yet
   return isBankPayment.value && voucherEntries.value.length === 0;
 });
 
 const isDebitDisabled = computed(() => {
   // Disable debit field when:
-  // 1. Voucher Type is BANK and Category is Receipt
+  // 1. Voucher Type is BANK/CASH and Category is Receipt
   // 2. No entries have been added yet
   return isBankReceipt.value && voucherEntries.value.length === 0;
 });
@@ -1341,12 +1345,13 @@ const addEntry = () => {
 
   const f = form.value;
 
-  // Validate credit/debit amounts for BANK vouchers
+  // Validate credit/debit amounts for BANK/CASH vouchers
   const selectedVoucherForValidation = voucherTypes.value.find(
     (v) => v.JVType === f.voucherType
   );
   const isBankVoucherValidation =
-    selectedVoucherForValidation?.Category?.toUpperCase() === "BANK";
+    selectedVoucherForValidation?.Category?.toUpperCase() === "BANK" ||
+    selectedVoucherForValidation?.Category?.toUpperCase() === "CASH";
 
   if (isBankVoucherValidation && f.category === "P" && f.credit > 0) {
     // For BANK Payment: Check if credit exceeds existing bank contra credit
@@ -1418,11 +1423,13 @@ const addEntry = () => {
     isEditing: false,
   };
 
-  // Check if Voucher Type is Bank and Category is Payment or Receipt
+  // Check if Voucher Type is Bank/Cash and Category is Payment or Receipt
   const selectedVoucher = voucherTypes.value.find(
     (v) => v.JVType === f.voucherType
   );
-  const isBankVoucher = selectedVoucher?.Category?.toUpperCase() === "BANK";
+  const isBankVoucher =
+    selectedVoucher?.Category?.toUpperCase() === "BANK" ||
+    selectedVoucher?.Category?.toUpperCase() === "CASH";
   const isPaymentCategory = f.category === "P";
   const isReceiptCategory = f.category === "R";
   const isEditing =
@@ -1902,7 +1909,9 @@ const populateFormFromResponse = async () => {
     const selectedVoucher = voucherTypes.value.find(
       (v) => v.JVType === data.JVType
     );
-    const isBankVoucher = selectedVoucher?.Category?.toUpperCase() === "BANK";
+    const isBankVoucher =
+      selectedVoucher?.Category?.toUpperCase() === "BANK" ||
+      selectedVoucher?.Category?.toUpperCase() === "CASH";
     const bankAMCode = selectedVoucher?.AMCode;
 
     voucherEntries.value = data.details.map((detail) => {
