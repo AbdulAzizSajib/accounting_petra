@@ -31,9 +31,7 @@
           <div
             class="flex flex-col md:flex-row items-center gap-1 border border-gray-300 rounded-lg p-4 flex-1"
           >
-            <label class="font-semibold text-gray-700 md:w-24 mb-2"
-              >Customer:</label
-            >
+            <label class="font-semibold text-gray-700 md:w-24 mb-2">Customer:</label>
             <a-select
               v-model:value="formData.customer"
               class="w-full md:w-48 flex-1"
@@ -57,8 +55,7 @@
 
           <div class="flex gap-2 mt-4 items-center">
             <a-button type="primary" @click="handleAddSale">Add</a-button>
-            <a-button
-              class="bg-red-600 text-white px-4 py-1 rounded-lg hover:bg-red-700"
+            <a-button class="bg-red-600 text-white px-4 py-1 rounded-lg hover:bg-red-700"
               >Close</a-button
             >
           </div>
@@ -79,18 +76,12 @@
       </thead>
       <tbody class="capitalize">
         <tr v-if="allData.length === 0">
-          <td colspan="6" class="text-center py-4 text-gray-500">
-            No data available.
-          </td>
+          <td colspan="6" class="text-center py-4 text-gray-500">No data available.</td>
         </tr>
         <template v-else v-for="data in allData" :key="data.InvoiceNo">
           <tr>
             <td class="px-4 border">
-              <input
-                type="checkbox"
-                :value="data.InvoiceNo"
-                v-model="checkedInvoice"
-              />
+              <input type="checkbox" :value="data.InvoiceNo" v-model="checkedInvoice" />
             </td>
             <td class="px-4 border relative">
               <div class="flex items-center cursor-pointer gap-2">
@@ -100,11 +91,7 @@
 
                 <Icon
                   class="text-lg"
-                  :icon="
-                    isOpen(data.InvoiceNo)
-                      ? 'mdi:chevron-down'
-                      : 'mdi:chevron-up'
-                  "
+                  :icon="isOpen(data.InvoiceNo) ? 'mdi:chevron-down' : 'mdi:chevron-up'"
                   @click.stop="toggleInvoice(data.InvoiceNo)"
                 />
               </div>
@@ -118,10 +105,7 @@
 
           <tr v-if="isOpen(data.InvoiceNo)">
             <td colspan="6" class="bg-gray-50">
-              <div
-                v-if="invoiceDetails[data.InvoiceNo]?.length"
-                class="overflow-x-auto"
-              >
+              <div v-if="invoiceDetails[data.InvoiceNo]?.length" class="overflow-x-auto">
                 <table class="w-full text-sm border-collapse">
                   <thead>
                     <tr class="bg-gray-200 border border-gray-400">
@@ -152,9 +136,7 @@
                   </tbody>
                 </table>
               </div>
-              <div v-else class="text-gray-500 text-center py-4">
-                Loading...
-              </div>
+              <div v-else class="text-gray-500 text-center py-4">Loading...</div>
             </td>
           </tr>
         </template>
@@ -172,9 +154,7 @@
           <div class="p-6 bg-gray-50 rounded">
             <div class="flex flex-wrap gap-3">
               <div class="w-[280px] hidden">
-                <label class="block text-sm font-medium text-gray-700"
-                  >Period</label
-                >
+                <label class="block text-sm font-medium text-gray-700">Period</label>
                 <input
                   v-model="modalForm.Period"
                   class="w-full border rounded-lg p-1 focus:outline-indigo-500"
@@ -182,9 +162,7 @@
               </div>
 
               <div class="w-[280px] hidden">
-                <label class="block text-sm font-medium text-gray-700"
-                  >Site Code</label
-                >
+                <label class="block text-sm font-medium text-gray-700">Site Code</label>
                 <input
                   v-model="modalForm.SiteCode"
                   class="w-full border rounded-lg p-1 focus:outline-indigo-500"
@@ -192,9 +170,7 @@
               </div>
 
               <div class="w-[280px]">
-                <label class="block text-sm font-medium text-gray-700"
-                  >Date</label
-                >
+                <label class="block text-sm font-medium text-gray-700">Date</label>
                 <a-date-picker
                   v-model:value="modalForm.JVDate"
                   class="w-full"
@@ -210,25 +186,16 @@
                   v-model:value="modalForm.JVType"
                   class="w-full"
                   @change="handleJVTypeChange"
-                  :rules="[
-                    {
-                      required: false,
-                      message: 'Please select a Voucher Type!',
-                    },
-                  ]"
+                  :rules="[{ required: false, message: 'Please select a Voucher Type!' }]"
                   required
                 >
                   <a-select-option value="NCC">NCC - 021-00001</a-select-option>
-                  <a-select-option value="CSH"
-                    >Cash - 021-01001</a-select-option
-                  >
+                  <a-select-option value="CSH">Cash - 021-01001</a-select-option>
                 </a-select>
               </div>
 
               <div class="w-[280px] hidden">
-                <label class="block text-sm font-medium text-gray-700"
-                  >JV Category</label
-                >
+                <label class="block text-sm font-medium text-gray-700">JV Category</label>
                 <input
                   v-model="modalForm.JVCat"
                   class="w-full border rounded-lg p-1 focus:outline-indigo-500"
@@ -236,9 +203,7 @@
               </div>
 
               <div class="w-[280px] hidden">
-                <label class="block text-sm font-medium text-gray-700"
-                  >Trans Date</label
-                >
+                <label class="block text-sm font-medium text-gray-700">Trans Date</label>
                 <a-date-picker
                   v-model:value="modalForm.TransDate"
                   class="w-full"
@@ -247,9 +212,7 @@
               </div>
 
               <div class="w-[280px] hidden">
-                <label class="block text-sm font-medium text-gray-700"
-                  >Posted</label
-                >
+                <label class="block text-sm font-medium text-gray-700">Posted</label>
                 <input
                   v-model="modalForm.Posted"
                   class="w-full border rounded-lg p-1 focus:outline-indigo-500"
@@ -257,9 +220,7 @@
               </div>
 
               <div class="w-[280px] hidden">
-                <label class="block text-sm font-medium text-gray-700"
-                  >User ID</label
-                >
+                <label class="block text-sm font-medium text-gray-700">User ID</label>
                 <input
                   v-model="modalForm.UserId"
                   class="w-full border rounded-lg p-1 focus:outline-indigo-500"
@@ -267,9 +228,7 @@
               </div>
 
               <div class="w-[280px] hidden">
-                <label class="block text-sm font-medium text-gray-700"
-                  >Edit Date</label
-                >
+                <label class="block text-sm font-medium text-gray-700">Edit Date</label>
                 <a-date-picker
                   v-model:value="modalForm.EditDate"
                   class="w-full"
@@ -278,9 +237,7 @@
               </div>
 
               <div class="w-[280px] hidden">
-                <label class="block text-sm font-medium text-gray-700"
-                  >AM Code</label
-                >
+                <label class="block text-sm font-medium text-gray-700">AM Code</label>
                 <input
                   v-model="modalForm.AMCode"
                   class="w-full border rounded-lg p-1 focus:outline-indigo-500"
@@ -288,9 +245,7 @@
               </div>
 
               <div class="w-[280px] hidden">
-                <label class="block text-sm font-medium text-gray-700"
-                  >AS Code</label
-                >
+                <label class="block text-sm font-medium text-gray-700">AS Code</label>
                 <input
                   v-model="modalForm.ASCode"
                   class="w-full border rounded-lg p-1 focus:outline-indigo-500"
@@ -310,9 +265,7 @@
               </div>
 
               <div class="w-[280px]">
-                <label class="block text-sm font-medium text-gray-700"
-                  >Amount</label
-                >
+                <label class="block text-sm font-medium text-gray-700">Amount</label>
                 <input
                   :value="calculateTotalSelectedAmount()"
                   readonly
@@ -328,9 +281,7 @@
               v-if="modalForm.JVType === 'NCC'"
             >
               <div class="w-[280px]">
-                <label class="block text-sm font-medium text-gray-700"
-                  >Cheque No</label
-                >
+                <label class="block text-sm font-medium text-gray-700">Cheque No</label>
                 <input
                   v-model="chequeDetails.ChequeNo"
                   type="text"
@@ -340,9 +291,7 @@
               </div>
 
               <div class="w-[280px]">
-                <label class="block text-sm font-medium text-gray-700"
-                  >Cheque Name</label
-                >
+                <label class="block text-sm font-medium text-gray-700">Cheque Name</label>
                 <input
                   v-model="chequeDetails.ChequeName"
                   class="w-full border rounded-lg p-1 focus:outline-indigo-500"
@@ -350,9 +299,7 @@
               </div>
 
               <div class="w-[280px]">
-                <label class="block text-sm font-medium text-gray-700"
-                  >Cheque Date</label
-                >
+                <label class="block text-sm font-medium text-gray-700">Cheque Date</label>
                 <a-date-picker
                   v-model:value="chequeDetails.ChequePayDate"
                   class="w-full"
@@ -374,103 +321,63 @@
                   <th class="border border-white px-4 py-2">Account Code</th>
                   <th class="border border-white px-4 py-2">Account Details</th>
                   <th class="border border-white px-4 py-2">Sub Ledger</th>
-                  <th class="border border-white px-4 py-2 text-right">
-                    Debit
-                  </th>
-                  <th class="border border-white px-4 py-2 text-right">
-                    Credit
-                  </th>
+                  <!-- <th class="border border-white px-4 py-2">Narration</th> -->
+                  <th class="border border-white px-4 py-2 text-right">Debit</th>
+                  <th class="border border-white px-4 py-2 text-right">Credit</th>
                 </tr>
               </thead>
               <tbody class="capitalize">
-                <tr
-                  v-if="
-                    !creditVoucherEntries.length && !modalForm.Details.length
-                  "
-                >
-                  <td colspan="5" class="text-center py-4 text-gray-500">
+                <tr v-if="!creditVoucherEntries.length">
+                  <td colspan="6" class="text-center py-4 text-gray-500">
                     No voucher data available. Click 'Add' above to populate.
                   </td>
                 </tr>
 
-                <!-- Show confirmed entries (already added with narration) -->
                 <tr
                   v-for="(item, index) in creditVoucherEntries"
-                  :key="'confirmed-' + item.BillNo"
+                  :key="item.BillNo"
                   class="bg-gray-100 hover:bg-gray-200"
                 >
                   <td class="px-4 border">{{ item.AccountCode }}</td>
                   <td class="px-4 border">{{ item.AccountDetails }}</td>
-                  <td class="px-4 border">{{ item.BillNo }}</td>
+                  <td class="px-4 border">-</td>
+                  <!-- <td class="px-4 border">{{ item.Narration }}</td> -->
                   <td class="px-4 border text-right">{{ 0.0 }}</td>
                   <td class="px-4 border text-right">
                     {{ (parseFloat(item.Credit) || 0).toFixed(2) }}
                   </td>
                 </tr>
 
-                <!-- Show pending entries (selected but not yet confirmed with narration) -->
                 <tr
-                  v-for="(item, index) in modalForm.Details"
-                  :key="'pending-' + item.BillNo"
-                  class="bg-yellow-50 hover:bg-yellow-100 border-l-4 border-l-yellow-400"
-                >
-                  <td class="px-4 border">{{ item.AccountCode }}</td>
-                  <td class="px-4 border">{{ item.AccountDetails }}</td>
-                  <td class="px-4 border">
-                    {{ item.BillNo }}
-                    <span class="text-xs text-yellow-600">(pending)</span>
-                  </td>
-                  <td class="px-4 border text-right">{{ 0.0 }}</td>
-                  <td class="px-4 border text-right">
-                    {{ (parseFloat(item.Credit) || 0).toFixed(2) }}
-                  </td>
-                </tr>
-
-                <!-- Debit entry row -->
-                <tr
-                  v-if="debitVoucherEntry || modalForm.Details.length > 0"
+                  v-if="debitVoucherEntry"
                   key="debit-entry"
                   class="bg-gray-100 hover:bg-gray-200"
                 >
-                  <td class="px-4 border">
-                    {{
-                      debitVoucherEntry?.AccountCode || getDebitAccountCode()
-                    }}
-                  </td>
-                  <td class="px-4 border">
-                    {{
-                      debitVoucherEntry?.AccountDetails ||
-                      getDebitAccountDetails()
-                    }}
-                  </td>
+                  <td class="px-4 border">{{ debitVoucherEntry.AccountCode }}</td>
+                  <td class="px-4 border">{{ debitVoucherEntry.AccountDetails }}</td>
                   <td class="px-4 border">-</td>
+                  <!-- <td class="px-4 border">{{ debitVoucherEntry.Narration }}</td> -->
                   <td class="px-4 border text-right">
-                    {{ calculateTotalCreditIncludingPending() }}
+                    {{ calculateTotalCredit() }}
                   </td>
                   <td class="px-4 border text-right">{{ 0.0 }}</td>
                 </tr>
               </tbody>
 
-              <tr
-                class="bg-gray-50 border-t-2 border-gray-400"
-                v-if="
-                  creditVoucherEntries.length > 0 ||
-                  modalForm.Details.length > 0
-                "
-              >
+              <tr class="bg-gray-50 border-t-2 border-gray-400">
                 <td colspan="3"></td>
                 <td class="px-4 border">
                   <div
                     class="w-full h-8 bg-blue-700 text-white text-center flex justify-center items-center rounded font-bold"
                   >
-                    {{ calculateTotalCreditIncludingPending() }}
+                    {{ calculateTotalDebit() }}
                   </div>
                 </td>
                 <td class="px-4 border">
                   <div
                     class="w-full h-8 bg-teal-500 text-white text-center flex justify-center items-center rounded font-bold"
                   >
-                    {{ calculateTotalCreditIncludingPending() }}
+                    {{ calculateTotalCredit() }}
                   </div>
                 </td>
               </tr>
@@ -535,9 +442,7 @@ const fetchAllData = async () => {
     const fromDate = formData.value.from
       ? dayjs(formData.value.from).format("YYYY-MM-DD")
       : "";
-    const toDate = formData.value.to
-      ? dayjs(formData.value.to).format("YYYY-MM-DD")
-      : "";
+    const toDate = formData.value.to ? dayjs(formData.value.to).format("YYYY-MM-DD") : "";
 
     const res = await axios.get(
       `${apiBase}/get_sales_details?q=${formData.value.customer}&from=${fromDate}&to=${toDate}`,
@@ -545,9 +450,7 @@ const fetchAllData = async () => {
     );
     allData.value = res?.data?.map((item) => ({
       ...item,
-      InvoiceDate: item.InvoiceDate
-        ? dayjs(item.InvoiceDate).format("YYYY-MM-DD")
-        : "",
+      InvoiceDate: item.InvoiceDate ? dayjs(item.InvoiceDate).format("YYYY-MM-DD") : "",
     }));
   } catch (error) {
     console.error(error);
@@ -557,10 +460,7 @@ const fetchAllData = async () => {
 
 const customerfetch = async (search = "") => {
   try {
-    const res = await axios.get(
-      `${apiBase}/get_customer?q=${search}`,
-      getToken()
-    );
+    const res = await axios.get(`${apiBase}/get_customer?q=${search}`, getToken());
     customerData.value = res?.data;
   } catch (error) {
     console.error(error);
@@ -604,20 +504,51 @@ const handleJVTypeChange = (value) => {
   }
 };
 
-// Helper functions for debit entry display when pending entries exist
-const getDebitAccountCode = () => {
-  return modalForm.value.JVType === "NCC" ? "021-00001" : "021-01001";
-};
+// 1. Opens the modal and prepares the base credit entries
+// const handleAddSale = () => {
+//   // Use a temporary list to track what we're about to add in this batch.
+//   // CRITICAL FIX: Filter checked invoices to ensure we only process invoices NOT already in the voucher table.
+//   const currentBatchInvoices = checkedInvoice.value.filter(
+//     (invNo) => !creditVoucherEntries.value.some((entry) => entry.BillNo === invNo)
+//   );
 
-const getDebitAccountDetails = () => {
-  return modalForm.value.JVType === "NCC" ? "NCC A/C" : "Cash A/C";
-};
+//   if (currentBatchInvoices.length === 0) {
+//     const message = isModalOpen.value
+//       ? "Please select a new invoice not already added to the voucher."
+//       : "Please select an invoice.";
+//     showNotification("warning", message);
+//     return;
+//   }
+
+//   // 1. Reset temporary details structure.
+//   modalForm.value.Details = [];
+
+//   // 2. Prepare the initial credit entries for the currently selected (unconsumed) invoices
+//   const initialCreditEntries = currentBatchInvoices.map((invNo) => {
+//     const invoice = allData.value.find((item) => item.InvoiceNo === invNo);
+//     const invoiceDateDayjs = invoice?.InvoiceDate ? dayjs(invoice.InvoiceDate) : null;
+
+//     return {
+//       AccountCode: modalForm.value.AMCode, // Customer A/C (Credit)
+//       AccountDetails: invoice?.CustomerName || "",
+//       Credit: parseFloat(invoice?.NET) || 0,
+//       BillNo: invNo, // Invoice No (used for Sub Ledger)
+//       BillDate: invoiceDateDayjs,
+//       TransType: "s",
+//       Person: invoice?.CustomerName || "",
+//     };
+//   });
+
+//   // Store them temporarily in Details. They will be consumed by addVoucherEntry.
+//   modalForm.value.Details = initialCreditEntries;
+
+//   isModalOpen.value = true;
+// };
 
 // 1. Opens the modal and prepares the base credit entries
 const handleAddSale = () => {
   const currentBatchInvoices = checkedInvoice.value.filter(
-    (invNo) =>
-      !creditVoucherEntries.value.some((entry) => entry.BillNo === invNo)
+    (invNo) => !creditVoucherEntries.value.some((entry) => entry.BillNo === invNo)
   );
 
   // If the modal is NOT open, and no invoices are selected, warn and return.
@@ -642,15 +573,13 @@ const handleAddSale = () => {
     commonNarration.value = "";
     chequeDetails.value = { ChequeNo: "", ChequeName: "", ChequePayDate: null };
     modalForm.value.JVType = "CSH";
-    modalForm.value.Details = []; // Reset pending details
   }
 
-  // Create entries for the newly selected invoices (these will show as "pending")
+  modalForm.value.Details = [];
+
   const initialCreditEntries = currentBatchInvoices.map((invNo) => {
     const invoice = allData.value.find((item) => item.InvoiceNo === invNo);
-    const invoiceDateDayjs = invoice?.InvoiceDate
-      ? dayjs(invoice.InvoiceDate)
-      : null;
+    const invoiceDateDayjs = invoice?.InvoiceDate ? dayjs(invoice.InvoiceDate) : null;
 
     return {
       AccountCode: modalForm.value.AMCode,
@@ -663,13 +592,13 @@ const handleAddSale = () => {
     };
   });
 
-  // Store them temporarily in Details - they will show as "pending" in the table
+  // Store them temporarily in Details. They will be consumed by addVoucherEntry.
   modalForm.value.Details = initialCreditEntries;
 
   isModalOpen.value = true;
 };
 
-// 2. Populates the Voucher table inside the modal
+// 2. Populates the Voucher table inside the modal, **WITHOUT** clearing the main table checkboxes.
 const addVoucherEntry = () => {
   if (!commonNarration.value || commonNarration.value.trim() === "") {
     showNotification("warning", "Please fill in the Narration.");
@@ -679,10 +608,7 @@ const addVoucherEntry = () => {
   if (modalForm.value.JVType === "NCC") {
     const { ChequeNo, ChequeName, ChequePayDate } = chequeDetails.value;
     if (!ChequeNo || !ChequeName || !ChequePayDate) {
-      showNotification(
-        "warning",
-        "Please fill in all Cheque details for NCC type."
-      );
+      showNotification("warning", "Please fill in all Cheque details for NCC type.");
       return;
     }
   }
@@ -706,14 +632,10 @@ const addVoucherEntry = () => {
     TransType: detail.TransType,
     Person: detail.Person,
     Narration: commonNarration.value,
-    ChequeNo:
-      modalForm.value.JVType === "NCC" ? chequeDetails.value.ChequeNo : null,
-    ChequeName:
-      modalForm.value.JVType === "NCC" ? chequeDetails.value.ChequeName : null,
+    ChequeNo: modalForm.value.JVType === "NCC" ? chequeDetails.value.ChequeNo : null,
+    ChequeName: modalForm.value.JVType === "NCC" ? chequeDetails.value.ChequeName : null,
     ChequePayDate:
-      modalForm.value.JVType === "NCC"
-        ? chequeDetails.value.ChequePayDate
-        : null,
+      modalForm.value.JVType === "NCC" ? chequeDetails.value.ChequePayDate : null,
   }));
 
   // ACCUMULATE: Add new entries to the existing entries
@@ -753,31 +675,9 @@ const calculateTotalCredit = () => {
     .toFixed(2);
 };
 
-// NEW: Calculate total credit including pending entries (for display purposes)
-const calculateTotalCreditIncludingPending = () => {
-  const confirmedTotal = creditVoucherEntries.value.reduce((sum, item) => {
-    return sum + (parseFloat(item.Credit) || 0);
-  }, 0);
-
-  const pendingTotal = modalForm.value.Details.reduce((sum, item) => {
-    return sum + (parseFloat(item.Credit) || 0);
-  }, 0);
-
-  return (confirmedTotal + pendingTotal).toFixed(2);
-};
-
 // 5. Save Voucher (Final preparation and API POST)
 
 const saveSaleVoucher = async () => {
-  // Check if there are pending entries that haven't been added yet
-  if (modalForm.value.Details.length > 0) {
-    showNotification(
-      "warning",
-      "You have pending entries. Please click 'Add' first to confirm them with narration before saving."
-    );
-    return;
-  }
-
   if (creditVoucherEntries.value.length === 0 || !debitVoucherEntry.value) {
     showNotification(
       "warning",
@@ -818,9 +718,7 @@ const saveSaleVoucher = async () => {
       Person: d.Person,
       ChequeNo: d.ChequeNo || "",
       ChequeName: d.ChequeName || "",
-      ChequePayDate: d.ChequePayDate
-        ? dayjs(d.ChequePayDate).format("YYYY-MM-DD")
-        : null,
+      ChequePayDate: d.ChequePayDate ? dayjs(d.ChequePayDate).format("YYYY-MM-DD") : null,
       Narration: d.Narration,
       Credit: parseFloat(d.Credit),
       Debit: 0,
@@ -834,9 +732,7 @@ const saveSaleVoucher = async () => {
   try {
     const payload = {
       ...modalForm.value,
-      JVDate: modalForm.value.JVDate
-        ? modalForm.value.JVDate.format("YYYY-MM-DD")
-        : "",
+      JVDate: modalForm.value.JVDate ? modalForm.value.JVDate.format("YYYY-MM-DD") : "",
       TransDate: modalForm.value.TransDate
         ? modalForm.value.TransDate.format("YYYY-MM-DD")
         : "",
