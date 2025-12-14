@@ -2,13 +2,43 @@
   <MainLayout>
     <div class="bg-white rounded-xl py-6 space-y-8 max-w-6xl mx-auto">
       <div class="bg-gray-50 rounded-lg shadow p-4 my-4">
+        <!-- <div class="flex items-center mb-2">
+          <label for="" class="w-32 font-semibold"
+            ><span class="text-red-500">* </span>Type :</label
+          >
+          <a-select
+            v-model:value="type"
+            class="w-60"
+            placeholder="Select Type"
+            default="others"
+            @change="typeValuehandler"
+          >
+            <a-select-option value="others">Others</a-select-option>
+            <a-select-option value="customer">Customer</a-select-option>
+            <a-select-option value="supplier">Supplier</a-select-option>
+          </a-select>
+        </div> -->
         <div class="flex items-center gap-4 relative">
-          <div class="flex items-center gap-2 w-11/12 relative">
-            <h2
-              class="absolute -top-10 left-[30%] text-white bg-indigo-500 border px-16"
+          <div class="flex items-center mb-2">
+            <label for="" class="w-32 font-semibold"
+              ><span class="text-red-500">* </span>Type :</label
             >
+            <a-select
+              v-model:value="type"
+              class="w-60"
+              placeholder="Select Type"
+              default="others"
+              @change="typeValuehandler"
+            >
+              <a-select-option value="others">Others</a-select-option>
+              <a-select-option value="customer">Customer</a-select-option>
+              <a-select-option value="supplier">Supplier</a-select-option>
+            </a-select>
+          </div>
+          <div class="flex items-center gap-2 w-11/12 relative">
+            <!-- <h2 class="absolute -top-10 left-[30%] text-white bg-indigo-500 border px-16">
               Type
-            </h2>
+            </h2> -->
             <label class="font-semibold block w-48"
               ><span class="text-red-500">* </span>Account Code :
             </label>
@@ -24,12 +54,10 @@
               :class="{ 'bg-yellow-100': focusedField === 'AMCode' }"
             />
           </div>
-          <h2
-            class="absolute -top-10 left-[44%] text-white bg-indigo-500 border px-16"
-          >
+          <!-- <h2 class="absolute -top-10 left-[44%] text-white bg-indigo-500 border px-16">
             Item
-          </h2>
-          <a-input
+          </h2> -->
+          <!-- <a-input
             @input="handle_fixed_five_digit(AMCodeOther_Digit)"
             v-model:value="AMCodeOther_Digit"
             type="number"
@@ -39,7 +67,7 @@
             @keydown.esc="AMCode_ref?.focus()"
             @focus="focusedField = 'AMCodeOther_Digit'"
             :class="{ 'bg-yellow-100': focusedField === 'AMCodeOther_Digit' }"
-          />
+          /> -->
           <button class="border px-6 py-1 rounded" @click="open = true">
             <Icon class="text-2xl" icon="fa6-solid:binoculars" />
           </button>
@@ -49,10 +77,48 @@
           <label class="block font-bold w-36"
             ><span class="text-red-500">* </span>Account Details</label
           >
-          <a-input v-model:value="AMDetails" placeholder="Account Details" />
+          <div class="w-full" v-if="type === 'others'">
+            <a-input
+              class="w-full"
+              v-model:value="AMDetails"
+              placeholder="Account Details"
+            />
+          </div>
+          <div class="w-full" v-else-if="type === 'customer'">
+            <a-select
+              v-model:value="AMDetails"
+              class="w-full"
+              placeholder="Select Customer"
+              show-search
+              allowClear
+              :filter-option="false"
+              @search="fetchTypeCustomer"
+            >
+              <a-select-option
+                v-for="customer in customertypeData"
+                :key="customer.CustomerCode"
+                :value="customer.CustomerCode"
+              >
+                {{ customer.CustomerName }} - {{ customer.CustomerCode }}
+              </a-select-option>
+            </a-select>
+          </div>
+
+          <div class="w-full" v-else="type === 'supplier'">
+            <a-select
+              v-model:value="AMDetails"
+              class="w-full"
+              placeholder="Select Supplier"
+              show-search
+              allowClear
+              :filter-option="false"
+            >
+              <a-select-option for=""> No data found </a-select-option>
+            </a-select>
+          </div>
         </div>
       </div>
-      <div class="grid grid-cols-2 gap-8 p-3 bg-gray-50 rounded-lg shadow-sm">
+      <div class="grid grid-cols-2 gap-8 p-3 bg-gray-50 rounded-lg shadow-sm hidden">
         <div class="flex items-center">
           <label for="" class="w-36">Account Type : </label>
 
@@ -150,11 +216,9 @@
 
       <!-- Sub-Ledger Range Table -->
 
-      <div class="pt-10">
+      <div class="pt-10 hidden">
         <div class="bg-gray-50 rounded-lg p-4 space-y-4 shadow relative">
-          <div class="font-semibold mb-2 absolute top-[-10px]">
-            Sub-Ledger Range:
-          </div>
+          <div class="font-semibold mb-2 absolute top-[-10px]">Sub-Ledger Range:</div>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end py-6">
             <div class="flex items-center">
               <label for="" class="block font-bold w-36">Category: </label>
@@ -311,16 +375,10 @@
             </tr>
           </tbody>
         </table>
-        <div
-          v-if="isLoadingMore"
-          class="bottom-0 w-full text-center py-2 bg-white"
-        >
+        <div v-if="isLoadingMore" class="bottom-0 w-full text-center py-2 bg-white">
           <a-spin /> Loading...
         </div>
-        <div
-          v-if="searchResults.length < totalResults"
-          class="text-center mt-8"
-        >
+        <div v-if="searchResults.length < totalResults" class="text-center mt-8">
           <a-button type="dashed" @click="loadMoreResults">Load More</a-button>
         </div>
       </div>
@@ -479,10 +537,7 @@ const GroupCode = ref();
 const AM_code_info = ref();
 const get_AM_Code = async () => {
   try {
-    const res = await axios.get(
-      `${apiBase}/actype?ACType1=${AMCode.value}`,
-      getToken()
-    );
+    const res = await axios.get(`${apiBase}/actype?ACType1=${AMCode.value}`, getToken());
     if (res.data) {
       AM_code_info.value = res?.data;
 
@@ -532,6 +587,25 @@ const handleSubLedgerEnter = () => {
   }
 };
 
+// fetch type customer and supplier
+const customertypeData = ref([]);
+const fetchTypeCustomer = async (search = "") => {
+  try {
+    const res = await axios.get(`${apiBase}/get_customer_all?q=${search}`, getToken());
+    customertypeData.value = res?.data;
+    console.log(customertypeData.value);
+  } catch (error) {}
+};
+
+const typeValuehandler = (value) => {
+  AMDetails.value = "";
+  if (value === "customer") {
+    fetchTypeCustomer();
+  } else value === "supplier";
+  fetchTypeCustomer();
+};
+
+const type = ref("others");
 const isSaveAccount = ref(false);
 const saveAccount = async () => {
   if (!AMCode.value) {
@@ -545,6 +619,7 @@ const saveAccount = async () => {
       {
         AMCode: `${AMCode.value}-${AMCodeOther_Digit.value}`,
         AMDetails: AMDetails.value,
+        type: type.value,
         Subledger: Subledger.value,
         ACType1: AMCode.value,
         UserId: userInfo.name,

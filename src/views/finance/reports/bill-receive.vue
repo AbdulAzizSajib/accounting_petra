@@ -5,9 +5,7 @@
     <div class="bg-white shadow-md rounded-xl p-6 overflow-x-auto">
       <div class="flex items-center gap-x-1 whitespace-nowrap">
         <!-- Bill Forward By -->
-        <label for="" class="text-gray-700 font-medium">
-          Bill Forward By :
-        </label>
+        <label for="" class="text-gray-700 font-medium"> Bill Forward By : </label>
         <select
           id=""
           class="border border-gray-300 rounded-lg px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 w-52"
@@ -15,11 +13,7 @@
           <option value="" disabled selected>Select a person</option>
         </select>
 
-        <button
-          class="bg-indigo-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        >
-          Load Data
-        </button>
+        <a-button type="primary"> Load Data </a-button>
 
         <!-- ACI Ref No -->
         <label for="aciRefNo" class="text-gray-700 font-medium ml-2">
@@ -33,31 +27,15 @@
         />
 
         <!-- Action Buttons -->
-        <button
-          class="bg-indigo-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        >
-          Receive
-        </button>
-        <button
-          class="bg-indigo-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        >
-          Return
-        </button>
-        <button
-          class="bg-indigo-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        >
-          Select All
-        </button>
-        <button
-          class="bg-indigo-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        >
-          Clear
-        </button>
-        <button
-          class="bg-red-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        <a-button type="primary"> Receive </a-button>
+        <a-button type="primary"> Return </a-button>
+        <a-button type="primary"> Select All </a-button>
+        <a-button type="primary"> Clear </a-button>
+        <a-button
+          class="bg-red-600 text-white px-4 py-1 rounded-lg hover:bg-red-700 items-center"
         >
           Close
-        </button>
+        </a-button>
       </div>
     </div>
 

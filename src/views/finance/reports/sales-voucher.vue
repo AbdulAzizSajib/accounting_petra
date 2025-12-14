@@ -19,7 +19,6 @@
               :format="dateFormat"
             />
           </div>
-
           <!-- Date To -->
           <div class="flex flex-col md:flex-row md:items-center gap-1">
             <label for="dateTo" class="font-semibold text-gray-700 md:w-24">
@@ -33,7 +32,6 @@
             />
           </div>
         </div>
-
         <!-- Right Section: Business + Buttons -->
         <div
           class="col-span-1 md:col-span-2 flex flex-col md:flex-row md:items-start md:gap-4"
@@ -42,32 +40,27 @@
           <div
             class="flex flex-col md:flex-row md:items-center md:gap-2 border border-gray-300 rounded-lg p-4 flex-1"
           >
-            <label class="font-semibold text-gray-700 md:w-24 mb-2"> Business: </label>
-
+            <label class="font-semibold text-gray-700 md:w-24 mb-2"> Customer: </label>
             <a-select class="w-full md:w-48 flex-1" placeholder="Select Business" />
-
             <a-radio-group class="flex flex-wrap gap-2 mt-2 md:mt-0 md:ml-4 items-center">
               <a-radio value="sales">Sales</a-radio>
               <a-radio value="credit">Credit</a-radio>
             </a-radio-group>
-
-            <a-button class="mt-2 bg-blue-600 text-white hover:bg-blue-800"
-              >Show</a-button
-            >
+            <a-button type="primary">Show</a-button>
           </div>
-
           <!-- Save & Close Buttons -->
           <div class="flex gap-2 mt-4 items-center">
-            <a-button type="submit" class="bg-blue-600 text-white hover:bg-blue-800"
-              >Save</a-button
-            >
-            <a-button type="" class="bg-red-600 text-white hover:bg-red-800"
+            <a-button type="primary">Save</a-button>
+            <a-button
+              type=""
+              class="bg-red-600 text-white px-4 py-1 rounded-lg hover:bg-red-700 items-center"
               >Close</a-button
             >
           </div>
         </div>
       </div>
     </div>
+
     <!-- table -->
     <table class="w-full border border-collapse text-left mt-5">
       <thead>

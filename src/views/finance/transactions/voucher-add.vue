@@ -44,18 +44,10 @@
                     (event) => {
                       voucherTypes = all_voucherTypes.filter(
                         (item) =>
-                          item?.JVType?.toLowerCase().includes(
-                            event.toLowerCase()
-                          ) ||
-                          item?.JVDetails?.toLowerCase().includes(
-                            event.toLowerCase()
-                          ) ||
-                          item?.Location?.toLowerCase().includes(
-                            event.toLowerCase()
-                          ) ||
-                          item?.AMCode?.toLowerCase().includes(
-                            event.toLowerCase()
-                          )
+                          item?.JVType?.toLowerCase().includes(event.toLowerCase()) ||
+                          item?.JVDetails?.toLowerCase().includes(event.toLowerCase()) ||
+                          item?.Location?.toLowerCase().includes(event.toLowerCase()) ||
+                          item?.AMCode?.toLowerCase().includes(event.toLowerCase())
                       );
                     }
                   "
@@ -70,8 +62,7 @@
                     :label="item.JVType"
                     class="!whitespace-normal"
                   >
-                    {{ item.JVType }} - {{ item.JVDetails }} -
-                    {{ item.Location }} -
+                    {{ item.JVType }} - {{ item.JVDetails }} - {{ item.Location }} -
                     {{ item.AMCode }}
                   </a-select-option>
                 </a-select>
@@ -97,9 +88,7 @@
                   class="w-[100px]"
                   placeholder="Select"
                   @select="group_code_ref?.focus()"
-                  :disabled="
-                    form.voucherType === 'JVR' || voucherEntries.length > 0
-                  "
+                  :disabled="form.voucherType === 'JVR' || voucherEntries.length > 0"
                   @keydown.native.enter.stop="onCategoryEnter"
                   @keydown.native.esc="onCategoryEsc"
                 >
@@ -115,9 +104,7 @@
 
               <!-- Voucher Number -->
               <div class="flex items-center flex-shrink-0">
-                <label for="voucher-number" class="text-lg mr-1"
-                  >Voucher:</label
-                >
+                <label for="voucher-number" class="text-lg mr-1">Voucher:</label>
                 <a-input
                   v-model:value="form.voucherNumber"
                   class="w-12 text-center bg-[#006dc1] text-white"
@@ -193,9 +180,7 @@
                     (event) => {
                       Type = all_Type.filter(
                         (item) =>
-                          item?.ACType1?.toLowerCase().includes(
-                            event.toLowerCase()
-                          ) ||
+                          item?.ACType1?.toLowerCase().includes(event.toLowerCase()) ||
                           item?.ACType1Details?.toLowerCase().includes(
                             event.toLowerCase()
                           )
@@ -226,10 +211,7 @@
                 allow-clear
                 v-model:value="form.account_head"
                 placeholder=""
-                :class="[
-                  'flex-1',
-                  { 'auto-selecting': isAutoSelectingAccountHead },
-                ]"
+                :class="['flex-1', { 'auto-selecting': isAutoSelectingAccountHead }]"
                 ref="account_head_ref"
                 @select="handleAccHeadSelect"
                 @keydown.enter="handleAccHeadEnter"
@@ -237,12 +219,8 @@
                   (event) => {
                     account_head = all_account_head.filter(
                       (item) =>
-                        item?.AMCode?.toLowerCase().includes(
-                          event.toLowerCase()
-                        ) ||
-                        item?.AMDetails?.toLowerCase().includes(
-                          event.toLowerCase()
-                        )
+                        item?.AMCode?.toLowerCase().includes(event.toLowerCase()) ||
+                        item?.AMDetails?.toLowerCase().includes(event.toLowerCase())
                     );
                   }
                 "
@@ -256,9 +234,7 @@
                 </a-select-option>
               </a-select>
             </div>
-            <div
-              class="grid grid-cols-1 lg:grid-cols-2 items-center gap-x-4 mt-2"
-            >
+            <div class="grid grid-cols-1 lg:grid-cols-2 items-center gap-x-4 mt-2">
               <div class="flex items-center">
                 <label class="w-36">Sub-Ledger:</label>
 
@@ -270,10 +246,7 @@
                   allow-clear
                   v-model:value="form.subLedger"
                   placeholder=""
-                  :class="[
-                    'flex-1',
-                    { 'auto-selecting': isAutoSelectingSubLedger },
-                  ]"
+                  :class="['flex-1', { 'auto-selecting': isAutoSelectingSubLedger }]"
                   ref="sub_ledger_ref"
                   @select="person_ref?.focus()"
                   @keydown.enter="handleSubLedgerEnter"
@@ -281,15 +254,9 @@
                     (event) => {
                       subLedgerList = all_subLedgerList.filter(
                         (item) =>
-                          item?.ASCode?.toLowerCase().includes(
-                            event.toLowerCase()
-                          ) ||
-                          item?.ASDetails?.toLowerCase().includes(
-                            event.toLowerCase()
-                          ) ||
-                          item?.SiteCode?.toLowerCase().includes(
-                            event.toLowerCase()
-                          )
+                          item?.ASCode?.toLowerCase().includes(event.toLowerCase()) ||
+                          item?.ASDetails?.toLowerCase().includes(event.toLowerCase()) ||
+                          item?.SiteCode?.toLowerCase().includes(event.toLowerCase())
                       );
                     }
                   "
@@ -314,13 +281,9 @@
                 />
               </div>
             </div>
-            <div
-              class="grid grid-cols-1 lg:grid-cols-2 items-center gap-x-4 mt-2"
-            >
+            <div class="grid grid-cols-1 lg:grid-cols-2 items-center gap-x-4 mt-2">
               <div class="flex items-center">
-                <label class="w-36"
-                  >Cheque No: <span class="text-red-600">*</span></label
-                >
+                <label class="w-36">Cheque No: <span class="text-red-600">*</span></label>
                 <a-select
                   show-search
                   allowClear
@@ -336,12 +299,8 @@
                     (event) => {
                       chequeRegisterList = all_chequeRegisterList.filter(
                         (item) =>
-                          item?.ChequeNo?.toLowerCase().includes(
-                            event.toLowerCase()
-                          ) ||
-                          item?.ChequeBookNo?.toLowerCase().includes(
-                            event.toLowerCase()
-                          )
+                          item?.ChequeNo?.toLowerCase().includes(event.toLowerCase()) ||
+                          item?.ChequeBookNo?.toLowerCase().includes(event.toLowerCase())
                       );
                     }
                   "
@@ -391,9 +350,7 @@
                 @keydown.esc.stop="handlecheckNameToVendorId"
               />
             </div>
-            <div
-              class="grid grid-cols-1 lg:grid-cols-2 items-center gap-x-4 mt-2"
-            >
+            <div class="grid grid-cols-1 lg:grid-cols-2 items-center gap-x-4 mt-2">
               <div class="flex items-center">
                 <label class="w-36">Bill No</label>
 
@@ -418,9 +375,7 @@
             </div>
 
             <div class="flex items-center mt-2">
-              <label class="w-36"
-                >Narration <span class="text-red-500">*</span></label
-              >
+              <label class="w-36">Narration <span class="text-red-500">*</span></label>
 
               <!-- @keydown.enter="isDebitDisabled ? add_button_ref?.$el?.focus() : credit_ref?.focus()" -->
               <a-input
@@ -444,9 +399,7 @@
                   @focus="handleNumberFocus('debit')"
                   @blur="handleNumberBlur('debit')"
                   @keydown.enter="
-                    isCreditDisabled
-                      ? add_button_ref?.$el?.focus()
-                      : credit_ref?.focus()
+                    isCreditDisabled ? add_button_ref?.$el?.focus() : credit_ref?.focus()
                   "
                 />
               </div>
@@ -506,12 +459,8 @@
             <th class="border border-white px-4 py-2">Account Code</th>
             <th class="border border-white px-4 py-2">Account Details</th>
             <th class="border border-white px-4 py-2">Sub Ledger</th>
-            <th class="border border-white px-4 py-2 w-[8%] text-center">
-              Debit
-            </th>
-            <th class="border border-white px-4 py-2 w-[8%] text-center">
-              Credit
-            </th>
+            <th class="border border-white px-4 py-2 w-[8%] text-center">Debit</th>
+            <th class="border border-white px-4 py-2 w-[8%] text-center">Credit</th>
             <th class="border border-white px-4 py-2 w-[8%]">Cheque No</th>
             <th class="border border-white px-4 py-2">Cheque Name</th>
             <th class="border border-white px-4 py-2">Narration</th>
@@ -623,9 +572,7 @@
                 {{
                   Number(debitTotal) - Number(creditTotal) <= 0
                     ? "0.00"
-                    : Number(Number(debitTotal) - Number(creditTotal)).toFixed(
-                        2
-                      )
+                    : Number(Number(debitTotal) - Number(creditTotal)).toFixed(2)
                 }}
               </h2>
             </div>
@@ -653,9 +600,7 @@ const goBack = () => {
 
 const onVoucherTypeSelect = async (value) => {
   // Find the selected voucher and store its AMCode
-  const selectedVoucher = voucherTypes.value.find(
-    (item) => item.JVType === value
-  );
+  const selectedVoucher = voucherTypes.value.find((item) => item.JVType === value);
   if (selectedVoucher) {
     selectedAMCode.value = selectedVoucher.AMCode || "";
   }
@@ -878,12 +823,7 @@ const originalCredit = ref(0);
 
 const canAddEntry = computed(() => {
   const f = form.value;
-  return (
-    f.voucherType &&
-    f.account_head &&
-    f.category &&
-    (f.debit > 0 || f.credit > 0)
-  );
+  return f.voucherType && f.account_head && f.category && (f.debit > 0 || f.credit > 0);
 });
 
 const canSaveVoucher = computed(() => voucherEntries.value.length > 0);
@@ -964,8 +904,7 @@ const isBankPayment = computed(() => {
     (v) => v.JVType === form.value.voucherType
   );
   return (
-    selectedVoucher?.Category?.toUpperCase() === "BANK" &&
-    form.value.category === "P"
+    selectedVoucher?.Category?.toUpperCase() === "BANK" && form.value.category === "P"
   ); // Assuming 'P' is short for Payment
 });
 
@@ -974,8 +913,7 @@ const isBankReceipt = computed(() => {
     (v) => v.JVType === form.value.voucherType
   );
   return (
-    selectedVoucher?.Category?.toUpperCase() === "BANK" &&
-    form.value.category === "R"
+    selectedVoucher?.Category?.toUpperCase() === "BANK" && form.value.category === "R"
   ); // Assuming 'R' is short for Receipt
 });
 
@@ -1244,9 +1182,7 @@ const selectedVoucher = computed(() =>
 const selectedVoucherDetails = computed(() => {
   if (!selectedVoucher.value) return "";
   const { JVDetails, Address1, Address2, AMCode } = selectedVoucher.value;
-  return `${JVDetails || ""} - ${Address1 || ""} - ${Address2 || ""} - ${
-    AMCode || ""
-  }`;
+  return `${JVDetails || ""} - ${Address1 || ""} - ${Address2 || ""} - ${AMCode || ""}`;
 });
 
 const getAccountDetails = (code) => {
@@ -1334,8 +1270,7 @@ const addEntry = () => {
   if (isBankVoucherValidation && f.category === "P" && f.credit > 0) {
     // For BANK Payment: Check if credit exceeds existing bank contra credit
     const existingBankEntry = voucherEntries.value.find(
-      (e) =>
-        e.account_head === selectedVoucherForValidation.AMCode && e.isBankContra
+      (e) => e.account_head === selectedVoucherForValidation.AMCode && e.isBankContra
     );
 
     if (existingBankEntry) {
@@ -1354,8 +1289,7 @@ const addEntry = () => {
   if (isBankVoucherValidation && f.category === "R" && f.debit > 0) {
     // For BANK Receipt: Check if debit exceeds existing bank contra debit
     const existingBankEntry = voucherEntries.value.find(
-      (e) =>
-        e.account_head === selectedVoucherForValidation.AMCode && e.isBankContra
+      (e) => e.account_head === selectedVoucherForValidation.AMCode && e.isBankContra
     );
 
     if (existingBankEntry) {
@@ -1376,10 +1310,7 @@ const addEntry = () => {
     f.vendorId.trim() !== "" &&
     !vendorList.value.some((v) => v.VendorId === f.vendorId)
   ) {
-    showNotification(
-      "error",
-      `Vendor ID "${f.vendorId}" not found in vendor list.`
-    );
+    showNotification("error", `Vendor ID "${f.vendorId}" not found in vendor list.`);
     return;
   }
 
@@ -1402,9 +1333,7 @@ const addEntry = () => {
   };
 
   // Check if Voucher Type is Bank and Category is Payment or Receipt
-  const selectedVoucher = voucherTypes.value.find(
-    (v) => v.JVType === f.voucherType
-  );
+  const selectedVoucher = voucherTypes.value.find((v) => v.JVType === f.voucherType);
   const isBankVoucher = selectedVoucher?.Category?.toUpperCase() === "BANK";
   const isPaymentCategory = f.category === "P";
   const isReceiptCategory = f.category === "R";
@@ -1420,9 +1349,7 @@ const addEntry = () => {
     if (f.debit > 0) {
       // User entered debit - add to bank credit
       // Add user entry before any bank contra entries
-      const bankContraIndex = voucherEntries.value.findIndex(
-        (e) => e.isBankContra
-      );
+      const bankContraIndex = voucherEntries.value.findIndex((e) => e.isBankContra);
       if (bankContraIndex !== -1) {
         voucherEntries.value.splice(bankContraIndex, 0, entry);
       } else {
@@ -1438,8 +1365,7 @@ const addEntry = () => {
             Number(f.debit);
         } else {
           // Not editing, just add the new debit
-          existingBankEntry.credit =
-            Number(existingBankEntry.credit) + Number(f.debit);
+          existingBankEntry.credit = Number(existingBankEntry.credit) + Number(f.debit);
         }
       } else {
         // Create new bank contra entry at the bottom
@@ -1471,9 +1397,7 @@ const addEntry = () => {
       }
     } else if (f.credit > 0) {
       // Add user entry before any bank contra entries
-      const bankContraIndex = voucherEntries.value.findIndex(
-        (e) => e.isBankContra
-      );
+      const bankContraIndex = voucherEntries.value.findIndex((e) => e.isBankContra);
       if (bankContraIndex !== -1) {
         voucherEntries.value.splice(bankContraIndex, 0, entry);
       } else {
@@ -1489,8 +1413,7 @@ const addEntry = () => {
             Number(originalCredit.value) -
             Number(f.credit);
         } else {
-          existingBankEntry.credit =
-            Number(existingBankEntry.credit) - Number(f.credit);
+          existingBankEntry.credit = Number(existingBankEntry.credit) - Number(f.credit);
         }
 
         // Remove bank entry if credit becomes 0 or negative
@@ -1513,9 +1436,7 @@ const addEntry = () => {
     if (f.credit > 0) {
       // User entered credit - add to bank debit
       // Add user entry before any bank contra entries
-      const bankContraIndex = voucherEntries.value.findIndex(
-        (e) => e.isBankContra
-      );
+      const bankContraIndex = voucherEntries.value.findIndex((e) => e.isBankContra);
       if (bankContraIndex !== -1) {
         voucherEntries.value.splice(bankContraIndex, 0, entry);
       } else {
@@ -1531,8 +1452,7 @@ const addEntry = () => {
             Number(f.credit);
         } else {
           // Not editing, just add the new credit
-          existingBankEntry.debit =
-            Number(existingBankEntry.debit) + Number(f.credit);
+          existingBankEntry.debit = Number(existingBankEntry.debit) + Number(f.credit);
         }
       } else {
         // Create new bank contra entry at the bottom
@@ -1564,9 +1484,7 @@ const addEntry = () => {
       }
     } else if (f.debit > 0) {
       // Add user entry before any bank contra entries
-      const bankContraIndex = voucherEntries.value.findIndex(
-        (e) => e.isBankContra
-      );
+      const bankContraIndex = voucherEntries.value.findIndex((e) => e.isBankContra);
       if (bankContraIndex !== -1) {
         voucherEntries.value.splice(bankContraIndex, 0, entry);
       } else {
@@ -1582,8 +1500,7 @@ const addEntry = () => {
             Number(originalDebit.value) -
             Number(f.debit);
         } else {
-          existingBankEntry.debit =
-            Number(existingBankEntry.debit) - Number(f.debit);
+          existingBankEntry.debit = Number(existingBankEntry.debit) - Number(f.debit);
         }
 
         // Remove bank entry if debit becomes 0 or negative
@@ -1695,9 +1612,7 @@ const saveVoucher = async () => {
       ChequeStatus: "Pending",
       VendorId: e.vendorId || null,
       BillNo: e.billNo || "",
-      BillDate: e.billDate
-        ? dayjs(e.billDate).format("YYYY-MM-DD HH:mm:ss.SSS")
-        : null,
+      BillDate: e.billDate ? dayjs(e.billDate).format("YYYY-MM-DD HH:mm:ss.SSS") : null,
       TransType: "pu",
       ChallanNo: null,
       ChallanDate: null,
@@ -1711,11 +1626,7 @@ const saveVoucher = async () => {
 
   creating.value = true;
   try {
-    const res = await axios.post(
-      `${apiBase}/journal-master`,
-      payload,
-      getToken()
-    );
+    const res = await axios.post(`${apiBase}/journal-master`, payload, getToken());
     showNotification("success", res.data.message);
     voucherEntries.value = [];
     creating.value = false;
@@ -1810,10 +1721,7 @@ const vendorList = ref([]);
 
 const fetchVendors = async () => {
   try {
-    const res = await axios.get(
-      `${apiBase}/settings/vendor-list/all`,
-      getToken()
-    );
+    const res = await axios.get(`${apiBase}/settings/vendor-list/all`, getToken());
     // console.log("res", res);
     if (res.data.success) {
       // console.log("res.data", res.data);
@@ -1940,11 +1848,7 @@ const fetchVoucherNumber = async () => {
 };
 
 watch(
-  [
-    () => form.value.voucherType,
-    () => form.value.category,
-    () => form.value.date,
-  ],
+  [() => form.value.voucherType, () => form.value.category, () => form.value.date],
   ([newType, newCat, newDate]) => {
     if (newType && newCat && newDate) {
       fetchVoucherNumber();
@@ -2053,12 +1957,7 @@ input:focus,
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(16, 185, 129, 0.1),
-    transparent
-  );
+  background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.1), transparent);
   animation: shimmer 1s infinite;
 }
 
