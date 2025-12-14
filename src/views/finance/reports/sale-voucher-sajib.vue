@@ -69,15 +69,7 @@
     <table class="w-full border border-collapse text-left mt-5">
       <thead>
         <tr class="bg-primary text-white">
-          <th class="border border-white px-4 py-2 w-[3%]">
-            <input
-              type="checkbox"
-              :disabled="allData.length === 0"
-              ref="selectAllCheckbox"
-              :checked="isAllSelected"
-              @change="toggleSelectAll"
-            />
-          </th>
+          <th class="border border-white px-4 py-2">Select</th>
           <th class="border border-white px-4 py-2">Invoice No</th>
           <th class="border border-white px-4 py-2">Invoice Date</th>
           <th class="border border-white px-4 py-2">Customer Code</th>
@@ -485,7 +477,7 @@
 
 <script setup>
 import MainLayout from "@/components/layouts/mainLayout.vue";
-import { ref, onMounted, computed, watch } from "vue";
+import { ref, onMounted } from "vue";
 import axios from "axios";
 import { apiBase } from "@/config";
 import { getToken, showNotification } from "@/utilities/common";
@@ -500,7 +492,6 @@ const customerData = ref([]);
 const openInvoices = ref([]);
 const invoiceDetails = ref({});
 const checkedInvoice = ref([]);
-const selectAllCheckbox = ref(null);
 const isModalOpen = ref(false);
 const userInfo = JSON.parse(localStorage.getItem("user_info"));
 // --- New/Modified Refs for Modal State ---
@@ -545,12 +536,6 @@ const fetchAllData = async () => {
       `${apiBase}/get_sales_details?q=${formData.value.customer}&from=${fromDate}&to=${toDate}`,
       getToken()
     );
-    if (!res?.data || res.data.length === 0) {
-      showNotification(
-        "info",
-        "No sales data found for the selected criteria."
-      );
-    }
     allData.value = res?.data?.map((item) => ({
       ...item,
       InvoiceDate: item.InvoiceDate
@@ -591,42 +576,6 @@ const fetchInvoiceDetails = async (invoiceNo) => {
 };
 
 const isOpen = (invoiceNo) => openInvoices.value.includes(invoiceNo);
-
-// Select All functionality
-const isAllSelected = computed(() => {
-  return (
-    allData.value.length > 0 &&
-    checkedInvoice.value.length === allData.value.length
-  );
-});
-
-const isIndeterminate = computed(() => {
-  return (
-    checkedInvoice.value.length > 0 &&
-    checkedInvoice.value.length < allData.value.length
-  );
-});
-
-const toggleSelectAll = (event) => {
-  if (event.target.checked) {
-    // Select all invoices
-    checkedInvoice.value = allData.value.map((item) => item.InvoiceNo);
-  } else {
-    // Deselect all
-    checkedInvoice.value = [];
-  }
-};
-
-// Watch for changes to update indeterminate state
-watch(
-  [checkedInvoice, allData],
-  () => {
-    if (selectAllCheckbox.value) {
-      selectAllCheckbox.value.indeterminate = isIndeterminate.value;
-    }
-  },
-  { deep: true }
-);
 
 const toggleInvoice = (invoiceNo) => {
   if (isOpen(invoiceNo)) {

@@ -259,14 +259,14 @@ const items = reactive([
         label: "Search Chart of Accounts",
         onClick: navigateTo("/transaction/voucher-search-chart-of-accounts"),
       },
-      {
-        key: "/transaction/sales-voucher",
-        label: "sales voucher",
-        onClick: navigateTo("/transaction/sales-voucher"),
-      },
+      // {
+      //   key: "/transaction/sales-voucher",
+      //   label: "sales voucher",
+      //   onClick: navigateTo("/transaction/sales-voucher"),
+      // },
       {
         key: "/transaction/sale-voucher",
-        label: "sale voucher",
+        label: "sales voucher",
         onClick: navigateTo("/transaction/sale-voucher"),
       },
       {

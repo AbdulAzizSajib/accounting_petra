@@ -904,7 +904,13 @@ const isBankPayment = computed(() => {
     (v) => v.JVType === form.value.voucherType
   );
   return (
+<<<<<<< HEAD
     selectedVoucher?.Category?.toUpperCase() === "BANK" && form.value.category === "P"
+=======
+    (selectedVoucher?.Category?.toUpperCase() === "BANK" ||
+      selectedVoucher?.Category?.toUpperCase() === "CASH") &&
+    form.value.category === "P"
+>>>>>>> 407bccb2e95aca8107954c198f54adc5c40a57a9
   ); // Assuming 'P' is short for Payment
 });
 
@@ -913,7 +919,13 @@ const isBankReceipt = computed(() => {
     (v) => v.JVType === form.value.voucherType
   );
   return (
+<<<<<<< HEAD
     selectedVoucher?.Category?.toUpperCase() === "BANK" && form.value.category === "R"
+=======
+    (selectedVoucher?.Category?.toUpperCase() === "BANK" ||
+      selectedVoucher?.Category?.toUpperCase() === "CASH") &&
+    form.value.category === "R"
+>>>>>>> 407bccb2e95aca8107954c198f54adc5c40a57a9
   ); // Assuming 'R' is short for Receipt
 });
 
@@ -1333,9 +1345,19 @@ const addEntry = () => {
     isEditing: false,
   };
 
+<<<<<<< HEAD
   // Check if Voucher Type is Bank and Category is Payment or Receipt
   const selectedVoucher = voucherTypes.value.find((v) => v.JVType === f.voucherType);
   const isBankVoucher = selectedVoucher?.Category?.toUpperCase() === "BANK";
+=======
+  // Check if Voucher Type is Bank/Cash and Category is Payment or Receipt
+  const selectedVoucher = voucherTypes.value.find(
+    (v) => v.JVType === f.voucherType
+  );
+  const isBankVoucher =
+    selectedVoucher?.Category?.toUpperCase() === "BANK" ||
+    selectedVoucher?.Category?.toUpperCase() === "CASH";
+>>>>>>> 407bccb2e95aca8107954c198f54adc5c40a57a9
   const isPaymentCategory = f.category === "P";
   const isReceiptCategory = f.category === "R";
   const isEditing =
