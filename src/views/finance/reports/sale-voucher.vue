@@ -545,6 +545,12 @@ const fetchAllData = async () => {
       `${apiBase}/get_sales_details?q=${formData.value.customer}&from=${fromDate}&to=${toDate}`,
       getToken()
     );
+    if (!res?.data || res.data.length === 0) {
+      showNotification(
+        "info",
+        "No sales data found for the selected criteria."
+      );
+    }
     allData.value = res?.data?.map((item) => ({
       ...item,
       InvoiceDate: item.InvoiceDate
