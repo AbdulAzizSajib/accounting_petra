@@ -426,51 +426,44 @@
                   </td>
                 </tr>
 
-                <!-- Debit entry row -->
+                <!-- Debit entry row - only show after user clicks Add inside modal -->
                 <tr
-                  v-if="debitVoucherEntry || modalForm.Details.length > 0"
+                  v-if="debitVoucherEntry"
                   key="debit-entry"
                   class="bg-gray-100 hover:bg-gray-200"
                 >
                   <td class="px-4 border">
-                    {{
-                      debitVoucherEntry?.AccountCode || getDebitAccountCode()
-                    }}
+                    {{ debitVoucherEntry.AccountCode }}
                   </td>
                   <td class="px-4 border">
-                    {{
-                      debitVoucherEntry?.AccountDetails ||
-                      getDebitAccountDetails()
-                    }}
+                    {{ debitVoucherEntry.AccountDetails }}
                   </td>
                   <td class="px-4 border">-</td>
                   <td class="px-4 border text-right">
-                    {{ calculateTotalCreditIncludingPending() }}
+                    {{ calculateTotalCredit() }}
                   </td>
                   <td class="px-4 border text-right">{{ 0.0 }}</td>
                 </tr>
               </tbody>
 
+              <!-- Totals row - only show after user clicks Add inside modal -->
               <tr
                 class="bg-gray-50 border-t-2 border-gray-400"
-                v-if="
-                  creditVoucherEntries.length > 0 ||
-                  modalForm.Details.length > 0
-                "
+                v-if="creditVoucherEntries.length > 0"
               >
                 <td colspan="3"></td>
                 <td class="px-4 border">
                   <div
                     class="w-full h-8 bg-blue-700 text-white text-center flex justify-center items-center rounded font-bold"
                   >
-                    {{ calculateTotalCreditIncludingPending() }}
+                    {{ calculateTotalDebit() }}
                   </div>
                 </td>
                 <td class="px-4 border">
                   <div
                     class="w-full h-8 bg-teal-500 text-white text-center flex justify-center items-center rounded font-bold"
                   >
-                    {{ calculateTotalCreditIncludingPending() }}
+                    {{ calculateTotalCredit() }}
                   </div>
                 </td>
               </tr>
@@ -615,34 +608,29 @@ const getDebitAccountDetails = () => {
 
 // 1. Opens the modal and prepares the base credit entries
 const handleAddSale = () => {
-  const currentBatchInvoices = checkedInvoice.value.filter(
-    (invNo) =>
-      !creditVoucherEntries.value.some((entry) => entry.BillNo === invNo)
-  );
-
-  // If the modal is NOT open, and no invoices are selected, warn and return.
-  if (!isModalOpen.value && currentBatchInvoices.length === 0) {
-    showNotification("warning", "Please select an invoice.");
-    return;
-  }
-
-  // If the modal *is* open, and no *new* invoices are selected, warn and return.
-  if (isModalOpen.value && currentBatchInvoices.length === 0) {
-    showNotification(
-      "warning",
-      "Please select a new invoice not already added to the voucher."
-    );
-    return;
-  }
-
-  // If the modal is being opened for the first time, reset the voucher table and form fields.
+  // If the modal is NOT open (opening fresh), reset everything first
   if (!isModalOpen.value) {
     creditVoucherEntries.value = [];
     debitVoucherEntry.value = null;
     commonNarration.value = "";
     chequeDetails.value = { ChequeNo: "", ChequeName: "", ChequePayDate: null };
     modalForm.value.JVType = "CSH";
-    modalForm.value.Details = []; // Reset pending details
+    modalForm.value.Details = [];
+  }
+
+  // Now filter after reset - this ensures fresh state when modal reopens
+  const currentBatchInvoices = checkedInvoice.value.filter(
+    (invNo) =>
+      !creditVoucherEntries.value.some((entry) => entry.BillNo === invNo)
+  );
+
+  // If no invoices are selected, warn and return.
+  if (currentBatchInvoices.length === 0) {
+    const message = isModalOpen.value
+      ? "Please select a new invoice not already added to the voucher."
+      : "Please select an invoice.";
+    showNotification("warning", message);
+    return;
   }
 
   // Create entries for the newly selected invoices (these will show as "pending")
