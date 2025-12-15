@@ -31,6 +31,12 @@
           <div
             class="flex flex-col md:flex-row items-center gap-1 border border-gray-300 rounded-lg p-4 flex-1"
           >
+            <label class="font-semibold text-gray-700 md:w-24 mb-2"> Select: </label>
+            <a-select class="flex-1" placeholder="Select Type">
+              <a-select-option value="local">Local</a-select-option>
+              <a-select-option value="global">Global</a-select-option>
+            </a-select>
+
             <label class="font-semibold text-gray-700 md:w-24 mb-2">Supplier:</label>
             <a-select
               v-model:value="formData.customer"
@@ -48,12 +54,6 @@
               >
                 {{ item.CustomerName }} - {{ item.CustomerCode }}
               </a-select-option>
-            </a-select>
-
-            <label class="font-semibold text-gray-700 md:w-24 mb-2"> Select: </label>
-            <a-select class="flex-1" placeholder="Select Type">
-              <a-select-option value="local">Local</a-select-option>
-              <a-select-option value="global">Global</a-select-option>
             </a-select>
 
             <a-button type="primary" @click="fetchAllData">Show</a-button>
@@ -157,7 +157,7 @@
     </table>
     <a-modal
       v-model:open="isModalOpen"
-      title="Add Sale Voucher"
+      title="Add Purchase Voucher"
       :footer="false"
       :width="1000"
       :maskClosable="false"
@@ -283,11 +283,13 @@
               </div>
 
               <div class="w-[280px]">
-                <label class="block text-sm font-medium text-gray-700">Amount</label>
+                <label class="block text-sm font-medium text-gray-700 text-end"
+                  >Amount</label
+                >
                 <input
                   :value="calculateTotalSelectedAmount()"
                   readonly
-                  class="w-full border rounded-lg p-1 bg-gray-100"
+                  class="w-full border rounded-lg p-1 bg-gray-100 text-end"
                 />
               </div>
             </div>
