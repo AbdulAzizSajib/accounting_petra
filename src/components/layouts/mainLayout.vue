@@ -270,6 +270,11 @@ const items = reactive([
         onClick: navigateTo("/transaction/sale-voucher"),
       },
       {
+        key: "/transaction/purchase-voucher",
+        label: "purchase voucher",
+        onClick: navigateTo("/transaction/purchase-voucher"),
+      },
+      {
         key: "/transaction/bill-receive",
         label: "bill receive",
         onClick: navigateTo("/transaction/bill-receive"),

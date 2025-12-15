@@ -699,6 +699,7 @@ watch(AMCode, (newType, oldType) => {
   }
 });
 
+//watch type change
 watch(type, (newType, oldType) => {
   if (newType !== oldType) {
     AMDetails.value = "";
