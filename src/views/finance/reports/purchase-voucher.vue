@@ -1,6 +1,6 @@
 <template>
   <MainLayout>
-    <h1 class="text-2xl font-bold text-indigo-700 mb-6">Sales Voucher</h1>
+    <h1 class="text-2xl font-bold text-indigo-700 mb-6">Purchase Voucher</h1>
 
     <div class="bg-white shadow-md rounded-xl p-6">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
@@ -34,7 +34,7 @@
             <label class="font-semibold text-gray-700 md:w-24 mb-2"> Select: </label>
             <a-select class="flex-1" placeholder="Select Type">
               <a-select-option value="local">Local</a-select-option>
-              <a-select-option value="global">Global</a-select-option>
+              <a-select-option value="export">Export</a-select-option>
             </a-select>
 
             <label class="font-semibold text-gray-700 md:w-24 mb-2">Supplier:</label>
@@ -80,10 +80,10 @@
               @change="toggleSelectAll"
             />
           </th>
-          <th class="border border-white px-4 py-2">Invoice No</th>
-          <th class="border border-white px-4 py-2">Invoice Date</th>
-          <th class="border border-white px-4 py-2">Customer Code</th>
-          <th class="border border-white px-4 py-2">Customer Name</th>
+          <th class="border border-white px-4 py-2">Purchase No</th>
+          <th class="border border-white px-4 py-2">Purchase Date</th>
+          <th class="border border-white px-4 py-2">Supplier Code</th>
+          <th class="border border-white px-4 py-2">Supplier Name</th>
           <th class="border border-white px-4 py-2">NET</th>
         </tr>
       </thead>
