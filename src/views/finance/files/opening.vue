@@ -45,7 +45,12 @@
         </tr>
       </thead>
       <tbody class="capitalize">
-        <tr v-for="(data, index) in allData" :key="index">
+        <tr v-if="allData.length === 0">
+          <td colspan="7" class="text-center px-4 py-2 border">
+            No data available
+          </td>
+        </tr>
+        <tr v-else v-for="(data, index) in allData" :key="index">
           <td class="px-4 border">{{ data?.SiteCode || "-" }}</td>
           <td class="px-4 border">{{ data?.AMCode || "-" }}</td>
           <td class="px-4 border">{{ data?.AMDetails || "-" }}</td>
@@ -423,6 +428,7 @@ const allData_idwise = async (SiteCode, AMCode, ASCode, BalDate) => {
     };
     isEditModalVisible.value = true;
   } catch (error) {
+    // console.log("------------->>>>>", error);
     showNotification("error", error?.response?.data?.message || error?.message);
   }
 };
@@ -478,6 +484,7 @@ const fetchAllData = async () => {
       `${apiBase}/settings/opening?page=${page.value}&per_page=${per_page.value}&search=${search.value}`,
       getToken()
     );
+
     loading.value = false;
     allData.value = res?.data?.data?.data;
     total.value = res?.data?.data?.total;
@@ -485,6 +492,7 @@ const fetchAllData = async () => {
     loading.value = false;
     allData.value = [];
     total.value = 0;
+    showNotification("info", err?.response?.data?.message || err?.message);
     console.error("Failed to fetch allData:", err);
   }
 };

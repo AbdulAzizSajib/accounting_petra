@@ -54,7 +54,7 @@
               </button>
 
               <a-popconfirm
-                @confirm="deleteData(data?.GroupCode)"
+                @confirm="deleteData(data?.ChequeNo)"
                 title="Are you sure?"
                 ok-text="Yes"
                 cancel-text="No"
@@ -335,11 +335,11 @@ const fetchAllData = async () => {
   }
 };
 
-const deleteData = async (groupcode) => {
+const deleteData = async (cheque) => {
   loading.value = true;
   try {
     const res = await axios.delete(
-      `${apiBase}/settings/ac-groups?groupcode=${groupcode}`,
+      `${apiBase}/settings/cheques?cheque=${cheque}`,
       getToken()
     );
     showNotification(res?.data ? "success" : "error", res?.data?.message);
