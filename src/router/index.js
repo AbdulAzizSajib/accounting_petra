@@ -106,6 +106,9 @@ import AccountRatioReport from "@/views/finance/reports/account-ratio-report.vue
 import SaleVoucher from "@/views/finance/reports/sale-voucher.vue";
 import SaleVoucherAdd from "@/views/finance/reports/sale-voucher-add.vue";
 
+//Purchase Voucher
+import PurchaseVoucher from "@/views/finance/reports/purchase-voucher.vue";
+
 const routes = [
   {
     path: "/",
@@ -512,6 +515,11 @@ const routes = [
     path: "/transaction/sale-voucher",
     name: "sale-voucher",
     component: SaleVoucher,
+  },
+  {
+    path: "/transaction/purchase-voucher",
+    name: "purchase-voucher",
+    component: PurchaseVoucher,
   },
     {
     path: "/transaction/sale-voucher/sale-voucher-add",

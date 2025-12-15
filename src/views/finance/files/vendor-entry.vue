@@ -38,7 +38,6 @@
             <th class="border border-white px-4 py-2">AccountName</th>
             <th class="border border-white text-end px-4 py-2">AccountNo</th>
 
-            
             <th class="border border-white px-4 py-2">Email</th>
             <th class="border border-white px-4 py-2 text-center">Actions</th>
           </tr>
@@ -51,7 +50,6 @@
             <td class="px-4 border">{{ data?.TINNo }}</td>
             <td class="px-4 border">{{ data?.AccountName }}</td>
             <td class="px-4 border text-end">{{ data?.AccountNo }}</td>
-
 
             <td class="px-4 border">{{ data?.Email }}</td>
 
@@ -101,7 +99,7 @@
       <form @submit.prevent="createallData" @keydown="handleEnterAsTab">
         <div class="grid grid-cols-2 gap-x-4 custom-form">
           <div>
-            {{ formData.VendorType }}
+            <!-- {{ formData.VendorType }} -->
             <!-- vendor type -->
             <a-form-item
               label="Vendor Type"
