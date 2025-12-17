@@ -428,7 +428,6 @@ const allData_idwise = async (SiteCode, AMCode, ASCode, BalDate) => {
     };
     isEditModalVisible.value = true;
   } catch (error) {
-    // console.log("------------->>>>>", error);
     showNotification("error", error?.response?.data?.message || error?.message);
   }
 };
