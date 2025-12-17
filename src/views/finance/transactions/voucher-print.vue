@@ -174,6 +174,7 @@
                 <th class="border border-gray-400"></th>
                 <th class="border border-gray-400"></th>
                 <th class="border border-gray-400"></th>
+                <th class="border border-gray-400"></th>
               </tr>
               <tr class="text-center">
                 <th
@@ -210,10 +211,10 @@
             </thead>
             <tbody>
               <tr v-if="report_Loading">
-                <td colspan="5"><a-skeleton /></td>
+                <td colspan="6"><a-skeleton /></td>
               </tr>
               <tr v-if="!report_Loading && !data?.length">
-                <td colspan="5"><a-empty /></td>
+                <td colspan="6"><a-empty /></td>
               </tr>
 
               <tr v-for="item in data">
@@ -245,7 +246,7 @@
               </tr>
             </tbody>
             <tfoot>
-              <tr class="">
+              <tr class="total-row">
                 <td
                   class="capitalize border border-t-2 border-gray-400 border-t-gray-600 px-3 py-1 text-sm"
                 ></td>
@@ -266,7 +267,7 @@
                   {{ calculateTotal(data, "Credit") }}
                 </td>
               </tr>
-              <tr>
+              <tr class="words-row">
                 <td
                   colspan="6"
                   class="capitalize border border-gray-400 px-3 py-1 text-sm font-semibold"
@@ -274,7 +275,7 @@
                   {{ numberToTakaWords(calculateTotal(data, "Debit")) }}
                 </td>
               </tr>
-              <tr>
+              <tr class="narration-row">
                 <td
                   colspan="6"
                   class="border border-gray-400 px-3 py-1 text-xs"
@@ -525,14 +526,10 @@ const printAll = () => {
       @page { size: A4; margin: 10mm; }
       @media print {
         .no-print { display: none !important; }
-        .voucher-page { page-break-after: always; }
+        .voucher-page { page-break-after: always; page-break-inside: avoid; }
         body { font-family: Arial, sans-serif; font-size: 11px; }
         table { border-collapse: collapse; width: 100%; }
         th, td { border: 1px solid #ccc; padding: 4px; text-align: left; }
-        .signature-table th, .signature-table td { border: none !important; }
-        .signature-table .signature-line { border-bottom: 2px solid #4a5568 !important; padding-top: 2.5rem; }
-        .mt-16 { margin-top: 4rem !important; }
-
         th.debit-credit-label{
           text-align: center !important;
           font-weight: bold;
@@ -540,7 +537,32 @@ const printAll = () => {
         td.debit-credit-value {
           text-align: right !important;
         }
+        tfoot .total-row td {
+          border-top: 2px solid #4a5568 !important;
+        }
+        tfoot .total-row td[colspan="3"] {
+          text-align: right !important;
+        }
+        tfoot .words-row td {
+          font-weight: bold !important;
+          text-transform: capitalize;
+        }
+        tfoot .narration-row td {
+          font-size: 10px;
+        }
         h2, h3 { text-align: center; margin: 4px 0; }
+        .flex {
+          display: flex;
+        }
+        .justify-between {
+          justify-content: space-between;
+        }
+        .items-start {
+          align-items: flex-start;
+        }
+        .mt-28 {
+          margin-top: 125px;
+        }
       }
     `,
   });
@@ -583,6 +605,19 @@ const printSingle = (index) => {
   td.debit-credit-value{
     text-align: right !important;
     }
+  tfoot .total-row td {
+    border-top: 2px solid #4a5568 !important;
+  }
+  tfoot .total-row td[colspan="3"] {
+    text-align: right !important;
+  }
+  tfoot .words-row td {
+    font-weight: bold !important;
+    text-transform: capitalize;
+  }
+  tfoot .narration-row td {
+    font-size: 10px;
+  }
   h2, h3 {
     text-align: center;
     margin: 4px 0;
