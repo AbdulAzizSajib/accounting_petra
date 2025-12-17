@@ -284,7 +284,7 @@
               @keydown.enter="end_id_ref?.focus()"
               @keydown.esc="selectedCategory_ref?.focus()"
               @pressEnter="end_id_ref.focus()"
-              @focus="handleStartFocus"
+              @focus="focusedField = 'startId'"
               :class="{ 'bg-yellow-100': focusedField === 'startId' }"
             />
             <a-input-number
@@ -296,7 +296,7 @@
               @blur="validateIdRange"
               @pressEnter="handleSubLedgerEnter"
               @keydown.esc="start_id_ref?.focus()"
-              @focus="handleEndFocus"
+              @focus="focusedField = 'endId'"
               :class="{ 'bg-yellow-100': focusedField === 'endId' }"
             />
           </div>
@@ -780,21 +780,6 @@ const getGroupCode = debounce(async (event) => {
     searchLoading.value = false;
   }
 }, 500);
-
-// input focus handlers
-const handleStartFocus = () => {
-  focusedField.value = "startId";
-  if (startId.value === 0) {
-    startId.value = null;
-  }
-};
-
-const handleEndFocus = () => {
-  focusedField.value = "endId";
-  if (endId.value === 0) {
-    endId.value = null;
-  }
-};
 
 // const ACType1 = ref();
 // const TypeInfo = ref([]);
