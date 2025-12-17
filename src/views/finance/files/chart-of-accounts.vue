@@ -239,7 +239,7 @@
 
       <!-- Sub-Ledger Range Table -->
 
-      <div class="pt-10 hidden">
+      <div class="pt-10">
         <div class="bg-gray-50 rounded-lg p-4 space-y-4 shadow relative">
           <div class="font-semibold mb-2 absolute top-[-10px]">Sub-Ledger Range:</div>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end py-6">
