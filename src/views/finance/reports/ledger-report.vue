@@ -458,9 +458,6 @@ const fetchAllData = async () => {
     let responseData = res?.data?.records || [];
     const openingBalanceData = res?.data?.openingBalance;
     openingBalanceData.value = openingBalanceData[0];
-    // Calculate running balance
-    console.log("open banm...", openingBalanceData.value);
-    console.log("response data", responseData);
 
     if (res.data && res.data.data) {
       responseData = res.data.data;
@@ -504,7 +501,7 @@ const fetchAllData = async () => {
     loading.value = false;
     allData.value = [];
     console.error("Failed to fetch ledger data:", err);
-    showNotification("error", err?.response?.data?.message || err?.message);
+    showNotification("info", err?.response?.data?.message || err?.message);
   }
 };
 

@@ -39,6 +39,7 @@
               allowClear
               :filter-option="false"
               @search="customerfetch"
+              @select="handleCustomerSelect"
               placeholder="Select Customer"
             >
               <a-select-option
@@ -484,7 +485,7 @@ const modalForm = ref({
   UserId: userInfo?.UserId || "",
   EditDate: dayjs(),
   EditUserID: userInfo?.UserId || "",
-  AMCode: "030-03008", // Default Account Code for Credit entries (Customer)
+  AMCode: "",
   ASCode: "0",
   Details: [], // Temporary: Holds basic credit structure on handleAddSale.
 });
@@ -523,6 +524,15 @@ const customerfetch = async (search = "") => {
     customerData.value = res?.data;
   } catch (error) {
     console.error(error);
+  }
+};
+
+const handleCustomerSelect = (customerCode) => {
+  const selectedCustomer = customerData.value.find(
+    (item) => item.CustomerCode === customerCode
+  );
+  if (selectedCustomer && selectedCustomer.AMCode) {
+    modalForm.value.AMCode = selectedCustomer.AMCode;
   }
 };
 
