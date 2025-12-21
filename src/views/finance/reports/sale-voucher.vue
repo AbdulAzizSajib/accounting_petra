@@ -62,7 +62,16 @@
         </div>
       </div>
     </div>
-
+    <!-- total of selected InvoiceNo -->
+    <div class="text-right mt-3 flex justify-end items-center gap-2">
+      <label class="font-semibold text-gray-700 md:w-24 mb-2"> Total</label>
+      <input
+        type="text"
+        class="w-24 border rounded-lg p-1"
+        :value="totalSelectedNet"
+        readonly
+      />
+    </div>
     <table class="w-full border border-collapse text-left mt-5">
       <thead>
         <tr class="bg-primary text-white">
@@ -72,7 +81,7 @@
               :disabled="allData.length === 0"
               ref="selectAllCheckbox"
               :checked="isAllSelected"
-              @change="toggleSelectAll"
+              @change="toggleSelectAll($event)"
             />
           </th>
           <th class="border border-white px-4 py-2">Invoice No</th>
@@ -89,7 +98,12 @@
         <template v-else v-for="data in allData" :key="data.InvoiceNo">
           <tr>
             <td class="px-4 border">
-              <input type="checkbox" :value="data.InvoiceNo" v-model="checkedInvoice" />
+              <input
+                type="checkbox"
+                :value="data.InvoiceNo"
+                v-model="checkedInvoice"
+                @change="updateTotalForIndividual"
+              />
             </td>
             <td class="px-4 border relative">
               <div class="flex items-center cursor-pointer gap-2">
@@ -451,6 +465,7 @@ const isModalOpen = ref(false);
 const userInfo = JSON.parse(localStorage.getItem("user_info"));
 // --- New/Modified Refs for Modal State ---
 const commonNarration = ref("");
+const totalSelectedNet = ref(0);
 
 const chequeDetails = ref({
   ChequeNo: "",
@@ -540,6 +555,7 @@ const isIndeterminate = computed(() => {
 });
 
 const toggleSelectAll = (event) => {
+  let total = 0;
   if (event.target.checked) {
     // Select all invoices
     checkedInvoice.value = allData.value.map((item) => item.InvoiceNo);
@@ -547,6 +563,24 @@ const toggleSelectAll = (event) => {
     // Deselect all
     checkedInvoice.value = [];
   }
+  allData.value.forEach((item) => {
+    if (checkedInvoice.value.includes(item.InvoiceNo)) {
+      total += Number(item.NET) || 0;
+    }
+  });
+  totalSelectedNet.value = total;
+};
+
+const updateTotalForIndividual = () => {
+  let total = 0;
+
+  allData.value.forEach((item) => {
+    if (checkedInvoice.value.includes(item.InvoiceNo)) {
+      total += Number(item.NET) || 0;
+    }
+  });
+
+  totalSelectedNet.value = total;
 };
 
 // Watch for changes to update indeterminate state
