@@ -862,6 +862,9 @@ const saveSaleVoucher = async () => {
     // **CRITICAL FIX**: Clear checkboxes ONLY on successful SAVE
     checkedInvoice.value = [];
 
+    // reset total
+    totalSelectedNet.value = 0;
+
     modalForm.value.JVType = "";
     modalForm.value.Details = [];
 
