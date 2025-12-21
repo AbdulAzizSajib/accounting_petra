@@ -68,7 +68,7 @@
       <label class="font-semibold text-gray-700 md:w-24 mb-2"> Total</label>
       <input
         type="text"
-        class="w-24 border rounded-lg p-1"
+        class="w-24 border rounded-lg p-1 text-right bg-yellow-300 text-black font-bold"
         :value="totalSelectedNet"
         readonly
       />
