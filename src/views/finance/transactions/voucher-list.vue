@@ -11,16 +11,12 @@
       </div>
       <div class="mb-4">
         <router-link :to="{ name: 'voucher-add' }">
-          <button class="bg-primary text-white px-4 py-2 rounded">
-            Add Voucher
-          </button>
+          <button class="bg-primary text-white px-4 py-2 rounded">Add Voucher</button>
         </router-link>
       </div>
     </div>
     <div class="grid grid-cols-8 gap-4 mb-4 items-end">
-      <h1 class="text-2xl font-bold text-primary mb-4">
-        Voucher List ({{ total }})
-      </h1>
+      <h1 class="text-2xl font-bold text-primary mb-4">Voucher List ({{ total }})</h1>
       <div class="w-full">
         <label for="period" class="w-36 font-bold">Form Date:</label>
         <input
@@ -192,11 +188,9 @@ const fetchAllData = async () => {
   loading.value = true;
   try {
     const res = await axios.get(
-      `${apiBase}/journal-master?page=${page.value}&per_page=${
-        per_page.value
-      }&search=${search.value}&from_date=${from_date.value || " "}&to_date=${
-        to_date.value || " "
-      }`,
+      `${apiBase}/journal-master?page=${page.value}&per_page=${per_page.value}&search=${
+        search.value
+      }&from_date=${from_date.value || " "}&to_date=${to_date.value || " "}`,
       getToken()
     );
 
@@ -248,14 +242,11 @@ const confirmDelete = (voucher) => {
     async onOk() {
       try {
         loading.value = true;
-        const url = `${apiBase}/journal-master?SiteCode=${
-          voucher.SiteCode
-        }&Period=${voucher.Period}&JVNo=${encodeURIComponent(voucher.JVNo)}`;
+        const url = `${apiBase}/journal-master?SiteCode=${voucher.SiteCode}&Period=${
+          voucher.Period
+        }&JVNo=${encodeURIComponent(voucher.JVNo)}`;
         await axios.delete(url, getToken());
-        showNotification(
-          "success",
-          `Voucher ${voucher.JVNo} deleted successfully.`
-        );
+        showNotification("success", `Voucher ${voucher.JVNo} deleted successfully.`);
         await fetchAllData();
       } catch (err) {
         console.error("Delete failed:", err);
