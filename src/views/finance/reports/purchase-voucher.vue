@@ -34,7 +34,11 @@
             <label class="font-semibold text-gray-700 md:w-24 mb-2">
               Select:
             </label>
-            <a-select class="flex-1" placeholder="Select Type">
+            <a-select
+              @change="customerfetch"
+              class="flex-1"
+              placeholder="Select Type"
+            >
               <a-select-option value="local">Local</a-select-option>
               <a-select-option value="export">Export</a-select-option>
             </a-select>
@@ -53,10 +57,10 @@
             >
               <a-select-option
                 v-for="item in customerData"
-                :key="item.CustomerCode"
-                :value="item.CustomerCode"
+                :key="item.SupplierCode"
+                :value="item.SupplierCode"
               >
-                {{ item.CustomerName }} - {{ item.CustomerCode }}
+                {{ item.SupplierName }} - {{ item.SupplierCode }}
               </a-select-option>
             </a-select>
 
@@ -549,7 +553,7 @@ const fetchAllData = async () => {
       : "";
 
     const res = await axios.get(
-      `${apiBase}/get_sales_details?q=${formData.value.customer}&from=${fromDate}&to=${toDate}`,
+      `${apiBase}/get_sales_details_purchase?q=${formData.value.customer}&from=${fromDate}&to=${toDate}`,
       getToken()
     );
     if (!res?.data || res.data.length === 0) {
@@ -573,7 +577,7 @@ const fetchAllData = async () => {
 const customerfetch = async (search = "") => {
   try {
     const res = await axios.get(
-      `${apiBase}/get_customer?q=${search}`,
+      `${apiBase}/get_customer_purchase?q=${search}`,
       getToken()
     );
     customerData.value = res?.data;
@@ -929,6 +933,6 @@ const calculateTotalSelectedAmount = () => {
 // --- MODIFIED Modal Logic END ---
 
 onMounted(() => {
-  customerfetch();
+  // customerfetch();
 });
 </script>

@@ -231,7 +231,7 @@
             </tr>
           </template>
           <!-- D. Payment during the year -->
-          <template v-if="D_data?.length > 0">
+          <!-- <template v-if="D_data?.length > 0">
             <tr v-for="(item, index) in D_data" :key="`d-${index}`">
               <td class="align-top py-1 px-2">{{ D_data[0]?.ReportCode }}</td>
               <td class="align-top py-1 px-2 pl-8">
@@ -245,7 +245,7 @@
                 {{ formatAmount(item?.Amount) }}
               </td>
             </tr>
-          </template>
+          </template> -->
         </tbody>
       </table>
 

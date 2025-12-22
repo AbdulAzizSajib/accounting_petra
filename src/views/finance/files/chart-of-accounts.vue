@@ -41,17 +41,7 @@
             <label class="font-semibold block w-48"
               ><span class="text-red-500">* </span>Account Head :
             </label>
-            <!-- <a-input
-              @input="handle_fixed_three_digit(AMCode)"
-              v-model:value="AMCode"
-              @change="get_AM_Code"
-              type="number"
-              ref="AMCode_ref"
-              placeholder="Type"
-              @keydown.enter="AMCodeOther_Digit_ref?.focus()"
-              @focus="focusedField = 'AMCode'"
-              :class="{ 'bg-yellow-100': focusedField === 'AMCode' }"
-            /> -->
+
             <a-select
               v-model:value="AMCode"
               class="w-full"
@@ -133,13 +123,22 @@
               show-search
               allowClear
               :filter-option="false"
+              @search="fetchSupplier"
             >
-              <a-select-option for=""> No data found </a-select-option>
+              <a-select-option
+                v-for="supplier in suppliertypeData"
+                :key="supplier.SupplierCode"
+                :value="supplier.SupplierCode"
+              >
+                {{ supplier.SupplierName }} - {{ supplier.SupplierCode }}
+              </a-select-option>
             </a-select>
           </div>
         </div>
       </div>
-      <div class="grid grid-cols-2 gap-8 p-3 bg-gray-50 rounded-lg shadow-sm hidden">
+      <div
+        class="grid grid-cols-2 gap-8 p-3 bg-gray-50 rounded-lg shadow-sm hidden"
+      >
         <div class="flex items-center">
           <label for="" class="w-36">Account Type : </label>
 
@@ -241,7 +240,9 @@
 
       <div class="pt-10">
         <div class="bg-gray-50 rounded-lg p-4 space-y-4 shadow relative">
-          <div class="font-semibold mb-2 absolute top-[-10px]">Sub-Ledger Range:</div>
+          <div class="font-semibold mb-2 absolute top-[-10px]">
+            Sub-Ledger Range:
+          </div>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end py-6">
             <div class="flex items-center">
               <label for="" class="block font-bold w-36">Category: </label>
@@ -398,10 +399,16 @@
             </tr>
           </tbody>
         </table>
-        <div v-if="isLoadingMore" class="bottom-0 w-full text-center py-2 bg-white">
+        <div
+          v-if="isLoadingMore"
+          class="bottom-0 w-full text-center py-2 bg-white"
+        >
           <a-spin /> Loading...
         </div>
-        <div v-if="searchResults.length < totalResults" class="text-center mt-8">
+        <div
+          v-if="searchResults.length < totalResults"
+          class="text-center mt-8"
+        >
           <a-button type="dashed" @click="loadMoreResults">Load More</a-button>
         </div>
       </div>
@@ -574,7 +581,10 @@ const GroupCode = ref();
 const AM_code_info = ref();
 const get_AM_Code = async () => {
   try {
-    const res = await axios.get(`${apiBase}/actype?ACType1=${AMCode.value}`, getToken());
+    const res = await axios.get(
+      `${apiBase}/actype?ACType1=${AMCode.value}`,
+      getToken()
+    );
     if (res.data) {
       AM_code_info.value = res?.data;
 
@@ -628,18 +638,34 @@ const handleSubLedgerEnter = () => {
 const customertypeData = ref([]);
 const fetchTypeCustomer = async (search = "") => {
   try {
-    const res = await axios.get(`${apiBase}/get_customer_all?q=${search}`, getToken());
+    const res = await axios.get(
+      `${apiBase}/get_customer_all?q=${search}`,
+      getToken()
+    );
     customertypeData.value = res?.data;
     console.log(customertypeData.value);
   } catch (error) {}
 };
 
-const typeValuehandler = (value) => {
+const suppliertypeData = ref([]);
+const fetchSupplier = async (search = "") => {
+  try {
+    const res = await axios.get(
+      `${apiBase}/get_customer_all_purchase?q=${search}`,
+      getToken()
+    );
+    suppliertypeData.value = res?.data;
+    // console.log(customertypeData.value);
+  } catch (error) {}
+};
+
+const typeValuehandler = async (value) => {
   AMDetails.value = "";
   if (value === "customer") {
-    fetchTypeCustomer();
-  } else value === "supplier";
-  fetchTypeCustomer();
+    await fetchTypeCustomer();
+  } else if (value === "supplier") {
+    await fetchSupplier();
+  }
 };
 
 const type = ref("others");
