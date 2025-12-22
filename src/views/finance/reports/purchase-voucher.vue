@@ -89,11 +89,11 @@
               @change="toggleSelectAll"
             />
           </th>
-          <th class="border border-white px-4 py-2">Purchase No</th>
-          <th class="border border-white px-4 py-2">Purchase Date</th>
-          <th class="border border-white px-4 py-2">Supplier Code</th>
-          <th class="border border-white px-4 py-2">Supplier Name</th>
-          <th class="border border-white px-4 py-2">NET</th>
+          <th class="border border-white px-4 py-2">Receive No</th>
+          <th class="border border-white px-4 py-2">Receive Date</th>
+          <th class="border border-white px-4 py-2">Depot Code</th>
+          <th class="border border-white px-4 py-2">Depot Name</th>
+          <th class="border border-white px-4 py-2">Gross</th>
         </tr>
       </thead>
       <tbody class="capitalize">
@@ -102,43 +102,43 @@
             No data available.
           </td>
         </tr>
-        <template v-else v-for="data in allData" :key="data.InvoiceNo">
+        <template v-else v-for="data in allData" :key="data.ReceiveNo">
           <tr>
             <td class="px-4 border">
               <input
                 type="checkbox"
-                :value="data.InvoiceNo"
+                :value="data.ReceiveNo"
                 v-model="checkedInvoice"
               />
             </td>
             <td class="px-4 border relative">
               <div class="flex items-center cursor-pointer gap-2">
-                <span @click="toggleInvoice(data.InvoiceNo)" class="flex-1">
-                  {{ data.InvoiceNo }}
+                <span @click="toggleInvoice(data.ReceiveNo)" class="flex-1">
+                  {{ data.ReceiveNo }}
                 </span>
 
                 <Icon
                   class="text-lg"
                   :icon="
-                    isOpen(data.InvoiceNo)
+                    isOpen(data.ReceiveNo)
                       ? 'mdi:chevron-down'
                       : 'mdi:chevron-up'
                   "
-                  @click.stop="toggleInvoice(data.InvoiceNo)"
+                  @click.stop="toggleInvoice(data.ReceiveNo)"
                 />
               </div>
             </td>
 
-            <td class="px-4 border">{{ data?.InvoiceDate }}</td>
-            <td class="px-4 border">{{ data?.CustomerCode }}</td>
-            <td class="px-4 border">{{ data?.CustomerName }}</td>
-            <td class="px-4 border text-right">{{ data?.NET }}</td>
+            <td class="px-4 border">{{ data?.ReceiveDate }}</td>
+            <td class="px-4 border">{{ data?.DepotCode }}</td>
+            <td class="px-4 border">{{ data?.DepotName }}</td>
+            <td class="px-4 border text-right">{{ data?.Gross }}</td>
           </tr>
 
-          <tr v-if="isOpen(data.InvoiceNo)">
+          <tr v-if="isOpen(data.ReceiveNo)">
             <td colspan="6" class="bg-gray-50">
               <div
-                v-if="invoiceDetails[data.InvoiceNo]?.length"
+                v-if="invoiceDetails[data.ReceiveNo]?.length"
                 class="overflow-x-auto"
               >
                 <table class="w-full text-sm border-collapse">
@@ -147,26 +147,26 @@
                       <th class="border px-2 py-1">Product Code</th>
                       <th class="border px-2 py-1">Product Name</th>
                       <th class="border px-2 py-1">Unit Price</th>
-                      <th class="border px-2 py-1">Sales VAT</th>
+                      <th class="border px-2 py-1">Expired Date</th>
                       <th class="border px-2 py-1">Quantity</th>
-                      <th class="border px-2 py-1">Discount</th>
-                      <th class="border px-2 py-1">NET</th>
-                      <th class="border px-2 py-1">NSI</th>
+                      <th class="border px-2 py-1">Gross</th>
+                      <th class="border px-2 py-1">Total TP</th>
+                      <th class="border px-2 py-1">Total VAT</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr
-                      v-for="inv in invoiceDetails[data.InvoiceNo]"
-                      :key="`${data.InvoiceNo}-${inv.ProductCode}`"
+                      v-for="inv in invoiceDetails[data.ReceiveNo]"
+                      :key="`${data.ReceiveNo}-${inv.ProductCode}`"
                     >
                       <td class="border px-2 py-1">{{ inv.ProductCode }}</td>
                       <td class="border px-2 py-1">{{ inv.ProductName }}</td>
                       <td class="border px-2 py-1">{{ inv.UnitPrice }}</td>
-                      <td class="border px-2 py-1">{{ inv.SalesVat }}</td>
-                      <td class="border px-2 py-1">{{ inv.SalesQTY }}</td>
-                      <td class="border px-2 py-1">{{ inv.Discount }}</td>
-                      <td class="border px-2 py-1">{{ inv.NET }}</td>
-                      <td class="border px-2 py-1">{{ inv.NSI }}</td>
+                      <td class="border px-2 py-1">{{ inv.ExpiredDate }}</td>
+                      <td class="border px-2 py-1">{{ inv.QTY }}</td>
+                      <td class="border px-2 py-1">{{ inv.Gross }}</td>
+                      <td class="border px-2 py-1">{{ inv.TotalTP }}</td>
+                      <td class="border px-2 py-1">{{ inv.TotalVAT }}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -544,6 +544,14 @@ const debitVoucherEntry = ref(null);
 
 // --- Existing Logic (Outside Modal Logic) ---
 const fetchAllData = async () => {
+  if (!formData.value.customer) {
+    showNotification("warning", "Please select a Supplier.");
+    return;
+  }
+  if (!formData.value.from || !formData.value.to) {
+    showNotification("warning", "Please select both From and To dates.");
+    return;
+  }
   try {
     const fromDate = formData.value.from
       ? dayjs(formData.value.from).format("YYYY-MM-DD")
@@ -590,7 +598,7 @@ const fetchInvoiceDetails = async (invoiceNo) => {
   try {
     if (!invoiceDetails.value[invoiceNo]) {
       const res = await axios.get(
-        `${apiBase}/get_invoice_details?InvoiceNo=${invoiceNo}`,
+        `${apiBase}/get_invoice_details_purchase?InvoiceNo=${invoiceNo}`,
         getToken()
       );
       invoiceDetails.value[invoiceNo] = res?.data;
