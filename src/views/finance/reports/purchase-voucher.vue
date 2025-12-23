@@ -52,8 +52,9 @@
               show-search
               allowClear
               :filter-option="false"
+              @select="handleSupplierSelect"
               @search="customerfetch"
-              placeholder="Select Customer"
+              placeholder="Select Supplier"
             >
               <a-select-option
                 v-for="item in customerData"
@@ -76,7 +77,16 @@
         </div>
       </div>
     </div>
-
+    <!-- total of selected ReceiveNo -->
+    <div class="text-right mt-3 flex justify-end items-center gap-2">
+      <label class="font-semibold text-gray-700 md:w-24 mb-2"> Total</label>
+      <input
+        type="text"
+        class="w-24 border rounded-lg p-1 text-right bg-yellow-300 text-black font-bold"
+        :value="totalSelectedNet"
+        readonly
+      />
+    </div>
     <table class="w-full border border-collapse text-left mt-5">
       <thead>
         <tr class="bg-primary text-white">
@@ -109,6 +119,7 @@
                 type="checkbox"
                 :value="data.ReceiveNo"
                 v-model="checkedInvoice"
+                @change="updateTotalForIndividual"
               />
             </td>
             <td class="px-4 border relative">
@@ -392,7 +403,7 @@
                 <tr class="bg-primary text-white">
                   <th class="border border-white px-4 py-2">Account Code</th>
                   <th class="border border-white px-4 py-2">Account Details</th>
-                  <th class="border border-white px-4 py-2">Sub Ledger</th>
+                  <th class="border border-white px-4 py-2">Bill No</th>
                   <th class="border border-white px-4 py-2 text-right">
                     Debit
                   </th>
@@ -418,13 +429,13 @@
                   :key="'confirmed-' + item.BillNo"
                   class="bg-gray-100 hover:bg-gray-200"
                 >
-                  <td class="px-4 border">{{ item.AccountCode }}</td>
+                  <td class="px-4 border">{{ item.AccountCode || "-" }}</td>
                   <td class="px-4 border">{{ item.AccountDetails }}</td>
                   <td class="px-4 border">{{ item.BillNo }}</td>
-                  <td class="px-4 border text-right">{{ 0.0 }}</td>
                   <td class="px-4 border text-right">
                     {{ (parseFloat(item.Credit) || 0).toFixed(2) }}
                   </td>
+                  <td class="px-4 border text-right">{{ 0.0 }}</td>
                 </tr>
 
                 <!-- Show pending entries (selected but not yet confirmed with narration) -->
@@ -439,10 +450,10 @@
                     {{ item.BillNo }}
                     <span class="text-xs text-yellow-600">(pending)</span>
                   </td>
-                  <td class="px-4 border text-right">{{ 0.0 }}</td>
                   <td class="px-4 border text-right">
                     {{ (parseFloat(item.Credit) || 0).toFixed(2) }}
                   </td>
+                  <td class="px-4 border text-right">{{ 0.0 }}</td>
                 </tr>
 
                 <!-- Debit entry row - only show after user clicks Add inside modal -->
@@ -458,10 +469,10 @@
                     {{ debitVoucherEntry.AccountDetails }}
                   </td>
                   <td class="px-4 border">-</td>
+                  <td class="px-4 border text-right">{{ 0.0 }}</td>
                   <td class="px-4 border text-right">
                     {{ calculateTotalCredit() }}
                   </td>
-                  <td class="px-4 border text-right">{{ 0.0 }}</td>
                 </tr>
               </tbody>
 
@@ -516,6 +527,7 @@ const isModalOpen = ref(false);
 const userInfo = JSON.parse(localStorage.getItem("user_info"));
 // --- New/Modified Refs for Modal State ---
 const commonNarration = ref("");
+const totalSelectedNet = ref(0);
 
 const chequeDetails = ref({
   ChequeNo: "",
@@ -534,9 +546,9 @@ const modalForm = ref({
   UserId: userInfo?.UserId || "",
   EditDate: dayjs(),
   EditUserID: userInfo?.UserId || "",
-  AMCode: "030-03008", // Default Account Code for Credit entries (Customer)
+  AMCode: "",
   ASCode: "0",
-  Details: [], // Temporary: Holds basic credit structure on handleAddSale.
+  Details: [],
 });
 
 const creditVoucherEntries = ref([]);
@@ -572,8 +584,8 @@ const fetchAllData = async () => {
     }
     allData.value = res?.data?.map((item) => ({
       ...item,
-      InvoiceDate: item.InvoiceDate
-        ? dayjs(item.InvoiceDate).format("YYYY-MM-DD")
+      ReceiveDate: item.ReceiveDate
+        ? dayjs(item.ReceiveDate).format("YYYY-MM-DD")
         : "",
     }));
   } catch (error) {
@@ -592,6 +604,27 @@ const customerfetch = async (search = "") => {
   } catch (error) {
     console.error(error);
   }
+};
+
+const handleSupplierSelect = (supplierCode) => {
+  const selectedSupplier = customerData.value.find(
+    (item) => item.SupplierCode === supplierCode
+  );
+  if (selectedSupplier && selectedSupplier.AMCode) {
+    modalForm.value.AMCode = selectedSupplier.AMCode;
+  }
+};
+
+const updateTotalForIndividual = () => {
+  let total = 0;
+
+  allData.value.forEach((item) => {
+    if (checkedInvoice.value.includes(item.ReceiveNo)) {
+      total += Number(item.Gross) || 0;
+    }
+  });
+
+  totalSelectedNet.value = total;
 };
 
 const fetchInvoiceDetails = async (invoiceNo) => {
@@ -627,13 +660,20 @@ const isIndeterminate = computed(() => {
 });
 
 const toggleSelectAll = (event) => {
+  let total = 0;
   if (event.target.checked) {
     // Select all invoices
-    checkedInvoice.value = allData.value.map((item) => item.InvoiceNo);
+    checkedInvoice.value = allData.value.map((item) => item.ReceiveNo);
   } else {
     // Deselect all
     checkedInvoice.value = [];
   }
+  allData.value.forEach((item) => {
+    if (checkedInvoice.value.includes(item.ReceiveNo)) {
+      total += Number(item.Gross) || 0;
+    }
+  });
+  totalSelectedNet.value = total;
 };
 
 // Watch for changes to update indeterminate state
@@ -705,19 +745,19 @@ const handleAddSale = () => {
 
   // Create entries for the newly selected invoices (these will show as "pending")
   const initialCreditEntries = currentBatchInvoices.map((invNo) => {
-    const invoice = allData.value.find((item) => item.InvoiceNo === invNo);
-    const invoiceDateDayjs = invoice?.InvoiceDate
-      ? dayjs(invoice.InvoiceDate)
+    const invoice = allData.value.find((item) => item.ReceiveNo === invNo);
+    const invoiceDateDayjs = invoice?.ReceiveDate
+      ? dayjs(invoice.ReceiveDate)
       : null;
 
     return {
       AccountCode: modalForm.value.AMCode,
-      AccountDetails: invoice?.CustomerName || "",
-      Credit: parseFloat(invoice?.NET) || 0,
+      AccountDetails: invoice?.DepotName || "",
+      Credit: parseFloat(invoice?.Gross) || 0,
       BillNo: invNo,
       BillDate: invoiceDateDayjs,
       TransType: "s",
-      Person: invoice?.CustomerName || "",
+      Person: invoice?.DepotName || "",
     };
   });
 
@@ -906,7 +946,7 @@ const saveSaleVoucher = async () => {
     };
 
     // Post data to API
-    await axios.post(`${apiBase}/sales_voucher_add`, payload, getToken());
+    await axios.post(`${apiBase}/purchase_voucher_add`, payload, getToken());
     showNotification("success", "Voucher saved successfully!");
     isModalOpen.value = false;
 
@@ -918,6 +958,9 @@ const saveSaleVoucher = async () => {
 
     // **CRITICAL FIX**: Clear checkboxes ONLY on successful SAVE
     checkedInvoice.value = [];
+
+    // reset total
+    totalSelectedNet.value = 0;
 
     modalForm.value.JVType = "";
     modalForm.value.Details = [];
@@ -932,8 +975,8 @@ const saveSaleVoucher = async () => {
 const calculateTotalSelectedAmount = () => {
   return checkedInvoice.value
     .map((invNo) => {
-      const item = allData.value.find((d) => d.InvoiceNo === invNo);
-      return item ? Number(item.NET) : 0;
+      const item = allData.value.find((d) => d.ReceiveNo === invNo);
+      return item ? Number(item.Gross) : 0;
     })
     .reduce((sum, net) => sum + net, 0);
 };

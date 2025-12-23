@@ -390,7 +390,7 @@
                 <tr class="bg-primary text-white">
                   <th class="border border-white px-4 py-2">Account Code</th>
                   <th class="border border-white px-4 py-2">Account Details</th>
-                  <th class="border border-white px-4 py-2">Sub Ledger</th>
+                  <th class="border border-white px-4 py-2">Bill No</th>
                   <th class="border border-white px-4 py-2 text-right">
                     Debit
                   </th>
