@@ -32,7 +32,7 @@
             class="flex flex-col md:flex-row items-center gap-1 border border-gray-300 rounded-lg p-4 flex-1"
           >
             <label class="font-semibold text-gray-700 md:w-24 mb-2">
-              Select:
+              Type:
             </label>
             <a-select
               @change="customerfetch"
@@ -40,7 +40,7 @@
               placeholder="Select Type"
             >
               <a-select-option value="local">Local</a-select-option>
-              <a-select-option value="export">Export</a-select-option>
+              <a-select-option value="import">Import</a-select-option>
             </a-select>
 
             <label class="font-semibold text-gray-700 md:w-24 mb-2"
@@ -515,7 +515,11 @@ import dayjs from "dayjs";
 import { Icon } from "@iconify/vue";
 
 // --- Existing Refs (Outside Modal Logic) ---
-const formData = ref({ from: "", to: "", customer: "" });
+const formData = ref({
+  from: dayjs().startOf("month"),
+  to: dayjs(),
+  customer: "",
+});
 const dateFormat = "YYYY-MM-DD";
 const allData = ref([]);
 const customerData = ref([]);

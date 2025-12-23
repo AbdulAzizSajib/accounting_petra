@@ -502,7 +502,11 @@ import dayjs from "dayjs";
 import { Icon } from "@iconify/vue";
 
 // --- Existing Refs (Outside Modal Logic) ---
-const formData = ref({ from: "", to: "", customer: "" });
+const formData = ref({
+  from: dayjs().startOf("month"),
+  to: dayjs(),
+  customer: "",
+});
 const dateFormat = "YYYY-MM-DD";
 const allData = ref([]);
 const customerData = ref([]);
