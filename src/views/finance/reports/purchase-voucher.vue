@@ -517,7 +517,7 @@ import { Icon } from "@iconify/vue";
 // --- Existing Refs (Outside Modal Logic) ---
 const formData = ref({
   from: dayjs().startOf("month"),
-  to: dayjs(),
+  to: dayjs().endOf("month"),
   customer: "",
 });
 const dateFormat = "YYYY-MM-DD";
@@ -541,8 +541,8 @@ const chequeDetails = ref({
 
 const modalForm = ref({
   SiteCode: "01",
-  Period: "202512",
-  JVType: "CSH",
+  Period: dayjs().format("YYYYMM"),
+  JVType: "",
   JVCat: "R",
   JVDate: dayjs(),
   TransDate: dayjs(),
