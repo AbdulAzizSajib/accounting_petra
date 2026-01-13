@@ -346,6 +346,11 @@ const items = reactive([
         label: "Trial Balance",
         onClick: navigateTo("/reports/trial-balance"),
       },
+      {
+        key: "/reports/trial-balance-sub",
+        label: "Trial Balance Sub",
+        onClick: navigateTo("/reports/trial-balance-sub"),
+      },
     ],
   },
   {

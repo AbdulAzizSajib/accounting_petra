@@ -108,6 +108,7 @@ import SaleVoucherAdd from "@/views/finance/reports/sale-voucher-add.vue";
 
 //Purchase Voucher
 import PurchaseVoucher from "@/views/finance/reports/purchase-voucher.vue";
+import TrialBalanceSub from "@/views/finance/reports/trial-balance-sub.vue";
 
 const routes = [
   {
@@ -465,6 +466,11 @@ const routes = [
     component: TrialBalance,
   },
   {
+    path: "/reports/trial-balance-sub",
+    name: "trial-balance-sub",
+    component: TrialBalanceSub,
+  },
+  {
     path: "/reports/cash-flow-statement-report",
     name: "cash-flow-statement-report",
     component: CashFlowStatementReport,
@@ -506,7 +512,7 @@ const routes = [
     component: SalesVoucher,
   },
 
-    {
+  {
     path: "/transaction/voucher-list/voucher-add",
     name: "voucher-add",
     component: VoucherAdd,
@@ -521,7 +527,7 @@ const routes = [
     name: "purchase-voucher",
     component: PurchaseVoucher,
   },
-    {
+  {
     path: "/transaction/sale-voucher/sale-voucher-add",
     name: "sale-voucher-add",
     component: SaleVoucherAdd,
