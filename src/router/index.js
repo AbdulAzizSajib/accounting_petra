@@ -109,6 +109,7 @@ import SaleVoucherAdd from "@/views/finance/reports/sale-voucher-add.vue";
 //Purchase Voucher
 import PurchaseVoucher from "@/views/finance/reports/purchase-voucher.vue";
 import TrialBalanceSub from "@/views/finance/reports/trial-balance-sub.vue";
+import BalanceSheetNew from "@/views/finance/reports/Balance-sheet-new.vue";
 
 const routes = [
   {
@@ -500,6 +501,11 @@ const routes = [
     path: "/reports/balance-sheet",
     name: "balance-sheet",
     component: BalanceSheet,
+  },
+  {
+    path: "/reports/balance-sheet-new",
+    name: "balance-sheet-new",
+    component: BalanceSheetNew,
   },
   {
     path: "/reports/balance-sheet-details",

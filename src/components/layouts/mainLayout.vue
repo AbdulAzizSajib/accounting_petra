@@ -312,6 +312,11 @@ const items = reactive([
         onClick: navigateTo("/reports/balance-sheet"),
       },
       {
+        key: "/reports/balance-sheet-new",
+        label: "Balance Sheet New",
+        onClick: navigateTo("/reports/balance-sheet-new"),
+      },
+      {
         key: "/reports/balance-sheet-details",
         label: "Balance Sheet Details",
         onClick: navigateTo("/reports/balance-sheet-details"),
