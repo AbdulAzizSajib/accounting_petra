@@ -30,7 +30,12 @@
           </div>
         </div>
       </div>
-      <div class="max-w-5xl mx-auto border border-black">
+      <div v-if="isLoading">
+        <p class="text-center font-semibold text-lg">
+          Please select a date and click Search to view the Balance Sheet
+        </p>
+      </div>
+      <div v-else class="max-w-5xl mx-auto border border-black">
         <!-- Main Content Area - Two Columns -->
         <div class="flex">
           <!-- Left Side - Assets -->
@@ -89,7 +94,7 @@
                 >
                 <div class="flex gap-8">
                   <span></span>
-                  <span class="border-t border-black">{{
+                  <span class="border-t border-black font-semibold">{{
                     formatAmount(currentAssetsTotal)
                   }}</span>
                 </div>
@@ -131,7 +136,9 @@
                   class="flex justify-between pl-8 py-1"
                 >
                   <span>{{ item.AccountName }}</span>
-                  <span>{{ formatAmount(item.Amount) }}</span>
+                  <span class="font-semibold">{{
+                    formatAmount(item.Amount)
+                  }}</span>
                 </div>
               </template>
               <div v-else class="flex justify-between pl-8 py-1">
@@ -164,7 +171,7 @@
                   >
                   <div class="flex gap-8">
                     <span></span>
-                    <span class="border-t border-black">{{
+                    <span class="border-t border-black font-semibold">{{
                       formatAmount(currentLiabilitiesTotal)
                     }}</span>
                   </div>
@@ -176,7 +183,7 @@
                 <span class="italic font-semibold">Total of Liabilities</span>
                 <div class="flex gap-8">
                   <span></span>
-                  <span class="border-t border-black">{{
+                  <span class="border-t border-black font-semibold">{{
                     formatAmount(totalLiabilities)
                   }}</span>
                 </div>
@@ -204,7 +211,7 @@
                 <span class="italic font-semibold">Total of Equity</span>
                 <div class="flex gap-8">
                   <span></span>
-                  <span class="border-t border-black">{{
+                  <span class="border-t border-black font-semibold">{{
                     formatAmount(totalEquity)
                   }}</span>
                 </div>
@@ -340,8 +347,10 @@ const formatAmount = (amount) => {
   });
 };
 
+const isLoading = ref(true);
 const fetchBalanceSheet = async () => {
   try {
+    isLoading.value = true;
     const res = await axios.post(
       `${apiBase}/journal-master/balance-sheet-new-report`,
       {
@@ -349,7 +358,7 @@ const fetchBalanceSheet = async () => {
       },
       getToken()
     );
-
+    isLoading.value = false;
     if (res.data?.data) {
       console.log(res.data.data);
       table_0.value = res.data.data.table_0 || [];
@@ -366,6 +375,7 @@ const fetchBalanceSheet = async () => {
     }
   } catch (error) {
     console.error("Error fetching balance sheet data:", error);
+    isLoading.value = false;
   }
 };
 
