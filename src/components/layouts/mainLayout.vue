@@ -306,21 +306,21 @@ const items = reactive([
         label: "Ledger",
         onClick: navigateTo("/reports/ledger-report"),
       },
-      {
-        key: "/reports/balance-sheet",
-        label: "Balance Sheet",
-        onClick: navigateTo("/reports/balance-sheet"),
-      },
+      // {
+      //   key: "/reports/balance-sheet",
+      //   label: "Balance Sheet",
+      //   onClick: navigateTo("/reports/balance-sheet"),
+      // },
       {
         key: "/reports/balance-sheet-new",
-        label: "Balance Sheet New",
+        label: "Balance Sheet ",
         onClick: navigateTo("/reports/balance-sheet-new"),
       },
-      {
-        key: "/reports/balance-sheet-details",
-        label: "Balance Sheet Details",
-        onClick: navigateTo("/reports/balance-sheet-details"),
-      },
+      // {
+      //   key: "/reports/balance-sheet-details",
+      //   label: "Balance Sheet Details",
+      //   onClick: navigateTo("/reports/balance-sheet-details"),
+      // },
       {
         key: "/reports/payment-receipt",
         label: "Payment Receipt",

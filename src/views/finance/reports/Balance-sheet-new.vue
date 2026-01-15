@@ -203,6 +203,16 @@
                   <span>{{ formatAmount(item.Amount) }}</span>
                 </div>
               </template>
+              <template v-if="retainedEarnings.length > 0">
+                <div
+                  v-for="(item, index) in retainedEarnings"
+                  :key="'re-' + index"
+                  class="flex justify-between pl-8 py-1"
+                >
+                  <span>{{ item.Description }}</span>
+                  <span>{{ formatAmount(item.TotalAmount) }}</span>
+                </div>
+              </template>
               <div v-else class="flex justify-between pl-8 py-1">
                 <span>-</span>
                 <span>-</span>
@@ -257,6 +267,7 @@ const table_6 = ref([]); // Equity
 const table_7 = ref([]); // Total Equity
 const table_8 = ref([]); // Total Liabilities + Equity
 const table_9 = ref([]); // Balance Status
+const table_10 = ref([]); // Retained Earnings
 
 // Computed properties for filtered data (excluding placeholder "-" entries)
 const fixedAssets = computed(() =>
@@ -278,6 +289,8 @@ const currentLiabilities = computed(() =>
 const equity = computed(() =>
   table_6.value.filter((item) => item.AccountName !== "-")
 );
+
+const retainedEarnings = computed(() => table_10.value);
 
 // Computed totals
 const fixedAssetsTotal = computed(() => {
@@ -319,10 +332,15 @@ const totalEquity = computed(() => {
   if (table_7.value.length > 0) {
     return parseFloat(table_7.value[0].TotalAmount || 0);
   }
-  return equity.value.reduce(
+  const equitySum = equity.value.reduce(
     (sum, item) => sum + parseFloat(item.Amount || 0),
     0
   );
+  const retainedEarningsSum = retainedEarnings.value.reduce(
+    (sum, item) => sum + parseFloat(item.TotalAmount || 0),
+    0
+  );
+  return equitySum + retainedEarningsSum;
 });
 
 const totalLiabilitiesEquity = computed(() => {
@@ -370,7 +388,7 @@ const fetchBalanceSheet = async () => {
       table_6.value = res.data.data.table_6 || [];
       table_7.value = res.data.data.table_7 || [];
       table_8.value = res.data.data.table_8 || [];
-      table_9.value = res.data.data.table_9 || [];
+      table_10.value = res.data.data.table_10 || [];
       console.log("Balance Sheet Data loaded successfully");
     }
   } catch (error) {
@@ -553,6 +571,20 @@ const exportPDF = () => {
                   .join("") ||
                 '<tr><td style="padding: 4px 8px 4px 32px;">-</td><td style="padding: 4px 8px; text-align: right;">-</td></tr>'
               }
+              ${retainedEarnings.value
+                .map(
+                  (item) => `
+                <tr>
+                  <td style="padding: 4px 8px 4px 32px;">${
+                    item.Description
+                  }</td>
+                  <td style="padding: 4px 8px; text-align: right;">${formatAmount(
+                    item.TotalAmount
+                  )}</td>
+                </tr>
+              `
+                )
+                .join("")}
               <tr>
                 <td style="padding: 4px 8px 4px 16px; font-style: italic; font-weight: 600;">Total of Equity</td>
                 <td style="padding: 4px 8px; text-align: right; border-top: 1px solid black;">${formatAmount(
