@@ -55,7 +55,7 @@
                   class="flex justify-between pl-4 py-1"
                 >
                   <span
-                    :class="{ 'text-blue-600 cursor-pointer': item?.ACType1 }"
+                    :class="{ 'text-indigo-600 cursor-pointer': item?.ACType1 }"
                     @click="getDetails(item?.ACType1)"
                     >{{ item.AccountName }}</span
                   >
@@ -85,7 +85,7 @@
                   class="flex justify-between pl-4 py-1"
                 >
                   <span
-                    :class="{ 'text-blue-600 cursor-pointer': item?.ACType1 }"
+                    :class="{ 'text-indigo-600 cursor-pointer': item?.ACType1 }"
                     @click="getDetails(item?.ACType1)"
                     >{{ item?.AccountName }}
                   </span>
@@ -144,7 +144,7 @@
                   class="flex justify-between pl-8 py-1"
                 >
                   <span
-                    :class="{ 'text-blue-600 cursor-pointer': item?.ACType1 }"
+                    :class="{ 'text-indigo-600 cursor-pointer': item?.ACType1 }"
                     @click="getDetails(item?.ACType1)"
                     >{{ item.AccountName }}</span
                   >
@@ -170,7 +170,9 @@
                     class="flex justify-between pl-8 py-1"
                   >
                     <span
-                      :class="{ 'text-blue-600 cursor-pointer': item?.ACType1 }"
+                      :class="{
+                        'text-indigo-600 cursor-pointer': item?.ACType1,
+                      }"
                       @click="getDetails(item?.ACType1)"
                       >{{ item.AccountName }}</span
                     >
@@ -216,7 +218,7 @@
                   class="flex justify-between pl-8 py-1"
                 >
                   <span
-                    :class="{ 'text-blue-600 cursor-pointer': item?.ACType1 }"
+                    :class="{ 'text-indigo-600 cursor-pointer': item?.ACType1 }"
                     @click="getDetails(item?.ACType1)"
                     >{{ item.AccountName }}</span
                   >
@@ -262,12 +264,30 @@
       </div>
     </div>
     <!-- modal -->
-    <a-modal :footer="null" :width="800" v-model:open="open" :title="null">
-      <!-- <h2></h2> -->
+    <a-modal
+      centered
+      :footer="null"
+      :width="800"
+      v-model:open="open"
+      :title="null"
+    >
+      <nav class="flex items-center text-sm text-gray-600 mb-4">
+        <span class="font-medium text-gray-800">{{
+          detailsInfo[0].GroupDetails
+        }}</span>
+        <span class="mx-2 text-gray-400">></span>
+        <span class="font-medium text-gray-800">{{
+          detailsInfo[0].GroupDetailsSub
+        }}</span>
+        <span class="mx-2 text-gray-400">></span>
+        <span class="font-semibold text-indigo-600">{{
+          detailsInfo[0].ACType1Details
+        }}</span>
+      </nav>
       <table class="w-full border-collapse text-sm">
         <thead class="bg-gray-100">
           <tr>
-            <th
+            <!-- <th
               class="border border-gray-300 px-3 py-2 text-left font-semibold"
             >
               Group Details
@@ -281,7 +301,7 @@
               class="border border-gray-300 px-3 py-2 text-left font-semibold"
             >
               AC Type Details
-            </th>
+            </th> -->
             <th
               class="border border-gray-300 px-3 py-2 text-left font-semibold"
             >
@@ -310,7 +330,7 @@
             :key="index"
             class="hover:bg-gray-50"
           >
-            <td class="border border-gray-300 px-3 py-2">
+            <!-- <td class="border border-gray-300 px-3 py-2">
               {{ item.GroupDetails }}
             </td>
             <td class="border border-gray-300 px-3 py-2">
@@ -318,7 +338,7 @@
             </td>
             <td class="border border-gray-300 px-3 py-2">
               {{ item.ACType1Details }}
-            </td>
+            </td> -->
             <td class="border border-gray-300 px-3 py-2">{{ item.AMCode }}</td>
             <td class="border border-gray-300 px-3 py-2">
               {{ item.AMDetails }}
