@@ -178,6 +178,11 @@ const items = reactive([
         onClick: navigateTo("/files/ac-sub-group"),
       },
       {
+        key: "/files/cash-flow",
+        label: "Cash Flow",
+        onClick: navigateTo("/files/cash-flow"),
+      },
+      {
         key: "/files/search-chart-of-accounts",
         label: "Chart of Accounts",
         onClick: navigateTo("/files/search-chart-of-accounts"),
@@ -316,6 +321,11 @@ const items = reactive([
         label: "Balance Sheet ",
         onClick: navigateTo("/reports/balance-sheet-new"),
       },
+      {
+        key: "/reports/balance-sheet-petra",
+        label: "Balance Sheet Petra",
+        onClick: navigateTo("/reports/balance-sheet-petra"),
+      },
       // {
       //   key: "/reports/balance-sheet-details",
       //   label: "Balance Sheet Details",
@@ -414,7 +424,7 @@ watch(
     // find exact match or fallback to prefix
     const exact = flat.find((i) => i.key === newPath);
     const prefix = flat.find(
-      (i) => typeof i.key === "string" && newPath.startsWith(i.key)
+      (i) => typeof i.key === "string" && newPath.startsWith(i.key),
     );
     const matchedKey = (exact || prefix)?.key || newPath;
 
@@ -433,7 +443,7 @@ watch(
       selected.scrollIntoView({ behavior: "smooth", block: "center" });
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 </script>
 

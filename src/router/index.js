@@ -110,6 +110,8 @@ import SaleVoucherAdd from "@/views/finance/reports/sale-voucher-add.vue";
 import PurchaseVoucher from "@/views/finance/reports/purchase-voucher.vue";
 import TrialBalanceSub from "@/views/finance/reports/trial-balance-sub.vue";
 import BalanceSheetNew from "@/views/finance/reports/Balance-sheet-new.vue";
+import BalanceSheetPetra from "@/views/finance/reports/Balance-sheet-petra.vue";
+import CashFlow from "@/views/finance/files/cash-flow.vue";
 
 const routes = [
   {
@@ -242,6 +244,11 @@ const routes = [
     path: "/files/group-code",
     name: "group-code",
     component: GroupCode,
+  },
+  {
+    path: "/files/cash-flow",
+    name: "cash-flow",
+    component: CashFlow,
   },
   {
     path: "/files/voucher-type",
@@ -506,6 +513,11 @@ const routes = [
     path: "/reports/balance-sheet-new",
     name: "balance-sheet-new",
     component: BalanceSheetNew,
+  },
+  {
+    path: "/reports/balance-sheet-petra",
+    name: "balance-sheet-petra",
+    component: BalanceSheetPetra,
   },
   {
     path: "/reports/balance-sheet-details",

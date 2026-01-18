@@ -271,23 +271,23 @@ const table_10 = ref([]); // Retained Earnings
 
 // Computed properties for filtered data (excluding placeholder "-" entries)
 const fixedAssets = computed(() =>
-  table_0.value.filter((item) => item.AccountName !== "-")
+  table_0.value.filter((item) => item.AccountName !== "-"),
 );
 
 const currentAssets = computed(() =>
-  table_1.value.filter((item) => item.AccountName !== "-")
+  table_1.value.filter((item) => item.AccountName !== "-"),
 );
 
 const fixedLiabilities = computed(() =>
-  table_3.value.filter((item) => item.AccountName !== "-")
+  table_3.value.filter((item) => item.AccountName !== "-"),
 );
 
 const currentLiabilities = computed(() =>
-  table_4.value.filter((item) => item.AccountName !== "-")
+  table_4.value.filter((item) => item.AccountName !== "-"),
 );
 
 const equity = computed(() =>
-  table_6.value.filter((item) => item.AccountName !== "-")
+  table_6.value.filter((item) => item.AccountName !== "-"),
 );
 
 const retainedEarnings = computed(() => table_10.value);
@@ -296,14 +296,14 @@ const retainedEarnings = computed(() => table_10.value);
 const fixedAssetsTotal = computed(() => {
   return fixedAssets.value.reduce(
     (sum, item) => sum + parseFloat(item.Amount || 0),
-    0
+    0,
   );
 });
 
 const currentAssetsTotal = computed(() => {
   return currentAssets.value.reduce(
     (sum, item) => sum + parseFloat(item.Amount || 0),
-    0
+    0,
   );
 });
 
@@ -317,7 +317,7 @@ const totalAssets = computed(() => {
 const currentLiabilitiesTotal = computed(() => {
   return currentLiabilities.value.reduce(
     (sum, item) => sum + parseFloat(item.Amount || 0),
-    0
+    0,
   );
 });
 
@@ -334,11 +334,11 @@ const totalEquity = computed(() => {
   }
   const equitySum = equity.value.reduce(
     (sum, item) => sum + parseFloat(item.Amount || 0),
-    0
+    0,
   );
   const retainedEarningsSum = retainedEarnings.value.reduce(
     (sum, item) => sum + parseFloat(item.TotalAmount || 0),
-    0
+    0,
   );
   return equitySum + retainedEarningsSum;
 });
@@ -374,7 +374,7 @@ const fetchBalanceSheet = async () => {
       {
         AsOnDate: dayjs(DateFrom.value).format("YYYY-MM-DD"),
       },
-      getToken()
+      getToken(),
     );
     isLoading.value = false;
     if (res.data?.data) {
@@ -402,7 +402,7 @@ const exportPDF = () => {
     <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 900px; margin: 0 auto;">
       <h1 style="text-align: center; font-size: 24px; margin-bottom: 5px;">Balance Sheet</h1>
       <p style="text-align: center; margin-bottom: 20px;">As On Date: ${dayjs(
-        DateFrom.value
+        DateFrom.value,
       ).format("DD-MM-YYYY")}</p>
 
       <table style="width: 100%; border-collapse: collapse; border: 1px solid black;">
@@ -427,10 +427,10 @@ const exportPDF = () => {
                     item.AccountName
                   }</td>
                   <td style="padding: 4px 8px; text-align: right;">${formatAmount(
-                    item.Amount
+                    item.Amount,
                   )}</td>
                 </tr>
-              `
+              `,
                   )
                   .join("") ||
                 '<tr><td style="padding: 4px 8px 4px 24px;">-</td><td style="padding: 4px 8px; text-align: right;">-</td></tr>'
@@ -438,7 +438,7 @@ const exportPDF = () => {
               <tr>
                 <td style="padding: 4px 8px; font-style: italic;">Total of Fixed Assets</td>
                 <td style="padding: 4px 8px; text-align: right;">${formatAmount(
-                  fixedAssetsTotal.value
+                  fixedAssetsTotal.value,
                 )}</td>
               </tr>
 
@@ -455,10 +455,10 @@ const exportPDF = () => {
                     item.AccountName
                   }</td>
                   <td style="padding: 4px 8px; text-align: right;">${formatAmount(
-                    item.Amount
+                    item.Amount,
                   )}</td>
                 </tr>
-              `
+              `,
                   )
                   .join("") ||
                 '<tr><td style="padding: 4px 8px 4px 24px;">-</td><td style="padding: 4px 8px; text-align: right;">-</td></tr>'
@@ -466,7 +466,7 @@ const exportPDF = () => {
               <tr>
                 <td style="padding: 4px 8px; font-style: italic; font-weight: 600;">Total of Current Assets</td>
                 <td style="padding: 4px 8px; text-align: right; border-top: 1px solid black;">${formatAmount(
-                  currentAssetsTotal.value
+                  currentAssetsTotal.value,
                 )}</td>
               </tr>
 
@@ -474,7 +474,7 @@ const exportPDF = () => {
               <tr>
                 <td style="padding: 16px 8px 8px 8px; font-weight: bold; font-style: italic;">TOTAL OF ASSETS</td>
                 <td style="padding: 16px 8px 8px 8px; text-align: right; font-weight: bold; border-top: 1px solid black; border-bottom: 1px solid black;">${formatAmount(
-                  totalAssets.value
+                  totalAssets.value,
                 )}</td>
               </tr>
             </table>
@@ -505,10 +505,10 @@ const exportPDF = () => {
                     item.AccountName
                   }</td>
                   <td style="padding: 4px 8px; text-align: right;">${formatAmount(
-                    item.Amount
+                    item.Amount,
                   )}</td>
                 </tr>
-              `
+              `,
                   )
                   .join("") ||
                 '<tr><td style="padding: 4px 8px 4px 32px;">-</td><td style="padding: 4px 8px; text-align: right;">-</td></tr>'
@@ -527,10 +527,10 @@ const exportPDF = () => {
                     item.AccountName
                   }</td>
                   <td style="padding: 4px 8px; text-align: right;">${formatAmount(
-                    item.Amount
+                    item.Amount,
                   )}</td>
                 </tr>
-              `
+              `,
                   )
                   .join("") ||
                 '<tr><td style="padding: 4px 8px 4px 32px;">-</td><td style="padding: 4px 8px; text-align: right;">-</td></tr>'
@@ -538,7 +538,7 @@ const exportPDF = () => {
               <tr>
                 <td style="padding: 4px 8px 4px 16px; font-style: italic; font-weight: 600;">Total of Current Liabilities</td>
                 <td style="padding: 4px 8px; text-align: right; border-top: 1px solid black;">${formatAmount(
-                  currentLiabilitiesTotal.value
+                  currentLiabilitiesTotal.value,
                 )}</td>
               </tr>
 
@@ -546,7 +546,7 @@ const exportPDF = () => {
               <tr>
                 <td style="padding: 4px 8px; font-style: italic; font-weight: 600;">Total of Liabilities</td>
                 <td style="padding: 4px 8px; text-align: right; border-top: 1px solid black;">${formatAmount(
-                  totalLiabilities.value
+                  totalLiabilities.value,
                 )}</td>
               </tr>
 
@@ -563,10 +563,10 @@ const exportPDF = () => {
                     item.AccountName
                   }</td>
                   <td style="padding: 4px 8px; text-align: right;">${formatAmount(
-                    item.Amount
+                    item.Amount,
                   )}</td>
                 </tr>
-              `
+              `,
                   )
                   .join("") ||
                 '<tr><td style="padding: 4px 8px 4px 32px;">-</td><td style="padding: 4px 8px; text-align: right;">-</td></tr>'
@@ -579,16 +579,16 @@ const exportPDF = () => {
                     item.Description
                   }</td>
                   <td style="padding: 4px 8px; text-align: right;">${formatAmount(
-                    item.TotalAmount
+                    item.TotalAmount,
                   )}</td>
                 </tr>
-              `
+              `,
                 )
                 .join("")}
               <tr>
                 <td style="padding: 4px 8px 4px 16px; font-style: italic; font-weight: 600;">Total of Equity</td>
                 <td style="padding: 4px 8px; text-align: right; border-top: 1px solid black;">${formatAmount(
-                  totalEquity.value
+                  totalEquity.value,
                 )}</td>
               </tr>
 
@@ -596,7 +596,7 @@ const exportPDF = () => {
               <tr>
                 <td style="padding: 16px 8px 8px 8px; font-weight: bold;">TOTAL OF LIABILITIES + EQUITY</td>
                 <td style="padding: 16px 8px 8px 8px; text-align: right; font-weight: bold; border-top: 1px solid black; border-bottom: 1px solid black;">${formatAmount(
-                  totalLiabilitiesEquity.value
+                  totalLiabilitiesEquity.value,
                 )}</td>
               </tr>
             </table>
