@@ -54,7 +54,11 @@
                   :key="'fa-' + index"
                   class="flex justify-between pl-4 py-1"
                 >
-                  <span>{{ item.AccountName }}</span>
+                  <span
+                    :class="{ 'text-blue-600 cursor-pointer': item?.ACType1 }"
+                    @click="getDetails(item?.ACType1)"
+                    >{{ item.AccountName }}</span
+                  >
                   <span>{{ formatAmount(item.Amount) }}</span>
                 </div>
               </template>
@@ -80,8 +84,12 @@
                   :key="'ca-' + index"
                   class="flex justify-between pl-4 py-1"
                 >
-                  <span>{{ item.AccountName }}</span>
-                  <span>{{ formatAmount(item.Amount) }}</span>
+                  <span
+                    :class="{ 'text-blue-600 cursor-pointer': item?.ACType1 }"
+                    @click="getDetails(item?.ACType1)"
+                    >{{ item?.AccountName }}
+                  </span>
+                  <span>{{ formatAmount(item?.Amount) }}</span>
                 </div>
               </template>
               <div v-else class="flex justify-between pl-4 py-1">
@@ -135,7 +143,11 @@
                   :key="'fl-' + index"
                   class="flex justify-between pl-8 py-1"
                 >
-                  <span>{{ item.AccountName }}</span>
+                  <span
+                    :class="{ 'text-blue-600 cursor-pointer': item?.ACType1 }"
+                    @click="getDetails(item?.ACType1)"
+                    >{{ item.AccountName }}</span
+                  >
                   <span class="font-semibold">{{
                     formatAmount(item.Amount)
                   }}</span>
@@ -157,7 +169,11 @@
                     :key="'cl-' + index"
                     class="flex justify-between pl-8 py-1"
                   >
-                    <span>{{ item.AccountName }}</span>
+                    <span
+                      :class="{ 'text-blue-600 cursor-pointer': item?.ACType1 }"
+                      @click="getDetails(item?.ACType1)"
+                      >{{ item.AccountName }}</span
+                    >
                     <span>{{ formatAmount(item.Amount) }}</span>
                   </div>
                 </template>
@@ -199,7 +215,11 @@
                   :key="'eq-' + index"
                   class="flex justify-between pl-8 py-1"
                 >
-                  <span>{{ item.AccountName }}</span>
+                  <span
+                    :class="{ 'text-blue-600 cursor-pointer': item?.ACType1 }"
+                    @click="getDetails(item?.ACType1)"
+                    >{{ item.AccountName }}</span
+                  >
                   <span>{{ formatAmount(item.Amount) }}</span>
                 </div>
               </template>
@@ -241,6 +261,78 @@
         </div>
       </div>
     </div>
+    <!-- modal -->
+    <a-modal :footer="null" :width="800" v-model:open="open" :title="null">
+      <!-- <h2></h2> -->
+      <table class="w-full border-collapse text-sm">
+        <thead class="bg-gray-100">
+          <tr>
+            <th
+              class="border border-gray-300 px-3 py-2 text-left font-semibold"
+            >
+              Group Details
+            </th>
+            <th
+              class="border border-gray-300 px-3 py-2 text-left font-semibold"
+            >
+              Group Details Sub
+            </th>
+            <th
+              class="border border-gray-300 px-3 py-2 text-left font-semibold"
+            >
+              AC Type Details
+            </th>
+            <th
+              class="border border-gray-300 px-3 py-2 text-left font-semibold"
+            >
+              AM Code
+            </th>
+            <th
+              class="border border-gray-300 px-3 py-2 text-left font-semibold"
+            >
+              AM Details
+            </th>
+            <th
+              class="border border-gray-300 px-3 py-2 text-right font-semibold"
+            >
+              Amount
+            </th>
+            <th
+              class="border border-gray-300 px-3 py-2 text-right font-semibold"
+            >
+              Sort Order
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="(item, index) in detailsInfo"
+            :key="index"
+            class="hover:bg-gray-50"
+          >
+            <td class="border border-gray-300 px-3 py-2">
+              {{ item.GroupDetails }}
+            </td>
+            <td class="border border-gray-300 px-3 py-2">
+              {{ item.GroupDetailsSub }}
+            </td>
+            <td class="border border-gray-300 px-3 py-2">
+              {{ item.ACType1Details }}
+            </td>
+            <td class="border border-gray-300 px-3 py-2">{{ item.AMCode }}</td>
+            <td class="border border-gray-300 px-3 py-2">
+              {{ item.AMDetails }}
+            </td>
+            <td class="border border-gray-300 px-3 py-2 text-right">
+              {{ formatAmount(item.Amount) }}
+            </td>
+            <td class="border border-gray-300 px-3 py-2 text-right">
+              {{ item.SortOrder }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </a-modal>
   </MainLayout>
 </template>
 
@@ -395,6 +487,32 @@ const fetchBalanceSheet = async () => {
     console.error("Error fetching balance sheet data:", error);
     isLoading.value = false;
   }
+};
+
+const detailsInfo = ref([]);
+const getDetails = async (ACTypeCode) => {
+  try {
+    const res = await axios.post(
+      `${apiBase}/journal-master/balance-sheet-detail`,
+      {
+        ASOnDate: dayjs(DateFrom.value).format("YYYY-MM-DD"),
+        ACTypeCode: ACTypeCode,
+      },
+      getToken(),
+    );
+    console.log("res.data----------", res.data);
+    if (res) {
+      detailsInfo.value = res.data || [];
+      open.value = true;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const open = ref(false);
+const showModal = () => {
+  open.value = true;
 };
 
 const exportPDF = () => {
