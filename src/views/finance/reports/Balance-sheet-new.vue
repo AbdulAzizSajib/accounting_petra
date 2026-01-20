@@ -317,11 +317,6 @@
             >
               Amount
             </th>
-            <th
-              class="border border-gray-300 px-3 py-2 text-right font-semibold"
-            >
-              Sort Order
-            </th>
           </tr>
         </thead>
         <tbody>
@@ -330,15 +325,6 @@
             :key="index"
             class="hover:bg-gray-50"
           >
-            <!-- <td class="border border-gray-300 px-3 py-2">
-              {{ item.GroupDetails }}
-            </td>
-            <td class="border border-gray-300 px-3 py-2">
-              {{ item.GroupDetailsSub }}
-            </td>
-            <td class="border border-gray-300 px-3 py-2">
-              {{ item.ACType1Details }}
-            </td> -->
             <td class="border border-gray-300 px-3 py-2">{{ item.AMCode }}</td>
             <td class="border border-gray-300 px-3 py-2">
               {{ item.AMDetails }}
@@ -346,8 +332,25 @@
             <td class="border border-gray-300 px-3 py-2 text-right">
               {{ formatAmount(item.Amount) }}
             </td>
-            <td class="border border-gray-300 px-3 py-2 text-right">
-              {{ item.SortOrder }}
+          </tr>
+          <tr>
+            <td
+              colspan="2"
+              class="border border-gray-300 px-3 py-2 font-semibold text-right"
+            >
+              Total
+            </td>
+            <td
+              class="border border-gray-300 px-3 py-2 font-semibold text-right"
+            >
+              {{
+                formatAmount(
+                  detailsInfo.reduce(
+                    (sum, item) => sum + parseFloat(item.Amount || 0),
+                    0,
+                  ),
+                )
+              }}
             </td>
           </tr>
         </tbody>
@@ -467,10 +470,21 @@ const balanceStatus = computed(() => {
 });
 
 // Format amount with thousand separators
+// const formatAmount = (amount) => {
+//   if (amount == null || amount === "" || amount === ".00") return "0.00";
+//   const num = parseFloat(amount);
+//   if (isNaN(num)) return "0.00";
+//   return num.toLocaleString("en-US", {
+//     minimumFractionDigits: 2,
+//     maximumFractionDigits: 2,
+//   });
+// };
+
 const formatAmount = (amount) => {
-  if (amount == null || amount === "" || amount === ".00") return "0.00";
+  if (amount == null || amount === "" || amount === ".00") return "-";
   const num = parseFloat(amount);
-  if (isNaN(num)) return "0.00";
+  if (isNaN(num)) return "-";
+  if (num === 0) return "-";
   return num.toLocaleString("en-US", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,

@@ -78,20 +78,49 @@
       @cancel="isCreateModalVisible = false"
       :footer="null"
     >
-      <form @submit.prevent="createallData">
-        <div class="grid grid-cols-1 gap-x-4 custom-form">
+      <form class="space-y-4" @submit.prevent="createallData">
+        <div class="flex items-center gap-2">
           <!-- Details Field -->
-          <a-form-item
-            label="Details"
-            name="Details"
-            :rules="[{ required: false, message: 'Please input details!' }]"
+          <label class="block mb-1 font-medium w-32">Code:</label>
+
+          <a-input
+            class="w-full"
+            placeholder="Enter Details"
+            v-model:value="formData.Details"
+          />
+        </div>
+        <div class="flex items-center gap-2">
+          <!-- :loading="searchLoading" -->
+          <!-- @search="getDetails" -->
+          <!-- option-filter-prop="children" -->
+          <!-- show-search -->
+          <label class="block mb-1 font-medium w-32">Code:</label>
+          <a-select
+            v-model:value="formData.Code"
+            placeholder="Select Code"
+            style="width: 100%"
+            allow-clear
           >
-            <a-input
-              class="w-full"
-              placeholder="Enter Details"
-              v-model:value="formData.Details"
-            />
-          </a-form-item>
+            <a-select-option
+              v-for="(item, index) in cf"
+              :key="index"
+              :value="item.Code"
+            >
+              {{ item.Details || "-" }}
+            </a-select-option>
+          </a-select>
+        </div>
+        <div class="flex items-center gap-2">
+          <label class="block mb-1 font-medium w-32">Operator:</label>
+          <a-select
+            v-model:value="formData.Operator"
+            placeholder="Select Operator"
+            style="width: 100%"
+            allow-clear
+          >
+            <a-select-option value="+"> + </a-select-option>
+            <a-select-option value="-"> - </a-select-option>
+          </a-select>
         </div>
 
         <!-- @click="createallData" -->
@@ -114,20 +143,52 @@
       @cancel="isEditModalVisible = false"
       width="500px"
     >
-      <form @submit.prevent="updateallData(updateformData.CashFlowId)">
-        <div class="grid grid-cols-1 gap-x-4 custom-form">
+      <form
+        class="space-y-3"
+        @submit.prevent="updateallData(updateformData.CashFlowId)"
+      >
+        <div class="flex items-center gap-2">
           <!-- Group Details Field -->
-          <a-form-item
-            label="Details"
-            name="Details"
-            :rules="[{ required: false, message: 'Please input details!' }]"
+          <label class="block mb-1 font-medium w-32">Code:</label>
+          <a-input
+            class="w-full"
+            placeholder="Enter Details"
+            v-model:value="updateformData.Details"
+          />
+        </div>
+
+        <div class="flex items-center gap-2">
+          <!-- :loading="searchLoading" -->
+          <!-- @search="getDetails" -->
+          <!-- option-filter-prop="children" -->
+          <!-- show-search -->
+          <label class="block mb-1 font-medium w-32">Code:</label>
+          <a-select
+            v-model:value="updateformData.Code"
+            placeholder="Select Code"
+            style="width: 100%"
+            allow-clear
           >
-            <a-input
-              class="w-full"
-              placeholder="Enter Details"
-              v-model:value="updateformData.Details"
-            />
-          </a-form-item>
+            <a-select-option
+              v-for="(item, index) in cf"
+              :key="index"
+              :value="item.Code"
+            >
+              {{ item.Details || "-" }}
+            </a-select-option>
+          </a-select>
+        </div>
+        <div class="flex items-center gap-2">
+          <label class="block mb-1 font-medium w-32">Operator:</label>
+          <a-select
+            v-model:value="updateformData.Operator"
+            placeholder="Select Operator"
+            style="width: 100%"
+            allow-clear
+          >
+            <a-select-option value="+"> + </a-select-option>
+            <a-select-option value="-"> - </a-select-option>
+          </a-select>
         </div>
 
         <div class="flex items-center justify-end">
@@ -188,10 +249,14 @@ const isUpdating = ref(false);
 
 const formData = ref({
   Details: "",
+  Code: "",
+  Operator: "",
 });
 const updateformData = ref({
   CashFlowId: "",
   Details: "",
+  Code: "",
+  Operator: "",
 });
 
 // create
@@ -233,10 +298,13 @@ const allData_idwise = async (id) => {
       getToken(),
     );
     isShowLoading.value = false;
+    console.log("code--------", res?.data?.data?.ReportCFDetails?.Code);
 
     updateformData.value = {
       Details: res?.data?.data?.Details,
       CashFlowId: res?.data?.data?.CashFlowId,
+      Code: res?.data?.data?.ReportCFDetails?.Code,
+      Operator: res?.data?.data?.ReportCFDetails?.Operator,
     };
     isEditModalVisible.value = true;
   } catch (error) {
@@ -248,6 +316,8 @@ const allData_idwise = async (id) => {
 const updateallData = async (GroupCode) => {
   const finalFormData = {
     Details: updateformData.value.Details,
+    Code: updateformData.value.Code,
+    Operator: updateformData.value.Operator,
   };
   isUpdating.value = true;
   try {
@@ -337,9 +407,22 @@ const getDetails = debounce(async (event) => {
   }
 }, 500);
 
+const cf = ref([]);
+const getCF = async () => {
+  try {
+    const res = await axios.get(`${apiBase}/settings/report/cf`, getToken());
+    if (res?.data) {
+      cf.value = res?.data?.data;
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
 onMounted(async () => {
   await fetchAllData();
   await getDetails();
+  await getCF();
 });
 </script>
 
